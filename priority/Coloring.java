@@ -80,6 +80,8 @@ public class Coloring {
 		add(syncDrain(), 9, 0);
 		add(router(), 11, 0);
 		add(lossyDrain(), 13, 0);
+		add(syncDrain(), 16, 0);
+		add(prioritySync(), 18, 1);
 		output();
 	}
 
