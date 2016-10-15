@@ -30,18 +30,25 @@ public class Coloring {
 			this.model = model;
 		}
 
-		List<ArrayList<Character>> ground(int... boundaries) {
+		public Connector(List<String> names, List<ArrayList<Character>> model) {
+			this.names = names;
+			this.model = model;
+		}
+
+		Connector ground(String... boundaries) {
 			List<ArrayList<Character>> result = new ArrayList<ArrayList<Character>>();
 			for (int i = 0; i < model.size(); i++) {
-				boolean skip = false;
+				boolean copy = true;
 				for (int j = 0; j < boundaries.length; j++) {
-					if (model.get(i).get(boundaries[j]) == 'o')
-						skip = true;
+					if (model.get(i).get(names.indexOf(boundaries[j])) == 'o') {
+						copy = false;
+						break;
+					}
 				}
-				if (!skip)
+				if (copy)
 					result.add(model.get(i));
 			}
-			return result;	
+			return new Connector(names, result);
 		}
 
 		ArrayList<Character> connect(ArrayList<Character> t1, List<Character> t2) {
@@ -203,6 +210,8 @@ public class Coloring {
 		connector.add(sync("f", "g"), "f", "a");
 		connector.output();
 		connector.add(merger("h", "i", "j"), "h", "g");
+		connector.output();
+		connector = connector.ground(new String[]{"d", "e", "i", "j"});
 		connector.output();
 	}
 }
