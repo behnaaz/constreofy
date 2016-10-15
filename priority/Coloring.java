@@ -4,61 +4,169 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Coloring {
-	List<ArrayList<Character>> model = new ArrayList<ArrayList<Character>>();
+	class Connector {
+		private List<String> names = new ArrayList<String>();
+		public List<String> getNames() {
+			return names;
+		}
 
-	List<ArrayList<Character>> lossyDrain() {
+		public List<ArrayList<Character>> getModel() {
+			return model;
+		}
+
+		private List<ArrayList<Character>> model = new ArrayList<ArrayList<Character>>();
+		private boolean verbose = true;
+
+		ArrayList<String> convert(String... c) {
+			ArrayList<String> result = new ArrayList<String>();
+			for (int i = 0; i < c.length; i++) {
+				result.add(c[i]);
+			}
+			return result;
+		}
+
+		public Connector(String[] names, List<ArrayList<Character>> model) {
+			this.names = convert(names);
+			this.model = model;
+		}
+
+		List<ArrayList<Character>> ground(int... boundaries) {
+			List<ArrayList<Character>> result = new ArrayList<ArrayList<Character>>();
+			for (int i = 0; i < model.size(); i++) {
+				boolean skip = false;
+				for (int j = 0; j < boundaries.length; j++) {
+					if (model.get(i).get(boundaries[j]) == 'o')
+						skip = true;
+				}
+				if (!skip)
+					result.add(model.get(i));
+			}
+			return result;	
+		}
+
+		ArrayList<Character> connect(ArrayList<Character> t1, List<Character> t2) {
+			ArrayList<Character> result = new ArrayList<Character>();
+			result.addAll(t1);
+			result.addAll(t2);
+			return result;
+		}
+
+		void output() {
+			for (int i = 0; i < model.size(); i++) {
+				if (i == 0) {
+					System.out.println("Nodes : "+ model.get(i).size() + " Lines : " + model.size());
+					for (int j = 0; j < model.get(i).size(); j++) {
+						System.out.print(" " + names.get(j));
+					}
+					System.out.println();
+				}
+				for (int j = 0; j < model.get(i).size(); j++) {
+					System.out.print(" " + model.get(i).get(j));
+				}
+				System.out.println();
+			}
+		}
+
+		boolean isCompatibel(Character c1, Character c2) {
+			if (c1 == '.' && c2 == '.')
+				return true;
+			
+			if (c1 == 'x' && c2 == 'x')
+				return true;
+
+			
+			if (c1 == '.' && c2 == 'o')
+				return true;
+
+			if (c1 == 'o' && c2 == '.')
+				return true;
+
+			return false;
+		}
+
+		void add(Connector newTable, String newPortName, String existingPortName) {
+			int newPort = newPortName == null ? -1 : newTable.getNames().indexOf(newPortName);
+			int existing = existingPortName == null ? -1 : names.indexOf(existingPortName);
+
+			if (model.size() == 0) {
+				this.model = newTable.getModel();
+				this.names = newTable.getNames();
+				return;
+			}
+			
+			if (model.size() > 0 && verbose )
+				System.out.println("Connecting " +  newPortName + " to " + existingPortName);
+			
+			List<ArrayList<Character>> newModel = new ArrayList<ArrayList<Character>>();
+			for (int i = 0; i < model.size(); i++) {
+				for (int j = 0; j < newTable.getModel().size(); j++) {
+					if (isCompatibel(model.get(i).get(existing), newTable.getModel().get(j).get(newPort))) {
+						newModel.add(connect(model.get(i), newTable.getModel().get(j)));
+					}
+				}
+			}
+			
+			this.model = newModel;
+			this.names.addAll(newTable.getNames());
+		}
+	}
+
+	Connector connector;
+
+	Connector lossyDrain(String src, String snk) {
 		List<ArrayList<Character>> lossyDrain  = new ArrayList<ArrayList<Character>>();
 		lossyDrain.add(convert('x', 'x'));
 		lossyDrain.add(convert('o', 'x'));
 		lossyDrain.add(convert('x', 'o'));
-		return lossyDrain;
+		return new Connector(new String[]{src, snk}, lossyDrain);
 	}
 
-	List<ArrayList<Character>> prioritySync() {
+	Connector prioritySync(String src, String snk) {
 		List<ArrayList<Character>> priority  = new ArrayList<ArrayList<Character>>();
 		priority.add(convert('.', '.'));
-		return priority;
+		return new Connector(new String[]{src, snk}, priority);
 	}
 
-	List<ArrayList<Character>> syncDrain() {
-		return sync();
+	Connector syncDrain(String c1, String c2) {
+		return sync(c1, c2);
 	}
 	
-	List<ArrayList<Character>> fullFifo() {
+	Connector fullFifo(String src, String snk) {
 		List<ArrayList<Character>> fullFifo  = new ArrayList<ArrayList<Character>>();
 		fullFifo.add(convert('x', 'x'));
 		fullFifo.add(convert('o', '.'));
 		fullFifo.add(convert('.', 'o'));
-		return fullFifo;
+		return new Connector(new String[]{src, snk}, fullFifo);
 	}
 
-	List<ArrayList<Character>> router() {
+	Connector router(String p1, String p2, String p3) {
 		List<ArrayList<Character>> router  = new ArrayList<ArrayList<Character>>();
 		router.add(convert('x', 'x', 'x'));
 		router.add(convert('.', 'o', 'o'));
 		router.add(convert('.', 'o', 'x'));
 		router.add(convert('.', 'x', 'o'));
-		return router;
+		return new Connector(new String[]{p1, p2, p3}, router);
 	}
 
-	List<ArrayList<Character>> sync() {
+	Connector sync(String src, String snk) {
 		List<ArrayList<Character>> sync  = new ArrayList<ArrayList<Character>>();
 		sync.add(convert('x', 'x'));
 		sync.add(convert('o', '.'));
 		sync.add(convert('.', 'o'));
-		return sync;
+		return new Connector(new String[]{src, snk}, sync);
 	}
 
-	List<ArrayList<Character>> merge() {
-		List<ArrayList<Character>> priority  = new ArrayList<ArrayList<Character>>();
-		priority.add(convert('x', 'x', 'x'));
-		priority.add(convert('x', 'o', '.'));
-		priority.add(convert('o', 'x', '.'));
-		priority.add(convert('o', 'o', '.'));
-		priority.add(convert('.', '.', 'o'));
-		return priority;
+	Connector merger(String p1, String p2, String p3) {
+		List<ArrayList<Character>> merger  = new ArrayList<ArrayList<Character>>();
+		merger.add(convert('x', 'x', 'x'));
+		merger.add(convert('x', 'o', '.'));
+		merger.add(convert('o', 'x', '.'));
+		merger.add(convert('o', 'o', '.'));
+		merger.add(convert('.', '.', 'o'));
+		return new Connector(new String[]{p1, p2, p3}, merger);
 	}
-	private ArrayList<Character> convert(Character... c) {
+	
+	ArrayList<Character> convert(Character... c) {
 		ArrayList<Character> result = new ArrayList<Character>();
 		for (int i = 0; i < c.length; i++) {
 			result.add(c[i]);
@@ -67,86 +175,34 @@ public class Coloring {
 	}
 	public static void main(String[] args) {
 		Coloring coloring = new Coloring();
-	//	coloring.exampleOne();
+		coloring.exampleOne();
 		//coloring.clear();
-		coloring.exampleTwo();
+		//coloring.exampleTwo();
 	}
 
 	private void exampleTwo() {
-		add(router(), -1, -1);
-		add(fullFifo(), 1, 0);
-		add(router(), 4, 0);
-		add(prioritySync(), 7, 0);
-		add(syncDrain(), 9, 0);
-		add(router(), 11, 0);
-		add(lossyDrain(), 13, 0);
-		add(syncDrain(), 16, 0);
-		add(prioritySync(), 18, 1);
-		output();
-	}
-
-	void clear() {
-		model = new ArrayList<ArrayList<Character>>();
+		/*add(router("a1", "a2", "a3"), -1, -1);
+		add(fullFifo("b1", "b2"), 1, 0);
+		add(router("c1", "c2", "c3"), 4, 0);
+		add(prioritySync("d1", "d2"), 7, 0);
+		add(syncDrain("e1", "e2"), 9, 0);
+		add(router("f1", "f2", "f3"), 11, 0);
+		add(lossyDrain("g2", "g1"), 13, 0);
+		add(syncDrain("h1", "h2"), 16, 0);
+		add(prioritySync("i2", "i1"), 18, 1);
+		connect(2,20);
+		model = ground(0, 6);
+		output();*/
 	}
 
 	void exampleOne() {
-		add(prioritySync(), -1, -1);
-		add(merge(), 0, 0);//flip
-		add(sync(), 0, 0);
-		add(merge(), 6, 0);
-		output();
-	}
-
-	private void output() {
-		for (int i = 0; i < model.size(); i++) {
-		//	System.out.println(i+1);
-			for (int j = 0; j < model.get(i).size(); j++) {
-				System.out.print(" " + model.get(i).get(j));
-			}
-			System.out.println(model.get(i).size());
-		}
-		System.out.println(model.size());
-	}
-
-	private void add(List<ArrayList<Character>> a, int j1, int j2) {
-		if (model.size() == 0) {
-			model = a;
-			return;
-		}
-		
-		List<ArrayList<Character>> newModel = new ArrayList<ArrayList<Character>>();
-		for (int i = 0; i < model.size(); i++) {
-			for (int j = 0; j < a.size(); j++) {
-				if (isCompatibel(model.get(i).get(j1), a.get(j).get(j2))) {
-					newModel.add(connect(model.get(i), a.get(j)));
-				}
-			}
-		}
-		
-		model = newModel;
-	}
-
-	private ArrayList<Character> connect(final ArrayList<Character> t1, final List<Character> t2) {
-		ArrayList<Character> result = new ArrayList<Character>();
-		result.addAll(t1);
-		result.addAll(t2);
-		return result;
-	}
-
-	private boolean isCompatibel(Character c1, Character c2) {
-		if (c1 == '.' && c2 == '.')
-			return true;
-		
-		if (c1 == 'x' && c2 == 'x')
-			return true;
-
-		
-		if (c1 == '.' && c2 == 'o')
-			return true;
-
-		if (c1 == 'o' && c2 == '.')
-			return true;
-
-		return false;
+		connector = prioritySync("a", "b");
+		connector.output();
+		connector.add(merger("c", "d", "e"), "c", "b");
+		connector.output();
+		connector.add(sync("f", "g"), "f", "a");
+		connector.output();
+		connector.add(merger("h", "i", "j"), "h", "g");
+		connector.output();
 	}
 }
