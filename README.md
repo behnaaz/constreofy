@@ -1,4 +1,7 @@
 # extendedcoloring
+
+To be viewed in raw format to eradableversion
+
 Example 1 =========================================================
 Nodes : 2 Lines : 1
  a   b
