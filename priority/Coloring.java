@@ -2,6 +2,10 @@ package priority;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 public class Coloring {
 	class Connector {
@@ -51,11 +55,15 @@ public class Coloring {
 			return new Connector(names, result);
 		}
 
-		ArrayList<Character> connect(ArrayList<Character> t1, List<Character> t2) {
+		ArrayList<Character> concat(ArrayList<Character> t1, List<Character> t2) {
 			ArrayList<Character> result = new ArrayList<Character>();
 			result.addAll(t1);
 			result.addAll(t2);
 			return result;
+		}
+
+		String spaced(int n, Optional<String> content) {
+			return Stream.generate(() -> " ").limit(n).collect(joining()).concat(content.get());
 		}
 
 		void output() {
@@ -63,12 +71,12 @@ public class Coloring {
 				if (i == 0) {
 					System.out.println("Nodes : "+ model.get(i).size() + " Lines : " + model.size());
 					for (int j = 0; j < model.get(i).size(); j++) {
-						System.out.print(" " + names.get(j));
+						System.out.print(spaced(names.get(j).length(), Optional.of(names.get(j))));
 					}
 					System.out.println();
 				}
 				for (int j = 0; j < model.get(i).size(); j++) {
-					System.out.print(" " + model.get(i).get(j));
+					System.out.print(spaced(names.get(j).length()+1, Optional.of(model.get(i).get(j).toString())));
 				}
 				System.out.println();
 			}
@@ -108,13 +116,31 @@ public class Coloring {
 			for (int i = 0; i < model.size(); i++) {
 				for (int j = 0; j < newTable.getModel().size(); j++) {
 					if (isCompatibel(model.get(i).get(existing), newTable.getModel().get(j).get(newPort))) {
-						newModel.add(connect(model.get(i), newTable.getModel().get(j)));
+						newModel.add(concat(model.get(i), newTable.getModel().get(j)));
 					}
 				}
 			}
 			
 			this.model = newModel;
 			this.names.addAll(newTable.getNames());
+		}
+
+		Connector connect(String name1, String name2) {
+			int port1 = name1 == null ? -1 : names.indexOf(name1);
+			int port2 = name2 == null ? -1 : names.indexOf(name2);
+			List<ArrayList<Character>> result = new ArrayList<ArrayList<Character>>();
+
+			for (int i = 0; i < model.size(); i++) {
+				boolean copy = true;
+				if ((model.get(i).get(port1) == 'x' && model.get(i).get(port2) != 'x') ||
+					(model.get(i).get(port1) != 'x' && model.get(i).get(port2) == 'x'))
+					copy = false;
+
+				if (copy)
+					result.add(model.get(i));
+			}
+
+			return new Connector(names, result);
 		}
 	}
 
@@ -182,24 +208,32 @@ public class Coloring {
 	}
 	public static void main(String[] args) {
 		Coloring coloring = new Coloring();
-		coloring.exampleOne();
-		//coloring.clear();
-		//coloring.exampleTwo();
+		//coloring.exampleOne();
+		coloring.exampleTwo();
 	}
 
 	private void exampleTwo() {
-		/*add(router("a1", "a2", "a3"), -1, -1);
-		add(fullFifo("b1", "b2"), 1, 0);
-		add(router("c1", "c2", "c3"), 4, 0);
-		add(prioritySync("d1", "d2"), 7, 0);
-		add(syncDrain("e1", "e2"), 9, 0);
-		add(router("f1", "f2", "f3"), 11, 0);
-		add(lossyDrain("g2", "g1"), 13, 0);
-		add(syncDrain("h1", "h2"), 16, 0);
-		add(prioritySync("i2", "i1"), 18, 1);
-		connect(2,20);
-		model = ground(0, 6);
-		output();*/
+		connector = router("a1", "a2", "a3");
+		connector.output();
+		connector.add(fullFifo("b1", "b2"), "b1", "a2");
+		connector.output();
+		connector.add(router("c1", "c2", "c3"), "c1", "b2");
+		connector.output();
+		connector.add(prioritySync("d1", "d2"), "d1", "c3");
+		connector.output();
+		connector.add(syncDrain("e1", "e2"), "e1", "d2");
+		connector.output();
+		connector.add(router("f2", "f1", "f3"), "f1", "e2");
+		connector.output();
+		connector.add(lossyDrain("g2", "g1"), "g1","f2");
+		connector.output();
+		connector.add(syncDrain("h1", "h2"), "h1", "f3");
+		connector.output();
+		connector.add(prioritySync("i2", "i1"), "i1", "h2");
+		connector.output();
+		connector = connector.connect("i2","a3");
+		connector = connector.ground(new String[]{"a1", "c2", "g2"});
+		connector.output();
 	}
 
 	void exampleOne() {
