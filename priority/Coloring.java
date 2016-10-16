@@ -68,7 +68,7 @@ public class Coloring extends AbstractSemantics {
 		coloring.exampleTwo();
 	}
 
-	private void exampleTwo() {
+	void exampleTwo() {
 		connector = router("a1", "a2", "a3");
 		connector.output();
 		connector.add(fullFifo("b1", "b2"), "b1", "a2");

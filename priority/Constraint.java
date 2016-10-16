@@ -9,7 +9,7 @@ public class Constraint extends AbstractSemantics {
 		constraint.exampleTwo();
 	}
 
-	private void exampleTwo() {
+	void exampleTwo() {
 		connector = router("a1", "a2", "a3");
 		connector.output();
 		connector.add(fullFifo("b1", "b2"), "b1", "a2");
@@ -58,7 +58,7 @@ public class Constraint extends AbstractSemantics {
 		return new ConstraintConnector(router, p1, p2, p3);
 	}
 
-	private void exampleOne() {
+	void exampleOne() {
 		connector = prioritySync("a", "b");
 		connector.output();
 		connector.add(merger("c", "d", "e"), "c", "b");
