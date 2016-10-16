@@ -1,5 +1,5 @@
 # extendedcoloring
-Example 1
+Example 1 =========================================================
 Nodes : 2 Lines : 1
  a   b
   .  .
