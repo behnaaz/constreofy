@@ -7,36 +7,18 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class Coloring {
-	class Connector {
-		private List<String> names = new ArrayList<String>();
-		public List<String> getNames() {
-			return names;
-		}
+public class Coloring extends AbstractConnector {
+	public Coloring() {
+		super();
+	}
 
-		public List<ArrayList<Character>> getModel() {
-			return model;
-		}
-
-		private List<ArrayList<Character>> model = new ArrayList<ArrayList<Character>>();
-		private boolean verbose = true;
-
-		ArrayList<String> convert(String... c) {
-			ArrayList<String> result = new ArrayList<String>();
-			for (int i = 0; i < c.length; i++) {
-				result.add(c[i]);
-			}
-			return result;
-		}
-
+	class Connector extends AbstractConnector {
 		public Connector(String[] names, List<ArrayList<Character>> model) {
-			this.names = convert(names);
-			this.model = model;
+			super(names, model);
 		}
 
 		public Connector(List<String> names, List<ArrayList<Character>> model) {
-			this.names = names;
-			this.model = model;
+			super(names, model);
 		}
 
 		Connector ground(String... boundaries) {
