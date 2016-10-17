@@ -1,7 +1,5 @@
 # extendedcoloring
-
 To be viewed in raw format to readableversion
-
 Priority:
 Example 1 =========================================================
 Nodes : 2 Lines : 1
