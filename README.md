@@ -1,26 +1,6 @@
 # extendedcoloring
 
-To be viewed in raw format to eradableversion
-Basic Constraints:
-
-Example 1 =========================================================
-(p1 <=> p2)
-(p1 <=> p2) and (e <=> c or d) and (not (c and d))
-(p1 <=> p2) and (e <=> c or d) and (not (c and d)) and (f <=> g)
-(p1 <=> p2) and (e <=> c or d) and (not (c and d)) and (f <=> g) and (j <=> h or i) and (not (h and i))
-
-Example 2 =========================================================
-(a1 <=> a2 or a3) and (not (a2 and a3))
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1)
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1) and (c1 <=> c2 or c3) and (not (c2 and c3))
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1) and (c1 <=> c2 or c3) and (not (c2 and c3)) and (p1 <=> p2)
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1) and (c1 <=> c2 or c3) and (not (c2 and c3)) and (p1 <=> p2) and (not (p1 and p2))
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1) and (c1 <=> c2 or c3) and (not (c2 and c3)) and (p1 <=> p2) and (not (p1 and p2)) and (f2 <=> f1 or f3) and (not (f1 and f3))
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1) and (c1 <=> c2 or c3) and (not (c2 and c3)) and (p1 <=> p2) and (not (p1 and p2)) and (f2 <=> f1 or f3) and (not (f1 and f3)) and (p2 => p1)
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1) and (c1 <=> c2 or c3) and (not (c2 and c3)) and (p1 <=> p2) and (not (p1 and p2)) and (f2 <=> f1 or f3) and (not (f1 and f3)) and (p2 => p1) and (not (p1 and p2))
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1) and (c1 <=> c2 or c3) and (not (c2 and c3)) and (p1 <=> p2) and (not (p1 and p2)) and (f2 <=> f1 or f3) and (not (f1 and f3)) and (p2 => p1) and (not (p1 and p2)) and (p1 <=> p2)
-(a1 <=> a2 or a3) and (not (a2 and a3)) and (not b1) and (c1 <=> c2 or c3) and (not (c2 and c3)) and (p1 <=> p2) and (not (p1 and p2)) and (f2 <=> f1 or f3) and (not (f1 and f3)) and (p2 => p1) and (not (p1 and p2)) and (p1 <=> p2) and  (i2 == a3) 
-
+To be viewed in raw format to readableversion
 
 Priority:
 Example 1 =========================================================
