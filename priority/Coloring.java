@@ -3,6 +3,8 @@ package priority;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omg.CosNaming.IstringHelper;
+
 public class Coloring extends AbstractSemantics {
 	public Coloring() {
 		super();
@@ -65,7 +67,8 @@ public class Coloring extends AbstractSemantics {
 	public static void main(String[] args) {
 		Coloring coloring = new Coloring();
 		//coloring.exampleOne();
-		coloring.exampleTwo();
+		//coloring.exampleTwo();
+		coloring.example3();
 	}
 
 	void exampleTwo() {
@@ -103,5 +106,45 @@ public class Coloring extends AbstractSemantics {
 		connector.output();
 		connector = connector.ground(new String[]{"d", "e", "i", "j"});
 		connector.output();
+	}
+
+	void example3() {
+		connector = prioritySync("a", "b");
+		connector.output();
+		connector.add(merger("c", "d", "e"), "c", "b");
+		connector.output();
+		connector.add(blocking("f", "g"), "f", "e");
+		connector.output();
+		connector.add(merger("i", "j", "k"), "i", "g");
+		connector.output();
+		connector.add(prioritySync("l", "m"), "l", "j");
+		connector.output();
+		connector = connector.ground(new String[]{"d", "k", "m"});
+		connector.output();
+	}
+
+	private ColoringConnector sourceBlocking(String src, String snk) {
+		List<ArrayList<Character>> sourceBlocking  = new ArrayList<ArrayList<Character>>();
+		sourceBlocking.add(convert('x', 'x'));
+		sourceBlocking.add(convert('o', 'x'));
+		sourceBlocking.add(convert('o', 'o'));
+		return new ColoringConnector(new String[]{src, snk}, sourceBlocking);
+	}
+	
+	private ColoringConnector sinkBlocking(String src, String snk) {
+		List<ArrayList<Character>> sinkBlocking  = new ArrayList<ArrayList<Character>>();
+		sinkBlocking.add(convert('x', 'x'));
+		sinkBlocking.add(convert('x', 'o'));
+		sinkBlocking.add(convert('o', 'o'));
+		return new ColoringConnector(new String[]{src, snk}, sinkBlocking);
+	}
+	
+	private ColoringConnector blocking(String src, String snk) {
+		List<ArrayList<Character>> blocking  = new ArrayList<ArrayList<Character>>();
+		blocking.add(convert('x', 'x'));
+		blocking.add(convert('x', 'o'));
+		blocking.add(convert('o', 'x'));
+		blocking.add(convert('o', 'o'));
+		return new ColoringConnector(new String[]{src, snk}, blocking);
 	}
 }

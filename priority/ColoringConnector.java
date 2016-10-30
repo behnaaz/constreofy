@@ -37,22 +37,58 @@ public class ColoringConnector extends AbstractConnector {
 			}
 			return new ColoringConnector(names, result);
 		}
+		
+		private String texify(Character ch) {
+			if (!isTex)
+				return ch.toString();
+
+			switch (ch) {
+				case 'x':
+					return " $\\times$ ";
+				case 'o':
+					return " $\\circ$ ";
+				case '.':
+					return " $\\bullet$ ";
+			}
+			return "UNDEF";
+		}
 
 		@Override
 		void output() {
+			if (isTex)
+				;
 			for (int i = 0; i < model.size(); i++) {
 				if (i == 0) {
 					System.out.println("Nodes : "+ model.get(i).size() + " Lines : " + model.size());
 					for (int j = 0; j < model.get(i).size(); j++) {
-						System.out.print(spaced(names.get(j).length(), Optional.of(names.get(j))));
+						String out = texify(names.get(j));
+						if (j == 0)
+							System.out.print(out);
+						else {
+							String res = spaced(names.get(j).length(), Optional.of(out));
+							System.out.print(res);
+						}
 					}
-					System.out.println();
+					System.out.println(newLine);
 				}
 				for (int j = 0; j < model.get(i).size(); j++) {
-					System.out.print(spaced(names.get(j).length()+1, Optional.of(model.get(i).get(j).toString())));
+					String out = texify(model.get(i).get(j));
+					if (j == 0)
+						System.out.print(out);
+					else {
+						String res = spaced(names.get(j).length()+1, Optional.of(out));
+						System.out.print(res);
+					}
 				}
-				System.out.println();
+				System.out.println(newLine);
 			}
+		}
+
+		private String texify(String name) {
+			if (!isTex)
+				return name;
+
+			return name.replaceAll("(.*)(\\d+)", " \\$$1\\_$2\\$ ");
 		}
 
 		boolean isCompatibel(Character c1, Character c2) {

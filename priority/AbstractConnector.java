@@ -8,6 +8,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public abstract class AbstractConnector {
+	boolean isTex = !true;
+	String newLine = isTex ? "\\\\ \r\n \\hline" : "";
+
 	protected List<String> names;
 	public boolean verbose;
 
@@ -40,8 +43,14 @@ public abstract class AbstractConnector {
 		return result;
 	}
 
-	String spaced(int n, Optional<String> content) {
-		return Stream.generate(() -> " ").limit(n).collect(joining()).concat(content.get());
+	String spaced(Optional<String> content) {
+		return Stream.generate(() -> "&").limit(1).collect(joining()).concat(content.get());
 	}
 
+	String spaced(int n, Optional<String> content) {
+		if (isTex)
+			return spaced(content);
+
+		return Stream.generate(() -> " ").limit(n).collect(joining()).concat(content.get());
+	}
 }
