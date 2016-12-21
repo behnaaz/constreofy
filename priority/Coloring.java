@@ -3,8 +3,6 @@ package priority;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omg.CosNaming.IstringHelper;
-
 public class Coloring extends AbstractSemantics {
 	public Coloring() {
 		super();
@@ -42,7 +40,7 @@ public class Coloring extends AbstractSemantics {
 		router.add(convert('x', 'x', 'x'));
 		router.add(convert('.', 'o', 'o'));
 		router.add(convert('.', 'o', 'x'));
-		router.add(convert('.', 'x', 'o'));
+		router.add(convert('.', 'x', 'o'));//???
 		return new ColoringConnector(new String[]{p1, p2, p3}, router);
 	}
 
@@ -123,7 +121,7 @@ public class Coloring extends AbstractSemantics {
 		connector.output();
 	}
 
-	private ColoringConnector sourceBlocking(String src, String snk) {
+	ColoringConnector sourceBlocking(String src, String snk) {
 		List<ArrayList<Character>> sourceBlocking  = new ArrayList<ArrayList<Character>>();
 		sourceBlocking.add(convert('x', 'x'));
 		sourceBlocking.add(convert('o', 'x'));
@@ -131,7 +129,7 @@ public class Coloring extends AbstractSemantics {
 		return new ColoringConnector(new String[]{src, snk}, sourceBlocking);
 	}
 	
-	private ColoringConnector sinkBlocking(String src, String snk) {
+	ColoringConnector sinkBlocking(String src, String snk) {
 		List<ArrayList<Character>> sinkBlocking  = new ArrayList<ArrayList<Character>>();
 		sinkBlocking.add(convert('x', 'x'));
 		sinkBlocking.add(convert('x', 'o'));

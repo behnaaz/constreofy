@@ -1,5 +1,6 @@
 package priority;
 
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +54,6 @@ public class ColoringConnector extends AbstractConnector {
 			return "UNDEF";
 		}
 
-		@Override
 		void output() {
 			if (isTex)
 				;
@@ -150,6 +150,12 @@ public class ColoringConnector extends AbstractConnector {
 			}
 
 			return new ColoringConnector(names, result);
+		}
+
+		@Override
+		void output(OutputStreamWriter out) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 

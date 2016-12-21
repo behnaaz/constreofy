@@ -2,13 +2,14 @@ package priority;
 
 import static java.util.stream.Collectors.joining;
 
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public abstract class AbstractConnector {
-	boolean isTex = !true;
+	boolean isTex = true;
 	String newLine = isTex ? "\\\\ \r\n \\hline" : "";
 
 	protected List<String> names;
@@ -22,7 +23,7 @@ public abstract class AbstractConnector {
 		this.names = convert(names);
 	}
 
-	abstract void output();
+	abstract void output(OutputStreamWriter out);
 
 	public List<String> getNames() {
 		return names;

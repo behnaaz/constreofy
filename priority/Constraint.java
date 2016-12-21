@@ -1,82 +1,171 @@
 package priority;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+
 public class Constraint extends AbstractSemantics {
-	ConstraintConnector connector;
+	private static final String SHUT = "shut";
+	static final String TILDE = "tilde";
+	static final String CIRC = "circ";
+	static final String BULLET = "bullet";
+	static final String CURRENT_MEMORY = "ring";
+	static final String NEXT_MEMORY = "xring";
+	
+	static final String OUTPUTFILE = "abc" + new Date().toString().replaceAll("\\ |\\:", "") + ".txt";
+	static final String CNFFILE = "/Users/behnaz.changizi/reoworkspace/priority/src/Users/behnaz.changizi/Desktop/Dropbox/sol.txt";
+	static final String IMPLIES = " impl ";
+	static final String RIGHTLEFTARROW = " equiv ";
+    static final String NOT = " not ";
+    static final String OR = " or ";
+	static final String AND = " and ";
+    static final String TRUE = " true ";
+    static final String FALSE = " false ";
 
-	public static void main(String[] args) {
-		Constraint constraint = new Constraint();
-		constraint.exampleOne();
-		constraint.exampleTwo();
+	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
+
+	byte[] readFile(File file) {
+		try {
+			if (file.exists() && file.canRead()) {
+				byte[] lines = Files.readAllBytes(file.toPath());
+				return lines;
+							}
+		} catch (IOException e) {
+			//e.printStackTrace();
+		}
+		return null;	
 	}
 
-	void exampleTwo() {
-		connector = router("a1", "a2", "a3");
-		connector.output();
-		connector.add(fullFifo("b1", "b2"), "b1", "a2");
-		connector.output();
-		connector.add(router("c1", "c2", "c3"), "c1", "b2");
-		connector.output();
-		connector.add(prioritySync("d1", "d2"), "d1", "c3");
-		connector.output();
-		connector.add(syncDrain("e1", "e2"), "e1", "d2");
-		connector.output();
-		connector.add(router("f2", "f1", "f3"), "f1", "e2");
-		connector.output();
-		connector.add(lossyDrain("g2", "g1"), "g1","f2");
-		connector.output();
-		connector.add(syncDrain("h1", "h2"), "h1", "f3");
-		connector.output();
-		connector.add(prioritySync("i2", "i1"), "i1", "h2");
-		connector.output();
-		connector.add(connector.connect("i2","a3"), "", "");
-		connector.output();	
+	public static void main(String[] args) throws Exception {
+		List<Map<String, Boolean>> visited = new ArrayList<Map<String, Boolean>>();
+		List<Map<String, Boolean>> explorableStates = new ArrayList<Map<String, Boolean>>();
+		Map<String, Boolean> currentStatesValues = ImmutableMap.of(new ConnectorFactory().mem("ab1", "ab2"), false);
+		do {
+		File file = createFile(OUTPUTFILE);
+		ConstraintConnector cc = new ExampleMaker(3, new OutputStreamWriter(new FileOutputStream(file))).getExample(currentStatesValues);
+		System.out.println("Constraint is: " + cc.constraint);
+		System.out.println("State is: " + cc.states().toString());
+		System.out.println("Xstate is: " + cc.nextStates());
+
+		visited.add(currentStatesValues);
+
+		writeToFile(CNFFILE, getReduceOutput(file, new Constraint()));
+
+		DNF dnf = new DNF(CNFFILE, Lists.newArrayList(cc.variables()), Lists.newArrayList(cc.states()), Lists.newArrayList(cc.nextStates()));
+		dnf.prepareForSat4j(new FileWriter(OUTPUTFILE));
+		dnf.reportVars();
+
+		dnf.reportSolutions();
+		dnf.printFlows();
+		dnf.printFlowsNPriority();
+		List<Map<String, Boolean>> nexts = dnf.stateValues();		
+		for (Map<String, Boolean> i : nexts) {
+			Map<String, Boolean> temp = find(i, visited);
+			if (temp == null)
+				explorableStates.add(i);
+		}
+
+		currentStatesValues = (explorableStates.size() > 0) ?makeItCurrent(explorableStates.remove(0)) : null;
+		
+		} while (currentStatesValues != null);
 	}
 
-	private ConstraintConnector lossyDrain(String p1, String p2) {
-		String lossyDrain = String.format("(p2 => p1)", p1);
-		return new ConstraintConnector(lossyDrain, p1, p2);
+	public static Map<String, Boolean> makeItCurrent(Map<String, Boolean> list) {
+		Map<String, Boolean> temp = new HashMap<String, Boolean>();
+		for (String s : list.keySet()) {
+			temp.put(s.toLowerCase().replace("xring", "ring"), list.get(s));
+		}
+		return temp;
 	}
 
-	private ConstraintConnector syncDrain(String p1, String p2) {
-		String syncDrain = String.format("(not (p1 and p2))", p1);
-		return new ConstraintConnector(syncDrain, p1, p2);
+	private static Map<String, Boolean> find(Map<String, Boolean> elem, List<Map<String, Boolean>> list) {
+		Map<String, Boolean> result = null;
+		for (Map<String, Boolean> t : list) {
+			if (result == null)
+				result = exists(elem, t);
+		}
+		return result;
 	}
 
-	private ConstraintConnector prioritySync(String p1, String p2) {
-		String prioritySync = String.format("(p1 <=> p2)", p1);
-		return new ConstraintConnector(prioritySync, p1, p2);
+	private static Map<String, Boolean> exists(Map<String, Boolean> elem, Map<String, Boolean> t) {
+		for (String key : elem.keySet()) {
+			if (!t.containsKey(key) || t.get(key) != elem.get(key)) {
+				return null;
+			}
+		}
+		return elem;
 	}
 
-	private ConstraintConnector fullFifo(String p1, String p2) {
-		String fullFifo = String.format("(not %s)", p1);
-		return new ConstraintConnector(fullFifo, p1, p2);
+	private static List<String> getReduceOutput(File file, Constraint constraint) throws IOException {
+		Process process = Runtime.getRuntime().exec(REDUCE_PROGRAM);
+		OutputStream stdin = process.getOutputStream();
+		stdin.write(constraint.readFile(file));
+		stdin.flush();
+		stdin.close();
+		
+		List<String> output = new ArrayList<String>();
+		BufferedReader out = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String line;
+		while ((line = out.readLine()) != null)
+			output.add(line);
+		return output;
 	}
 
-	private ConstraintConnector router(String p1, String p2, String p3) {
-		String router = String.format("(%s <=> %s or %s) and (not (%s and %s))", 
-				p1, p2, p3, p2, p3);
-		return new ConstraintConnector(router, p1, p2, p3);
+	private static File createFile(String fileName) throws IOException {
+		File file = new File(fileName);
+		if (file.exists())
+			file.delete();
+		if (!file.exists())
+			file.createNewFile();
+		return file;
 	}
 
-	void exampleOne() {
-		connector = prioritySync("a", "b");
-		connector.output();
-		connector.add(merger("c", "d", "e"), "c", "b");
-		connector.output();
-		connector.add(sync("f", "g"), "f", "a");
-		connector.output();
-		connector.add(merger("h", "i", "j"), "h", "g");
-		connector.output();
+	private static void writeToFile(String cnffile, List<String> content) throws IOException {
+		System.out.println("Going to write into " + cnffile);
+		File output = createFile(cnffile);
+		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(output));
+		System.out.println("Going to extract solutions from " + content);
+		osw.write(extractSolution(content));
+		osw.flush();
+		osw.close();
 	}
 
-	private ConstraintConnector sync(String p1, String p2) {
-		String sync = String.format("(%s <=> %s)", p1, p2);
-		return new ConstraintConnector(sync, p1, p2);
+	private static String extractSolution(List<String> content) {
+		int start = findResultStart(content);
+		if (start > -1) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = start; i < content.size() - 1 && !content.get(i).contains(SHUT); i++) {
+				if (content.get(i).trim().length() > 0)
+					sb.append(content.get(i));
+			}
+			return sb.toString();
+		}
+		return null;
 	}
 
-	private ConstraintConnector merger(String p1, String p2, String p3) {
-		String merger = String.format("(%s <=> %s or %s) and (not (%s and %s))", 
-				p3, p1, p2, p1, p2);
-		return new ConstraintConnector(merger, p1, p2, p3);
+	private static int findResultStart(List<String> content) {
+		for (int i = content.lastIndexOf(SHUT)-1; i > -1; i--) {
+			if (content.get(i-1).trim().length() == 0 && content.get(i-2).trim().length() == 0) {
+				if (content.get(i).trim().endsWith(":") && Integer.parseInt(content.get(i).replaceAll(":", "").trim()) > 0)
+					i++;
+				return i;
+			}
+		}
+
+		return -1;
 	}
 }
