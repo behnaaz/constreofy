@@ -5,7 +5,6 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,6 @@ public class DNF {
 	public void prepareForSat4j(Writer writer) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		for (String line : Files.lines(Paths.get(filePath)).filter(s -> s.length() > 0).map(s -> s).collect(Collectors.toList())) {
-		//	System.out.println(line+"..");
 			sb.append(line);
 		}
 		writer.write("c test\r\n");
@@ -71,17 +69,15 @@ public class DNF {
 				sb.append((atoms[1].trim().equals("0")?"-":"")+(variables.indexOf(atoms[0].toUpperCase())+1)+" ");
 			}
 			writer.write(sb.toString() + " 0\r\n");
-
-			//System.out.println(and.trim().substring(1, and.trim().length()-1));
 		}
 		writer.close();
 	}
 
-	public void reportSolutions() throws IOException {
-		System.out.println("====================");
+	public void reportSolutions(Boolean verbose) throws IOException {
+		if (verbose)
+			System.out.println("====================");
 		StringBuilder sb = new StringBuilder();
 		for (String line : Files.lines(Paths.get(filePath)).filter(s -> s.length() > 0).map(s -> s).collect(Collectors.toList())) {
-		//	System.out.println(line+"..");
 			sb.append(line);
 		}
 
@@ -101,7 +97,8 @@ public class DNF {
 			if (!redundantSolution(solutions, newSol))
 				solutions.add(newSol);
 
-			System.out.println(sb.toString() + " \r\n");
+			if (verbose)
+				System.out.println(sb.toString() + " \r\n");
 		}		
 	}
 
@@ -114,7 +111,6 @@ public class DNF {
 	}
 
 	public void printFlowsNPriority() {
-		System.out.println("Flows~~~~~~~~~~~");
 		for (Solution sol : solutions) {
 			System.out.println(sol.toString(true));
 		}
@@ -122,7 +118,6 @@ public class DNF {
 
 	public List<Map<String, Boolean>> stateValues() {
 		List<Map<String, Boolean>> nexts = new ArrayList<Map<String, Boolean>>();
-		System.out.println("States~~~~~~~~~~~");
 		for (Solution sol : solutions) {
 			System.out.println(sol.nextStateValuess().toString());
 			Map<String, Boolean> t = Constraint.makeItCurrent(sol.nextStateValuess());

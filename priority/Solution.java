@@ -46,28 +46,29 @@ public class Solution {
 					sb.append(" ").append(nodeflow.trim().replaceFirst(TILDE, "PRIORITY"));
 			}
 		}
+		
+		StringBuilder from = new StringBuilder();
+		from.append(" [");
 		for (String state : states) {
-		//	if (!state.trim().startsWith(NEG)) {
 				if (state.trim().endsWith(CURRENT_MEMORY)) {
-					sb.append(" [").append(state.trim()).append("] ");
-				//states.add(e)	
+					from.append(state.trim()).append(' ');
 				}
 			}
-	//	}
+		from.append("] ------ { ");
+		
+		StringBuilder to = new StringBuilder();
+		to.append(" } -------> (");
 		for (String state : nextStates) {
-		//	if (!state.trim().startsWith(NEG)) {
 				if (state.trim().endsWith(NEXT_MEMORY)) {
-					sb.append(" <").append(state.trim()).append("> ");
 					boolean neg = state.trim().startsWith(NEG);
+					to.append(state).append(' ');
 					String name = neg?state.trim().substring(1, state.trim().length()):state.trim();
-					nextStateValues.put(name, neg);
-
-					
-					
+					nextStateValues.put(name, !neg);
 				}
-		//	}
 		}
-		return sb.toString();
+		to.append(") ");
+	
+		return from.append(sb.toString()).append(to.toString()).toString();
 	}
 
 	Map<String, Boolean> nextStateValuess() {

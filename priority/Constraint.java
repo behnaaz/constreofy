@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class Constraint extends AbstractSemantics {
@@ -25,16 +24,16 @@ public class Constraint extends AbstractSemantics {
 	static final String BULLET = "bullet";
 	static final String CURRENT_MEMORY = "ring";
 	static final String NEXT_MEMORY = "xring";
-	
+
 	static final String OUTPUTFILE = "abc" + new Date().toString().replaceAll("\\ |\\:", "") + ".txt";
 	static final String CNFFILE = "/Users/behnaz.changizi/reoworkspace/priority/src/Users/behnaz.changizi/Desktop/Dropbox/sol.txt";
 	static final String IMPLIES = " impl ";
 	static final String RIGHTLEFTARROW = " equiv ";
-    static final String NOT = " not ";
-    static final String OR = " or ";
+	static final String NOT = " not ";
+	static final String OR = " or ";
 	static final String AND = " and ";
-    static final String TRUE = " true ";
-    static final String FALSE = " false ";
+	static final String TRUE = " true ";
+	static final String FALSE = " false ";
 
 	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
 
@@ -43,44 +42,67 @@ public class Constraint extends AbstractSemantics {
 			if (file.exists() && file.canRead()) {
 				byte[] lines = Files.readAllBytes(file.toPath());
 				return lines;
-							}
+			}
 		} catch (IOException e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
-		return null;	
+		return null;
 	}
 
 	public static void main(String[] args) throws Exception {
+		ConnectorFactory factory = new ConnectorFactory();
 		List<Map<String, Boolean>> visited = new ArrayList<Map<String, Boolean>>();
 		List<Map<String, Boolean>> explorableStates = new ArrayList<Map<String, Boolean>>();
-		Map<String, Boolean> currentStatesValues = ImmutableMap.of(new ConnectorFactory().mem("ab1", "ab2"), false);
+		Map<String, Boolean> currentStatesValues = new HashMap<String, Boolean>();
+		currentStatesValues.put(factory.mem("ab1", "ab2"), false);
+		currentStatesValues.put(factory.mem("cd1", "cd2"), false);
+		currentStatesValues.put(factory.mem("de1", "de2"), false);
+		currentStatesValues.put(factory.mem("el1", "el2"), false);
+		currentStatesValues.put(factory.mem("fg2", "fg1"), false);
+		currentStatesValues.put(factory.mem("gh1", "gh2"), false);
+		currentStatesValues.put(factory.mem("ij1", "ij2"), false);
+		currentStatesValues.put(factory.mem("jk1", "jk2"), false);
+		currentStatesValues.put(factory.mem("lm1", "lm2"), false);
+		currentStatesValues.put(factory.mem("on1", "on2"), false);
+
+		long start = System.currentTimeMillis();
+		int w1 = 1;
 		do {
-		File file = createFile(OUTPUTFILE);
-		ConstraintConnector cc = new ExampleMaker(3, new OutputStreamWriter(new FileOutputStream(file))).getExample(currentStatesValues);
-		System.out.println("Constraint is: " + cc.constraint);
-		System.out.println("State is: " + cc.states().toString());
-		System.out.println("Xstate is: " + cc.nextStates());
+			File file = createFile(OUTPUTFILE);
+			ConstraintConnector cc = new ExampleMaker(3, new OutputStreamWriter(new FileOutputStream(file)))
+					.getExample(currentStatesValues, w1);
+			System.out.println("in " + (new Date().getTime() - start) +"Constraint is: " + cc.constraint);
+			visited.add(currentStatesValues);
 
-		visited.add(currentStatesValues);
+			start = System.currentTimeMillis();
+			writeToFile(CNFFILE, getReduceOutput(file, new Constraint()));
+			System.out.println("In " + (System.currentTimeMillis() - start) + " wrote cnf file");
+			
+			start = System.currentTimeMillis();;
+			DNF dnf = new DNF(CNFFILE, Lists.newArrayList(cc.variables()), Lists.newArrayList(cc.states()),
+					Lists.newArrayList(cc.nextStates()));
+			dnf.prepareForSat4j(new FileWriter(OUTPUTFILE));
+			System.out.println("In " + (System.currentTimeMillis() - start) + " did sat4j prep");
+			start = System.currentTimeMillis();
+			
+			if (w1 > 0)
+				dnf.reportVars();
+			w1 = (w1 > 0) ? w1 - 1 : 0;
 
-		writeToFile(CNFFILE, getReduceOutput(file, new Constraint()));
+			dnf.reportSolutions(false);
+			System.out.println("In " + (System.currentTimeMillis() - start) + " reported solution");
+			
+		///////	dnf.printFlows();
+			// dnf.printFlowsNPriority();
+			List<Map<String, Boolean>> nexts = dnf.stateValues();
+			for (Map<String, Boolean> i : nexts) {
+				Map<String, Boolean> temp = find(i, visited);
+				if (temp == null)
+					explorableStates.add(i);
+			}
 
-		DNF dnf = new DNF(CNFFILE, Lists.newArrayList(cc.variables()), Lists.newArrayList(cc.states()), Lists.newArrayList(cc.nextStates()));
-		dnf.prepareForSat4j(new FileWriter(OUTPUTFILE));
-		dnf.reportVars();
+			currentStatesValues = (explorableStates.size() > 0) ? makeItCurrent(explorableStates.remove(0)) : null;
 
-		dnf.reportSolutions();
-		dnf.printFlows();
-		dnf.printFlowsNPriority();
-		List<Map<String, Boolean>> nexts = dnf.stateValues();		
-		for (Map<String, Boolean> i : nexts) {
-			Map<String, Boolean> temp = find(i, visited);
-			if (temp == null)
-				explorableStates.add(i);
-		}
-
-		currentStatesValues = (explorableStates.size() > 0) ?makeItCurrent(explorableStates.remove(0)) : null;
-		
 		} while (currentStatesValues != null);
 	}
 
@@ -116,7 +138,7 @@ public class Constraint extends AbstractSemantics {
 		stdin.write(constraint.readFile(file));
 		stdin.flush();
 		stdin.close();
-		
+
 		List<String> output = new ArrayList<String>();
 		BufferedReader out = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line;
@@ -158,9 +180,10 @@ public class Constraint extends AbstractSemantics {
 	}
 
 	private static int findResultStart(List<String> content) {
-		for (int i = content.lastIndexOf(SHUT)-1; i > -1; i--) {
-			if (content.get(i-1).trim().length() == 0 && content.get(i-2).trim().length() == 0) {
-				if (content.get(i).trim().endsWith(":") && Integer.parseInt(content.get(i).replaceAll(":", "").trim()) > 0)
+		for (int i = content.lastIndexOf(SHUT) - 1; i > -1; i--) {
+			if (content.get(i - 1).trim().length() == 0 && content.get(i - 2).trim().length() == 0) {
+				if (content.get(i).trim().endsWith(":")
+						&& Integer.parseInt(content.get(i).replaceAll(":", "").trim()) > 0)
 					i++;
 				return i;
 			}
