@@ -66,19 +66,23 @@ public class Constraint extends AbstractSemantics {
 		currentStatesValues.put(factory.mem("on1", "on2"), false);
 
 		long start = System.currentTimeMillis();
+		int n=0;
 		int w1 = 1;
 		do {
+			n++;
+			
 			File file = createFile(OUTPUTFILE);
 			ConstraintConnector cc = new ExampleMaker(3, new OutputStreamWriter(new FileOutputStream(file)))
 					.getExample(currentStatesValues, w1);
 			System.out.println("in " + (new Date().getTime() - start) +"Constraint is: " + cc.constraint);
 			visited.add(currentStatesValues);
 
+			System.out.println("In " + (System.currentTimeMillis() - start) + " invoking reduce");
 			start = System.currentTimeMillis();
 			writeToFile(CNFFILE, getReduceOutput(file, new Constraint()));
-			System.out.println("In " + (System.currentTimeMillis() - start) + " wrote cnf file");
+			System.out.println("reduce done In " + (System.currentTimeMillis() - start) + " wrote cnf file");
 			
-			start = System.currentTimeMillis();;
+			start = System.currentTimeMillis();
 			DNF dnf = new DNF(CNFFILE, Lists.newArrayList(cc.variables()), Lists.newArrayList(cc.states()),
 					Lists.newArrayList(cc.nextStates()));
 			dnf.prepareForSat4j(new FileWriter(OUTPUTFILE));
@@ -103,7 +107,11 @@ public class Constraint extends AbstractSemantics {
 
 			currentStatesValues = (explorableStates.size() > 0) ? makeItCurrent(explorableStates.remove(0)) : null;
 
+			
+			System.out.println("nnnnn " + n);
 		} while (currentStatesValues != null);
+		System.out.println(".....done in step " + n);
+
 	}
 
 	public static Map<String, Boolean> makeItCurrent(Map<String, Boolean> list) {

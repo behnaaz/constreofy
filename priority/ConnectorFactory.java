@@ -79,7 +79,7 @@ public class ConnectorFactory {
 
 	public ConstraintConnector router(String c, String k1, String k2) {
 		String router = String.format(
-				"(%s" + RIGHTLEFTARROW + "%s" + OR + "%s)" + AND + "(" + NOT + "(%s" + AND + "%s))", 
+				"(%s" + RIGHTLEFTARROW + "( %s" + OR + "%s ))" + AND + "(" + NOT + "(%s" + AND + "%s))", 
 				flow(c), flow(k1),	flow(k2), 
 				flow(k1), flow(k2));
 		return new ConstraintConnector(router, c, k1, k2);
@@ -91,7 +91,7 @@ public class ConnectorFactory {
 	}
 
 	public ConstraintConnector syncDrain(String p1, String p2) {
-		String syncDrain = String.format("(" + NOT + "(%s" + AND + "%s))", flow(p1), flow(p2));
+		String syncDrain = String.format("(%s" + RIGHTLEFTARROW + "%s)", flow(p1), flow(p2));
 		return new ConstraintConnector(syncDrain, p1, p2);
 	}
 
@@ -146,7 +146,7 @@ public class ConnectorFactory {
 	public ConstraintConnector writer(String k, int n) {
 		String writer;
 		if (n > 0)
-			writer = String.format("( %s " + OR + "%s )", flow(k), flow(k));
+			writer = String.format("( %s " + OR + NOT + " %s )", flow(k), flow(k));
 		else
 			writer = String.format("( " + NOT + "%s )", flow(k));
 		return new ConstraintConnector(writer, k);

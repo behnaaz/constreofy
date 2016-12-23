@@ -94,6 +94,8 @@ public class DNF {
 				sb.append((atoms[1].trim().equals("0")?"!":" ")+(atoms[0].trim())+" ");
 			}
 			Solution newSol = new Solution(terms);
+			System.out.println(newSol.toString() + " \r\n");
+
 			if (!redundantSolution(solutions, newSol))
 				solutions.add(newSol);
 

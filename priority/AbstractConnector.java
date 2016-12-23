@@ -32,7 +32,8 @@ public abstract class AbstractConnector {
 	List<String> convert(String... c) {
 		List<String> result = new ArrayList<String>();
 		for (int i = 0; i < c.length; i++) {
-			result.add(c[i]);
+			if (!result.contains(c[i]))
+				result.add(c[i]);
 		}
 		return result;
 	}
