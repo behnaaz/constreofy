@@ -1,15 +1,8 @@
-package priority;
+package priority.connector;
 
-import static priority.Constraint.AND;
-import static priority.Constraint.NOT;
-import static priority.Constraint.TILDE;
-import static priority.Constraint.IMPLIES;
-import static priority.Constraint.OR;
-import static priority.Constraint.RIGHTLEFTARROW;
-import static priority.Constraint.CURRENT_MEMORY;
-import static priority.Constraint.NEXT_MEMORY;
+import priority.common.Constants;
 
-public class ConnectorFactory {
+public class ConnectorFactory  implements Constants {
 	public ConstraintConnector merger(String p1, String p2, String p3) {
 		String merger = String.format(
 				"(%s" + RIGHTLEFTARROW + "(%s" + OR + "%s))" + AND + "(" + NOT + "(%s" + AND + "%s))" + AND + "((" + NOT
@@ -117,15 +110,15 @@ public class ConnectorFactory {
 		return new ConstraintConnector(replicator, c, k);
 	}
 
-	String flow(String node) {
+	public String flow(String node) {
 		return new StringBuilder().append(node).append(TILDE).toString();
 	}
 
-	String mem(String p1, String p2) {
+	public String mem(String p1, String p2) {
 		return new StringBuilder().append(p1.trim()).append(p2.trim()).append(CURRENT_MEMORY).toString();
 	}
 
-	String nextMem(String p1, String p2) {
+	public String nextMem(String p1, String p2) {
 		return new StringBuilder().append(p1.trim()).append(p2.trim()).append(NEXT_MEMORY).toString();
 	}
 

@@ -1,16 +1,13 @@
-package priority;
+package priority.solving;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import static priority.Constraint.TILDE;
-import static priority.Constraint.BULLET;
-import static priority.Constraint.CIRC;
-import static priority.Constraint.CURRENT_MEMORY;
-import static priority.Constraint.NEXT_MEMORY;
 
-public class Solution {
+import priority.common.Constants;
+
+public class Solution  implements Constants  {
 	private static final String NEG = "!";
 	Set<String> flow = new HashSet<String>();
 	Set<String> priority = new HashSet<String>();
@@ -71,7 +68,7 @@ public class Solution {
 		return from.append(sb.toString()).append(to.toString()).toString();
 	}
 
-	Map<String, Boolean> nextStateValuess() {
+	public Map<String, Boolean> nextStateValuess() {
 		return nextStateValues;
 	}
 }

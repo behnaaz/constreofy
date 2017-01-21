@@ -1,4 +1,4 @@
-package priority;
+package priority.connector;
 
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class ColoringConnector extends AbstractConnector {
 			this.model =  model;
 		}
 
-		ColoringConnector ground(String... boundaries) {
+		public ColoringConnector ground(String... boundaries) {
 			List<ArrayList<Character>> result = new ArrayList<ArrayList<Character>>();
 			for (int i = 0; i < model.size(); i++) {
 				boolean copy = true;
@@ -54,7 +54,7 @@ public class ColoringConnector extends AbstractConnector {
 			return "UNDEF";
 		}
 
-		void output() {
+		public void output() {
 			if (isTex)
 				;
 			for (int i = 0; i < model.size(); i++) {
@@ -108,7 +108,7 @@ public class ColoringConnector extends AbstractConnector {
 			return false;
 		}
 
-		void add(ColoringConnector newTable, String newPortName, String existingPortName) {
+		public void add(ColoringConnector newTable, String newPortName, String existingPortName) {
 			int newPort = newPortName == null ? -1 : newTable.getNames().indexOf(newPortName);
 			int existing = existingPortName == null ? -1 : names.indexOf(existingPortName);
 
@@ -134,7 +134,7 @@ public class ColoringConnector extends AbstractConnector {
 			this.names.addAll(newTable.getNames());
 		}
 
-		ColoringConnector connect(String name1, String name2) {
+		public ColoringConnector connect(String name1, String name2) {
 			int port1 = name1 == null ? -1 : names.indexOf(name1);
 			int port2 = name2 == null ? -1 : names.indexOf(name2);
 			List<ArrayList<Character>> result = new ArrayList<ArrayList<Character>>();

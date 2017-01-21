@@ -1,4 +1,4 @@
-package priority;
+package priority.semantics;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import static priority.Constraint.OR;
-import static priority.Constraint.AND;
 
-public class DNF {
+import priority.common.Constants;
+import priority.init.Starter;
+import priority.solving.Solution;
+
+public class DNF implements Constants {
 	private String filePath;
 	private List<String> variables;
 	private Set<Solution> solutions = new HashSet<Solution>();
@@ -122,7 +124,7 @@ public class DNF {
 		List<Map<String, Boolean>> nexts = new ArrayList<Map<String, Boolean>>();
 		for (Solution sol : solutions) {
 			System.out.println(sol.nextStateValuess().toString());
-			Map<String, Boolean> t = Constraint.makeItCurrent(sol.nextStateValuess());
+			Map<String, Boolean> t = Starter.makeItCurrent(sol.nextStateValuess());
 			if (!nexts.contains(t))
 				nexts.add(t);
 		}

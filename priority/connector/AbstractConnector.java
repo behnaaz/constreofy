@@ -1,4 +1,4 @@
-package priority;
+package priority.connector;
 
 import static java.util.stream.Collectors.joining;
 

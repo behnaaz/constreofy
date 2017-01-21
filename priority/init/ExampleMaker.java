@@ -1,8 +1,11 @@
-package priority;
+package priority.init;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Map;
+
+import priority.connector.ConnectorFactory;
+import priority.connector.ConstraintConnector;
 
 public class ExampleMaker {
 	ConstraintConnector connector;
@@ -38,7 +41,7 @@ public class ExampleMaker {
 		return connector;
 	}
 
-	ConstraintConnector getExample(Map<String, Boolean> currentStatesValues, int... ios) throws IOException {
+	public ConstraintConnector getExample(Map<String, Boolean> currentStatesValues, int... ios) throws IOException {
 		ConstraintConnector example = null;
 		if (n == 1)
 			example = exampleOne();

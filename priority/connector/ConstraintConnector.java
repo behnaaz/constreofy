@@ -1,12 +1,4 @@
-package priority;
-
-import static priority.Constraint.FALSE;
-import static priority.Constraint.TRUE;
-import static priority.Constraint.NOT;
-import static priority.Constraint.OR;
-import static priority.Constraint.AND;
-import static priority.Constraint.IMPLIES;
-import static priority.Constraint.RIGHTLEFTARROW;
+package priority.connector;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -20,10 +12,12 @@ import java.util.stream.Collectors;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 
-public class ConstraintConnector extends AbstractConnector {
+import priority.common.Constants;
+
+public class ConstraintConnector extends AbstractConnector implements Constants {
 	static final String FORMULA_NAME = "qaz";
 	private static final String WORD_BOUNDARY = "\\b";
-	String constraint;
+	public String constraint;
 	OutputStreamWriter out;
 	ConnectorFactory cf = new ConnectorFactory();
 	private String[] states;

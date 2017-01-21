@@ -1,4 +1,4 @@
-package priority;
+package priority.solving;
 import java.io.IOException;
 import java.util.List;
 

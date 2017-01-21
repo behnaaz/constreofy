@@ -1,4 +1,4 @@
-package priority;
+package priority.init;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,23 +17,15 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 
-public class Constraint extends AbstractSemantics {
-	private static final String SHUT = "shut";
-	static final String TILDE = "tilde";
-	static final String CIRC = "circ";
-	static final String BULLET = "bullet";
-	static final String CURRENT_MEMORY = "ring";
-	static final String NEXT_MEMORY = "xring";
+import priority.semantics.AbstractSemantics;
+import priority.semantics.DNF;
+import priority.connector.ConnectorFactory;
+import priority.connector.ConstraintConnector;
+import priority.common.Constants;
 
+public class Starter extends AbstractSemantics implements Constants {
 	static final String OUTPUTFILE = "abc" + new Date().toString().replaceAll("\\ |\\:", "") + ".txt";
 	static final String CNFFILE = "/Users/behnaz.changizi/reoworkspace/priority/src/Users/behnaz.changizi/Desktop/Dropbox/sol.txt";
-	static final String IMPLIES = " impl ";
-	static final String RIGHTLEFTARROW = " equiv ";
-	static final String NOT = " not ";
-	static final String OR = " or ";
-	static final String AND = " and ";
-	static final String TRUE = " true ";
-	static final String FALSE = " false ";
 
 	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
 
@@ -79,7 +71,7 @@ public class Constraint extends AbstractSemantics {
 
 			System.out.println("In " + (System.currentTimeMillis() - start) + " invoking reduce");
 			start = System.currentTimeMillis();
-			writeToFile(CNFFILE, getReduceOutput(file, new Constraint()));
+			writeToFile(CNFFILE, getReduceOutput(file, new Starter()));
 			System.out.println("reduce done In " + (System.currentTimeMillis() - start) + " wrote cnf file");
 			
 			start = System.currentTimeMillis();
@@ -109,7 +101,7 @@ public class Constraint extends AbstractSemantics {
 
 			
 			System.out.println("nnnnn " + n);
-		} while (currentStatesValues != null);
+		} while (currentStatesValues != null && n < 20);
 		System.out.println(".....done in step " + n);
 
 	}
@@ -140,7 +132,7 @@ public class Constraint extends AbstractSemantics {
 		return elem;
 	}
 
-	private static List<String> getReduceOutput(File file, Constraint constraint) throws IOException {
+	private static List<String> getReduceOutput(File file, Starter constraint) throws IOException {
 		Process process = Runtime.getRuntime().exec(REDUCE_PROGRAM);
 		OutputStream stdin = process.getOutputStream();
 		stdin.write(constraint.readFile(file));
