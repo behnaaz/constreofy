@@ -2,6 +2,7 @@ package priority.init;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import com.google.common.collect.Lists;
 import priority.semantics.AbstractSemantics;
 import priority.semantics.DNF;
 import priority.connector.ConstraintConnector;
+import priority.draw.Drawer;
 import priority.common.Constants;
 
 public class Starter extends AbstractSemantics implements Constants {
@@ -41,6 +43,11 @@ public class Starter extends AbstractSemantics implements Constants {
 	}
 
 	public static void main(String[] args) throws Exception {
+		 new Starter().solve(2);
+         new Drawer().draw();
+	}
+
+	private void solve(int maxLimit) throws IOException, FileNotFoundException, Exception {
 		List<Map<String, Boolean>> visited = new ArrayList<Map<String, Boolean>>();
 		List<Map<String, Boolean>> explorableStates = new ArrayList<Map<String, Boolean>>();
 
@@ -91,10 +98,9 @@ public class Starter extends AbstractSemantics implements Constants {
 			currentStatesValues = (explorableStates.size() > 0) ? makeItCurrent(explorableStates.remove(0)) : null;
 
 			
-			System.out.println("nnnnn " + n);
-		} while (currentStatesValues != null && n < 20);
+			System.out.println("Step " + n);
+		} while (currentStatesValues != null && n < maxLimit);
 		System.out.println(".....done in step " + n);
-
 	}
 
 	public static Map<String, Boolean> makeItCurrent(Map<String, Boolean> list) {
