@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import priority.common.Constants;
-import priority.init.Starter;
 import priority.solving.Solution;
+import priority.solving.Solver;
 
 public class DNF implements Constants {
 	private String filePath;
@@ -132,7 +132,7 @@ public class DNF implements Constants {
 		List<Map<String, Boolean>> nexts = new ArrayList<Map<String, Boolean>>();
 		for (Solution sol : solutions) {
 			System.out.println(sol.nextStateValuess().toString());
-			Map<String, Boolean> t = Starter.makeItCurrent(sol.nextStateValuess());
+			Map<String, Boolean> t = Solver.makeItCurrent(sol.nextStateValuess());
 			if (!nexts.contains(t))
 				nexts.add(t);
 		}
