@@ -71,9 +71,9 @@ public class ExampleMaker {
 	}
 
 	public Map<String, Boolean> currentStates() {
-		Map<String, Boolean> currentStatesValues = new HashMap<String, Boolean>();
+		Map<String, Boolean> currentStatesValues = new HashMap<>();
 		for (FIFO fifo : fifos) {
-			currentStatesValues.put(fifo.memory(), false);//???//T'oDO
+			currentStatesValues.put(fifo.memory(), fifo.full());
 		}
 		return currentStatesValues;
 	}

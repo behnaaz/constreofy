@@ -72,4 +72,8 @@ public class FIFO extends Primitive implements Constants {
 	public String memory() {
 		return memory(p1, p2);
 	}
+
+	public Boolean full() {
+		return full;
+	}
 }
