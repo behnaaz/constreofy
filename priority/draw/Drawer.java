@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.asu.emit.qyan.alg.model.Vertex;
 import grph.Grph;
 import grph.in_memory.InMemoryGrph;
 
@@ -48,7 +49,19 @@ public class Drawer {
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
        // Creating a 4x4 grid and display it in a graphical view:
         Grph gb = new InMemoryGrph();
-        gb.grid(4, 4);
+        Map<Integer, Long> stateVertex = new HashMap<>();
+        for (int i = 0; i < states.size(); i++) {
+        	Long v = gb.addVertex();
+        	stateVertex.put(i, v);
+        }
+        for (int i = 0; i < states.size(); i++) {
+        	List<Integer> targets = links.get(i);
+        	if (targets != null) {
+        		for (Integer j : targets) {
+        			gb.addDirectedSimpleEdge(stateVertex.get(j), stateVertex.get(i));
+        		}
+        	}
+        }
         gb.display();
     }
 
