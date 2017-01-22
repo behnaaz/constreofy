@@ -2,18 +2,31 @@ package priority.init;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import priority.connector.ConnectorFactory;
 import priority.connector.ConstraintConnector;
+import priority.primitives.FIFO;
 
 public class ExampleMaker {
 	ConstraintConnector connector;
 	private int n;
 	private OutputStreamWriter out;
+	private List<FIFO> fifos = new ArrayList<>();
 
 	public ExampleMaker(int n, OutputStreamWriter out) {
 		this.n = n;
+		this.out = out;
+	}
+
+	public ExampleMaker(int n) {
+		this.n = n;
+	}
+	
+	public void out(OutputStreamWriter out) {
 		this.out = out;
 	}
 
@@ -56,126 +69,83 @@ public class ExampleMaker {
 		example.close();
 		return example;
 	}
-	
+
+	public Map<String, Boolean> currentStates() {
+		Map<String, Boolean> currentStatesValues = new HashMap<String, Boolean>();
+		for (FIFO fifo : fifos) {
+			currentStatesValues.put(fifo.memory(), false);//???//T'oDO
+		}
+		return currentStatesValues;
+	}
+
 	private ConstraintConnector xaction(Map<String, Boolean> currentStatesValues, int... ios) {
-		ConnectorFactory factory = new ConnectorFactory();
-		connector = factory.fifo("AB1", "AB2", currentStatesValues.get(new ConnectorFactory().mem("ab1", "ab2")));
-		connector.add(factory.writer("AB1", ios[0]), "ab1", "ab1");
-		connector.add(factory.replicator("b1", "b2", "b3"), "b1", "AB2");
-		//connector.add(factory.sync("BC1", "BC2"), "BC1", "b2");
-		connector.add(factory.replicator("c1", "c2"), "c1", "b2");//"BC2");
-		connector.add(factory.fifo("CD1", "CD2", currentStatesValues.get(new ConnectorFactory().mem("cd1", "cd2"))),
-				"CD1", "c2");
-	///	connector.add(factory.replicator("d1", "d2"), "d1", "CD2");
-		connector.add(factory.fifo("DE1", "DE2", currentStatesValues.get(new ConnectorFactory().mem("de1", "de2"))),
+		ConnectorFactory connectorFactory = new ConnectorFactory();
+		FIFO ab = buildFIFO("AB1", "AB2", currentStatesValues);
+		connector = ab.constraint();
+		connector.add(connectorFactory.writer("AB1", ios[0]), "ab1", "ab1");
+		connector.add(connectorFactory.replicator("b1", "b2", "b3"), "b1", "AB2");
+		connector.add(connectorFactory.replicator("c1", "c2"), "c1", "b2");//"BC2");
+		FIFO cd = buildFIFO("CD1", "CD2", currentStatesValues);
+		connector.add(cd.constraint(), "CD1", "c2");
+		FIFO de = buildFIFO("DE1", "DE2", currentStatesValues);
+		connector.add(de.constraint(),
 				"DE1", "CD2");
-		connector.add(factory.router("e1", "e2", "e3"), "e1", "DE2");
-		connector.add(factory.fifo("EL1", "EL2", currentStatesValues.get(new ConnectorFactory().mem("el1", "el2"))),
+		connector.add(connectorFactory.router("e1", "e2", "e3"), "e1", "DE2");
+		FIFO el = buildFIFO("EL1", "EL2", currentStatesValues);
+		connector.add(el.constraint(),
 				"EL1", "e2");
 		//connector.add(factory.sync("EG1", "EG2"), "EG1", "e3");
-		connector.add(factory.replicator("g3", "g1", "g2"), "g3", "e3");
-		connector.add(factory.fifo("FG2", "FG1", currentStatesValues.get(new ConnectorFactory().mem("fg2", "fg1"))),
+		connector.add(connectorFactory.replicator("g3", "g1", "g2"), "g3", "e3");
+		FIFO fg = buildFIFO("FG2", "FG1", currentStatesValues);
+		connector.add(fg.constraint(),
 				"FG2", "g1");
-		connector.add(factory.fifo("GH1", "GH2", currentStatesValues.get(new ConnectorFactory().mem("gh1", "gh2"))),
-				"GH1", "g2");
+		FIFO gh = buildFIFO("GH1", "GH2", currentStatesValues);
+		connector.add(gh.constraint(), "GH1", "g2");
 		
 		//connector.add(factory.replicator("h1", "h2"), "h1", "GH2");
 		//connector.add(factory.sync("HP1", "HP2"), "HP1", "h2");// prio
 		//connector.add(factory.sync("BI1", "BI2"), "BI1", "b3");
-		connector.add(factory.router("i1", "i2", "i3"), "i1", "b3");
-		connector.add(factory.fifo("IJ1", "IJ2", currentStatesValues.get(factory.mem("ij1", "ij2"))), "IJ1", "i2");
+		connector.add(connectorFactory.router("i1", "i2", "i3"), "i1", "b3");
+		FIFO ij = buildFIFO("IJ1", "IJ2", currentStatesValues);
+		connector.add(ij.constraint(), "IJ1", "i2");
 	//	connector.add(factory.replicator("j1", "j2"), "j1", "IJ2");
-		connector.add(factory.fifo("JK1", "JK2", currentStatesValues.get(factory.mem("jk1", "jk2"))), "JK1", "j2");
-		connector.add(factory.router("JK2", "k2", "k3"), "JK2", "JK2");
+		connector.add(buildFIFO("JK1", "JK2", currentStatesValues).constraint(), "JK1", "j2");
+		connector.add(connectorFactory.router("JK2", "k2", "k3"), "JK2", "JK2");
 	//	connector.add(factory.sync("KL1", "KL2"), "KL1", "k2");
-		connector.add(factory.join("EL2", "l3", "l2"), "EL2", "EL2");
+		connector.add(connectorFactory.join("EL2", "l3", "l2"), "EL2", "EL2");
 		// kl2 l3
-		connector.add(factory.fifo("LM1", "LM2", currentStatesValues.get(factory.mem("lm1", "lm2"))), "LM1", "l2");
+		connector.add(buildFIFO("LM1", "LM2", currentStatesValues).constraint(), "LM1", "l2");
 	//	connector.add(factory.syncDrain("KO1", "KO2"), "KO1", "k3");
 	//	connector.add(factory.router("p2", "p1", "p3"), "p2", "HP2");
-		connector.add(factory.router("p2", "p1", "p3"), "p2", "GH2");
+		connector.add(connectorFactory.router("p2", "p1", "p3"), "p2", "GH2");
 /*
 		connector.add(factory.sync("OP2", "OP1"), "OP2", "p1");
 		connector.add(factory.syncDrain("IP2", "IP1"), "IP2", "p3");
 		// i3 ip1
 		 */
-		connector.add(factory.replicator("o2", "o1", "o3"), "o2", "p1");
+		connector.add(connectorFactory.replicator("o2", "o1", "o3"), "o2", "p1");
 		// ko2 o3
-		connector.add(factory.fifo("ON1", "ON2", currentStatesValues.get(factory.mem("on1", "on2"))), "ON1", "o1");
+		connector.add(buildFIFO("ON1", "ON2", currentStatesValues).constraint(), "ON1", "o1");
 	/*	connector.add(factory.sync("KL2", "l3"), "KL2", "l3");
 		connector.add(factory.sync("IP1", "i3"), "IP1", "i3");
 		connector.add(factory.sync("KO2", "o3"), "KO2", "o3");
 */
 		
-		connector.states(factory.mem("ab1", "ab2"), factory.mem("cd1", "cd2"), factory.mem("de1", "de2"),
-				factory.mem("el1", "el2"), factory.mem("fg2", "fg1"), factory.mem("gh1", "gh2"),
-				factory.mem("ij1", "ij2"), factory.mem("jk1", "jk2"), factory.mem("lm1", "lm2"),
-				factory.mem("on1", "on2"));
-		connector.nextStates(factory.nextMem("ab1", "ab2"), factory.nextMem("cd1", "cd2"),
-				factory.nextMem("de1", "de2"), factory.nextMem("el1", "el2"), factory.nextMem("fg2", "fg1"),
-				factory.nextMem("gh1", "gh2"), factory.nextMem("ij1", "ij2"), factory.nextMem("jk1", "jk2"),
-				factory.nextMem("lm1", "lm2"), factory.nextMem("on1", "on2"));
+		connector.states(connectorFactory.memory("ab1", "ab2"), connectorFactory.memory("cd1", "cd2"), connectorFactory.memory("de1", "de2"),
+				connectorFactory.memory("el1", "el2"), connectorFactory.memory("fg2", "fg1"), connectorFactory.memory("gh1", "gh2"),
+				connectorFactory.memory("ij1", "ij2"), connectorFactory.memory("jk1", "jk2"), connectorFactory.memory("lm1", "lm2"),
+				connectorFactory.memory("on1", "on2"));
+		connector.nextStates(connectorFactory.nextMem("ab1", "ab2"), connectorFactory.nextMem("cd1", "cd2"),
+				connectorFactory.nextMem("de1", "de2"), connectorFactory.nextMem("el1", "el2"), connectorFactory.nextMem("fg2", "fg1"),
+				connectorFactory.nextMem("gh1", "gh2"), connectorFactory.nextMem("ij1", "ij2"), connectorFactory.nextMem("jk1", "jk2"),
+				connectorFactory.nextMem("lm1", "lm2"), connectorFactory.nextMem("on1", "on2"));
 		return connector;
 	}
 
-
-	private ConstraintConnector xaction2(Map<String, Boolean> currentStatesValues, int... ios) {
-		ConnectorFactory factory = new ConnectorFactory();
-		connector = factory.fifo("AB1", "AB2", currentStatesValues.get(new ConnectorFactory().mem("ab1", "ab2")));
-		connector.add(factory.writer("o1", ios[0]), "o1", "ab1");
-		connector.add(factory.replicator("b1", "b2", "b3"), "b1", "AB2");
-		connector.add(factory.sync("BC1", "BC2"), "BC1", "b2");
-		connector.add(factory.replicator("c1", "c2"), "c1", "BC2");
-		connector.add(factory.fifo("CD1", "CD2", currentStatesValues.get(new ConnectorFactory().mem("cd1", "cd2"))),
-				"CD1", "c2");
-		connector.add(factory.replicator("d1", "d2"), "d1", "CD2");
-		connector.add(factory.fifo("DE1", "DE2", currentStatesValues.get(new ConnectorFactory().mem("de1", "de2"))),
-				"DE1", "d2");
-		connector.add(factory.router("e1", "e2", "e3"), "e1", "DE2");
-		connector.add(factory.fifo("EL1", "EL2", currentStatesValues.get(new ConnectorFactory().mem("el1", "el2"))),
-				"EL1", "e2");
-		connector.add(factory.sync("EG1", "EG2"), "EG1", "e3");
-		connector.add(factory.replicator("g3", "g1", "g2"), "g3", "EG2");
-		connector.add(factory.fifo("FG2", "FG1", currentStatesValues.get(new ConnectorFactory().mem("fg2", "fg1"))),
-				"FG2", "g1");
-		connector.add(factory.fifo("GH1", "GH2", currentStatesValues.get(new ConnectorFactory().mem("gh1", "gh2"))),
-				"GH1", "g2");
-		/*
-		connector.add(factory.replicator("h1", "h2"), "h1", "GH2");
-		connector.add(factory.sync("HP1", "HP2"), "HP1", "h2");// prio
-		connector.add(factory.sync("BI1", "BI2"), "BI1", "b3");
-		connector.add(factory.router("i1", "i2", "i3"), "i1", "BI2");
-		connector.add(factory.fifo("IJ1", "IJ2", currentStatesValues.get(factory.mem("ij1", "ij2"))), "IJ1", "i2");
-		connector.add(factory.replicator("j1", "j2"), "j1", "IJ2");
-		connector.add(factory.fifo("JK1", "JK2", currentStatesValues.get(factory.mem("jk1", "jk2"))), "JK1", "j2");
-		connector.add(factory.router("k1", "k2", "k3"), "k1", "JK2");
-		connector.add(factory.sync("KL1", "KL2"), "KL1", "k2");
-		connector.add(factory.join("l1", "l3", "l2"), "l1", "EL2");
-		// kl2 l3
-		connector.add(factory.fifo("LM1", "LM2", currentStatesValues.get(factory.mem("lm1", "lm2"))), "LM1", "l2");
-		connector.add(factory.syncDrain("KO1", "KO2"), "KO1", "k3");
-		connector.add(factory.router("p2", "p1", "p3"), "p2", "HP2");
-		connector.add(factory.sync("OP2", "OP1"), "OP2", "p1");
-		connector.add(factory.syncDrain("IP2", "IP1"), "IP2", "p3");
-		// i3 ip1
-		 */
-		connector.add(factory.replicator("o2", "o1", "o3"), "o2", "OP1");
-		// ko2 o3
-		connector.add(factory.fifo("ON1", "ON2", currentStatesValues.get(factory.mem("on1", "on2"))), "ON1", "o1");
-		connector.add(factory.sync("KL2", "l3"), "KL2", "l3");
-		connector.add(factory.sync("IP1", "i3"), "IP1", "i3");
-		connector.add(factory.sync("KO2", "o3"), "KO2", "o3");
-
-		
-		connector.states(factory.mem("ab1", "ab2"), factory.mem("cd1", "cd2"), factory.mem("de1", "de2"),
-				factory.mem("el1", "el2"), factory.mem("fg2", "fg1"), factory.mem("gh1", "gh2"),
-				factory.mem("ij1", "ij2"), factory.mem("jk1", "jk2"), factory.mem("lm1", "lm2"),
-				factory.mem("on1", "on2"));
-		connector.nextStates(factory.nextMem("ab1", "ab2"), factory.nextMem("cd1", "cd2"),
-				factory.nextMem("de1", "de2"), factory.nextMem("el1", "el2"), factory.nextMem("fg2", "fg1"),
-				factory.nextMem("gh1", "gh2"), factory.nextMem("ij1", "ij2"), factory.nextMem("jk1", "jk2"),
-				factory.nextMem("lm1", "lm2"), factory.nextMem("on1", "on2"));
-		return connector;
+	private FIFO buildFIFO(String p1, String p2, Map<String, Boolean> currentStatesValues) {
+		FIFO fifo = new FIFO(p1, p2, currentStatesValues);
+		fifos.add(fifo);
+		return fifo;
 	}
 
 	private ConstraintConnector sequencer(int n) {
@@ -195,5 +165,9 @@ public class ExampleMaker {
 		// true);
 		// connector.add(factory.merger("h", "i", "j"), "h", "g");
 		return connector;
+	}
+
+	public List<FIFO> fifos() {
+		return fifos;
 	}
 }

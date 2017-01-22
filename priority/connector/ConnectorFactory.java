@@ -1,8 +1,10 @@
 package priority.connector;
 
 import priority.common.Constants;
+import priority.primitives.FIFO;
+import priority.primitives.Primitive;
 
-public class ConnectorFactory  implements Constants {
+public class ConnectorFactory extends Primitive implements Constants {
 	public ConstraintConnector merger(String p1, String p2, String p3) {
 		String merger = String.format(
 				"(%s" + RIGHTLEFTARROW + "(%s" + OR + "%s))" + AND + "(" + NOT + "(%s" + AND + "%s))" + AND + "((" + NOT
@@ -31,43 +33,7 @@ public class ConnectorFactory  implements Constants {
 	}
 
 	public ConstraintConnector fifo(String p1, String p2, Boolean full) {
-		String fifo;
-		if (full)
-			fifo = String
-					.format("( " + NOT + "%s )" + AND + " %s " + AND + "(%s" + RIGHTLEFTARROW + "( " + NOT + "%s )) "// +
-																														// AND
-																														// +
-			// "(%s" + IMPLIES + "(%s" + ")) " + AND +
-			// "(%s" + IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND +
-			// (full ? "%s" : "%s")
-							, flow(p1), mem(p1, p2), flow(p2), nextMem(p1, p2)// ,
-			// flow(p1), nextMem(p1, p2),
-			// flow(p2), mem(p1, p2, full), nextMem(p1, p2),
-			// mem(p1, p2, full), nextMem(p1, p2)
-			);
-		/*
-		 * fifo = String.format( "(" + NOT + "(%s" + OR + "%s)" + IMPLIES +
-		 * " (%s" + RIGHTLEFTARROW + "%s)) " + AND + "(%s" + IMPLIES + "(%s" +
-		 * AND + "("+ NOT +"%s))) " + AND + "(%s" + IMPLIES + "(%s" + AND + "("+
-		 * NOT +"%s))) " + AND + (full ? "%s" : "%s") , flow(p1), flow(p2),
-		 * mem(p1, p2, full), nextMem(p1, p2), flow(p1), nextMem(p1, p2),
-		 * mem(p1, p2, full), flow(p2), mem(p1, p2, full), nextMem(p1, p2),
-		 * mem(p1, p2, full), nextMem(p1, p2) );
-		 */
-		else
-			fifo = String
-					.format("( " + NOT + "%s )" + AND + "( " + NOT + "%s )" + AND + "(%s" + RIGHTLEFTARROW + " %s) "// +
-																													// AND
-																													// +
-			// "(%s" + IMPLIES + "(%s" + ")) " + AND +
-			// "(%s" + IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND +
-			// (full ? "%s" : "%s")
-							, flow(p2), mem(p1, p2), flow(p1), nextMem(p1, p2)// ,
-			// flow(p1), nextMem(p1, p2),
-			// flow(p2), mem(p1, p2, full), nextMem(p1, p2),
-			// mem(p1, p2, full), nextMem(p1, p2)
-			);
-		return new ConstraintConnector(fifo, p1, p2, mem(p1, p2), nextMem(p1, p2));
+		return new FIFO(p1, p2, full).constraint();
 	}
 
 	public ConstraintConnector router(String c, String k1, String k2) {
@@ -108,18 +74,6 @@ public class ConnectorFactory  implements Constants {
 				// "%sbullet",
 				flow(c), flow(k));
 		return new ConstraintConnector(replicator, c, k);
-	}
-
-	public String flow(String node) {
-		return new StringBuilder().append(node).append(TILDE).toString();
-	}
-
-	public String mem(String p1, String p2) {
-		return new StringBuilder().append(p1.trim()).append(p2.trim()).append(CURRENT_MEMORY).toString();
-	}
-
-	public String nextMem(String p1, String p2) {
-		return new StringBuilder().append(p1.trim()).append(p2.trim()).append(NEXT_MEMORY).toString();
 	}
 
 	public ConstraintConnector fullFifo(String c, String k) {

@@ -19,7 +19,6 @@ import com.google.common.collect.Lists;
 
 import priority.semantics.AbstractSemantics;
 import priority.semantics.DNF;
-import priority.connector.ConnectorFactory;
 import priority.connector.ConstraintConnector;
 import priority.common.Constants;
 
@@ -42,30 +41,22 @@ public class Starter extends AbstractSemantics implements Constants {
 	}
 
 	public static void main(String[] args) throws Exception {
-		ConnectorFactory factory = new ConnectorFactory();
 		List<Map<String, Boolean>> visited = new ArrayList<Map<String, Boolean>>();
 		List<Map<String, Boolean>> explorableStates = new ArrayList<Map<String, Boolean>>();
-		Map<String, Boolean> currentStatesValues = new HashMap<String, Boolean>();
-		currentStatesValues.put(factory.mem("ab1", "ab2"), false);
-		currentStatesValues.put(factory.mem("cd1", "cd2"), false);
-		currentStatesValues.put(factory.mem("de1", "de2"), false);
-		currentStatesValues.put(factory.mem("el1", "el2"), false);
-		currentStatesValues.put(factory.mem("fg2", "fg1"), false);
-		currentStatesValues.put(factory.mem("gh1", "gh2"), false);
-		currentStatesValues.put(factory.mem("ij1", "ij2"), false);
-		currentStatesValues.put(factory.mem("jk1", "jk2"), false);
-		currentStatesValues.put(factory.mem("lm1", "lm2"), false);
-		currentStatesValues.put(factory.mem("on1", "on2"), false);
 
 		long start = System.currentTimeMillis();
 		int n=0;
 		int w1 = 1;
+		Map<String, Boolean> currentStatesValues;
+		File file = createFile(OUTPUTFILE);
+		ExampleMaker exampleMaker = new ExampleMaker(3);
+		currentStatesValues = exampleMaker.currentStates();
+
 		do {
 			n++;
-			
-			File file = createFile(OUTPUTFILE);
-			ConstraintConnector cc = new ExampleMaker(3, new OutputStreamWriter(new FileOutputStream(file)))
-					.getExample(currentStatesValues, w1);
+			exampleMaker.out(new OutputStreamWriter(new FileOutputStream(file)));
+			ConstraintConnector cc = exampleMaker.getExample(currentStatesValues, w1);
+
 			System.out.println("in " + (new Date().getTime() - start) +"Constraint is: " + cc.constraint);
 			visited.add(currentStatesValues);
 
