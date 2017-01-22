@@ -43,7 +43,7 @@ public class Starter extends AbstractSemantics implements Constants {
 	}
 
 	public static void main(String[] args) throws Exception {
-		List<String> solutions = new Starter().solve(9);
+		List<String> solutions = new Starter().solve(-1);
          new Drawer(solutions).draw();
 	}
 
@@ -102,7 +102,7 @@ public class Starter extends AbstractSemantics implements Constants {
 
 			
 			System.out.println("Step " + n);
-		} while (currentStatesValues != null && n < maxLimit);
+		} while (currentStatesValues != null && (maxLimit < 0 || n < maxLimit));
 		System.out.println(".....done in step " + n);
 		return solutions;
 	}
