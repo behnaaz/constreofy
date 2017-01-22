@@ -3,7 +3,6 @@ package priority.init;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,14 +69,6 @@ public class ExampleMaker {
 		return example;
 	}
 
-	public Map<String, Boolean> currentStates() {
-		Map<String, Boolean> currentStatesValues = new HashMap<>();
-		for (FIFO fifo : fifos) {
-			currentStatesValues.put(fifo.memory(), fifo.full());
-		}
-		return currentStatesValues;
-	}
-
 	private ConstraintConnector xaction(Map<String, Boolean> currentStatesValues, int... ios) {
 		ConnectorFactory connectorFactory = new ConnectorFactory();
 		FIFO ab = buildFIFO("AB1", "AB2", currentStatesValues);
@@ -135,10 +126,10 @@ public class ExampleMaker {
 				connectorFactory.memory("el1", "el2"), connectorFactory.memory("fg2", "fg1"), connectorFactory.memory("gh1", "gh2"),
 				connectorFactory.memory("ij1", "ij2"), connectorFactory.memory("jk1", "jk2"), connectorFactory.memory("lm1", "lm2"),
 				connectorFactory.memory("on1", "on2"));
-		connector.nextStates(connectorFactory.nextMem("ab1", "ab2"), connectorFactory.nextMem("cd1", "cd2"),
-				connectorFactory.nextMem("de1", "de2"), connectorFactory.nextMem("el1", "el2"), connectorFactory.nextMem("fg2", "fg1"),
-				connectorFactory.nextMem("gh1", "gh2"), connectorFactory.nextMem("ij1", "ij2"), connectorFactory.nextMem("jk1", "jk2"),
-				connectorFactory.nextMem("lm1", "lm2"), connectorFactory.nextMem("on1", "on2"));
+		connector.nextStates(connectorFactory.nextMemory("ab1", "ab2"), connectorFactory.nextMemory("cd1", "cd2"),
+				connectorFactory.nextMemory("de1", "de2"), connectorFactory.nextMemory("el1", "el2"), connectorFactory.nextMemory("fg2", "fg1"),
+				connectorFactory.nextMemory("gh1", "gh2"), connectorFactory.nextMemory("ij1", "ij2"), connectorFactory.nextMemory("jk1", "jk2"),
+				connectorFactory.nextMemory("lm1", "lm2"), connectorFactory.nextMemory("on1", "on2"));
 		return connector;
 	}
 

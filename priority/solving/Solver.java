@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import priority.connector.ConstraintConnector;
 import priority.init.ExampleMaker;
 import priority.init.Starter;
 import priority.semantics.DNF;
+import priority.states.StateManager;
 
 public class Solver implements Constants {
 	static final String OUTPUTFILE = "abc" + new Date().toString().replaceAll("\\ |\\:", "") + ".txt";
@@ -67,10 +69,10 @@ public class Solver implements Constants {
 		long start = System.currentTimeMillis();
 		int n=0;
 		int w1 = 1;
-		Map<String, Boolean> currentStatesValues;
+		Map<String, Boolean> currentStatesValues = new HashMap<>();
 		File file = createFile(OUTPUTFILE);
 		ExampleMaker exampleMaker = new ExampleMaker(3);
-		currentStatesValues = exampleMaker.currentStates();
+		StateManager stateManager = new StateManager();
 		List<String> solutions = new ArrayList<>();
 
 		do {
@@ -104,14 +106,14 @@ public class Solver implements Constants {
 			
 		///////	dnf.printFlows();
 			// dnf.printFlowsNPriority();
-			List<Map<String, Boolean>> nexts = dnf.stateValues();
+			List<Map<String, Boolean>> nexts = stateManager.stateValues(dnf.solutions());
 			for (Map<String, Boolean> i : nexts) {
 				Map<String, Boolean> temp = find(i, visited);
 				if (temp == null)
 					explorableStates.add(i);
 			}
 
-			currentStatesValues = (explorableStates.size() > 0) ? makeItCurrent(explorableStates.remove(0)) : null;
+			currentStatesValues = (explorableStates.size() > 0) ? stateManager.makeItCurrent(explorableStates.remove(0)) : null;
 
 			
 			System.out.println("Step " + n);
@@ -120,15 +122,7 @@ public class Solver implements Constants {
 		return solutions;
 	}
 
-	public static Map<String, Boolean> makeItCurrent(Map<String, Boolean> list) {
-		Map<String, Boolean> temp = new HashMap<String, Boolean>();
-		for (String s : list.keySet()) {
-			temp.put(s.toLowerCase().replace("xring", "ring"), list.get(s));
-		}
-		return temp;
-	}
-
-	private static Map<String, Boolean> find(Map<String, Boolean> elem, List<Map<String, Boolean>> list) {
+	private Map<String, Boolean> find(Map<String, Boolean> elem, List<Map<String, Boolean>> list) {
 		Map<String, Boolean> result = null;
 		for (Map<String, Boolean> t : list) {
 			if (result == null)
@@ -137,7 +131,7 @@ public class Solver implements Constants {
 		return result;
 	}
 
-	private static Map<String, Boolean> exists(Map<String, Boolean> elem, Map<String, Boolean> t) {
+	private Map<String, Boolean> exists(Map<String, Boolean> elem, Map<String, Boolean> t) {
 		for (String key : elem.keySet()) {
 			if (!t.containsKey(key) || t.get(key) != elem.get(key)) {
 				return null;
@@ -146,10 +140,22 @@ public class Solver implements Constants {
 		return elem;
 	}
 
-	private static List<String> getReduceOutput(File file, Starter constraint) throws IOException {
+	private byte[] readFile(File file) {
+		try {
+			if (file.exists() && file.canRead()) {
+				byte[] lines = Files.readAllBytes(file.toPath());
+				return lines;
+			}
+		} catch (IOException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+
+	private List<String> getReduceOutput(File file, Starter constraint) throws IOException {
 		Process process = Runtime.getRuntime().exec(REDUCE_PROGRAM);
 		OutputStream stdin = process.getOutputStream();
-		stdin.write(constraint.readFile(file));
+		stdin.write(readFile(file));
 		stdin.flush();
 		stdin.close();
 
@@ -161,7 +167,7 @@ public class Solver implements Constants {
 		return output;
 	}
 
-	private static File createFile(String fileName) throws IOException {
+	private File createFile(String fileName) throws IOException {
 		File file = new File(fileName);
 		if (file.exists())
 			file.delete();
@@ -170,7 +176,7 @@ public class Solver implements Constants {
 		return file;
 	}
 
-	private static void writeToFile(String cnffile, List<String> content) throws IOException {
+	private void writeToFile(String cnffile, List<String> content) throws IOException {
 		System.out.println("Going to write into " + cnffile);
 		File output = createFile(cnffile);
 		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(output));
@@ -180,7 +186,7 @@ public class Solver implements Constants {
 		osw.close();
 	}
 
-	private static String extractSolution(List<String> content) {
+	private String extractSolution(List<String> content) {
 		int start = findResultStart(content);
 		if (start > -1) {
 			StringBuilder sb = new StringBuilder();
@@ -193,7 +199,7 @@ public class Solver implements Constants {
 		return null;
 	}
 
-	private static int findResultStart(List<String> content) {
+	private int findResultStart(List<String> content) {
 		for (int i = content.lastIndexOf(SHUT) - 1; i > -1; i--) {
 			if (content.get(i - 1).trim().length() == 0 && content.get(i - 2).trim().length() == 0) {
 				if (content.get(i).trim().endsWith(":")

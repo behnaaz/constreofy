@@ -39,7 +39,7 @@ public class FIFO extends Primitive implements Constants {
 			// "(%s" + IMPLIES + "(%s" + ")) " + AND +
 			// "(%s" + IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND +
 			// (full ? "%s" : "%s")
-							, flow(p1), memory(p1, p2), flow(p2), nextMem(p1, p2)// ,
+							, flow(p1), memory(p1, p2), flow(p2), nextMemory(p1, p2)// ,
 			// flow(p1), nextMem(p1, p2),
 			// flow(p2), mem(p1, p2, full), nextMem(p1, p2),
 			// mem(p1, p2, full), nextMem(p1, p2)
@@ -61,12 +61,12 @@ public class FIFO extends Primitive implements Constants {
 			// "(%s" + IMPLIES + "(%s" + ")) " + AND +
 			// "(%s" + IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND +
 			// (full ? "%s" : "%s")
-							, flow(p2), memory(p1, p2), flow(p1), nextMem(p1, p2)// ,
+							, flow(p2), memory(p1, p2), flow(p1), nextMemory(p1, p2)// ,
 			// flow(p1), nextMem(p1, p2),
 			// flow(p2), mem(p1, p2, full), nextMem(p1, p2),
 			// mem(p1, p2, full), nextMem(p1, p2)
 			);
-		return new ConstraintConnector(fifo, p1, p2, memory(p1, p2), nextMem(p1, p2));
+		return new ConstraintConnector(fifo, p1, p2, memory(p1, p2), nextMemory(p1, p2));
 	}
 
 	public String memory() {

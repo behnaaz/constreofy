@@ -7,13 +7,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import priority.common.Constants;
 import priority.solving.Solution;
-import priority.solving.Solver;
 
 public class DNF implements Constants {
 	private String filePath;
@@ -29,7 +27,7 @@ public class DNF implements Constants {
 		}
 	}
 
-	public List<String> getVariables() {
+	public List<String> variables() {
 		return variables;
 	}
 
@@ -128,14 +126,7 @@ public class DNF implements Constants {
 		}
 	}
 
-	public List<Map<String, Boolean>> stateValues() {
-		List<Map<String, Boolean>> nexts = new ArrayList<Map<String, Boolean>>();
-		for (Solution sol : solutions) {
-			System.out.println(sol.nextStateValuess().toString());
-			Map<String, Boolean> t = Solver.makeItCurrent(sol.nextStateValuess());
-			if (!nexts.contains(t))
-				nexts.add(t);
-		}
-		return nexts;
+	public Set<Solution> solutions() {
+		return solutions;
 	}
 }

@@ -13,7 +13,7 @@ public abstract class Primitive implements Constants {
 		return new StringBuilder().append(p1).append(p2).append(CURRENT_MEMORY).toString();
 	}
 
-	public String nextMem(String p1, String p2) {
+	public String nextMemory(String p1, String p2) {
 		p1 = p1.toLowerCase().trim();
 		p2 = p2.toLowerCase().trim();
 		return new StringBuilder().append(p1).append(p2).append(NEXT_MEMORY).toString();
