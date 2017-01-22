@@ -75,6 +75,14 @@ public class DNF implements Constants {
 		writer.close();
 	}
 
+	public List<String> solutionsToList(boolean withPriority) {
+		List<String> list = new ArrayList<>();
+		for (Solution s : solutions) {
+			list.add(s.toString(withPriority));
+		}
+		return list;
+	}
+
 	public void reportSolutions(Boolean verbose) throws IOException {
 		if (verbose)
 			System.out.println("====================");

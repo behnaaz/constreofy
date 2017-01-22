@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.asu.emit.qyan.alg.model.Vertex;
 import grph.Grph;
 import grph.in_memory.InMemoryGrph;
 
@@ -13,7 +12,8 @@ public class Drawer {
 	/**
 	 * 
 	 */
-	String[] content = {
+	List<String> content;
+	String[] contento = {
 			" [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  } -------> (!cd1cd2xring !el1el2xring !de1de2xring !gh1gh2xring  jk1jk2xring !on1on2xring  ab1ab2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )  ",
 
 			" [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  jk2tilde k2tilde } -------> (!cd1cd2xring !el1el2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring  ab1ab2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )  ",
@@ -41,6 +41,10 @@ public class Drawer {
 
 	};	
 
+	public Drawer(List<String> solutions) {
+		this.content = solutions;
+	}
+
 	public void draw(){
         // Circular Surface
 		List<String> states = extractStates(content);
@@ -65,9 +69,9 @@ public class Drawer {
         gb.display();
     }
 
-    private Map<Integer, ArrayList<Integer>> extractLinks(String[] content, List<String> states) {
+    private Map<Integer, ArrayList<Integer>> extractLinks(List<String> content2, List<String> states) {
     	Map<Integer, ArrayList<Integer>> res = new HashMap<>();
-    	for (String s : content) {
+    	for (String s : content2) {
     		int begin = s.indexOf("------");
     		String from = s.substring(0, begin).replace("[", "").replace("]", "").trim();
     		int fromIndx = states.indexOf(from);
@@ -88,9 +92,9 @@ public class Drawer {
     	return res;
 	}
 
-	private List<String> extractStates(String[] content) {
+	private List<String> extractStates(List<String> content2) {
     	List <String> states = new ArrayList<>();
-    	for (String s : content) {
+    	for (String s : content2) {
     		int begin = s.indexOf("------");
     		String state = s.substring(0, begin).replace("[", "").replace("]", "").trim();
     		if (!states.contains(state))

@@ -43,11 +43,11 @@ public class Starter extends AbstractSemantics implements Constants {
 	}
 
 	public static void main(String[] args) throws Exception {
-		 new Starter().solve(2);
-         new Drawer().draw();
+		List<String> solutions = new Starter().solve(9);
+         new Drawer(solutions).draw();
 	}
 
-	private void solve(int maxLimit) throws IOException, FileNotFoundException, Exception {
+	private List<String> solve(int maxLimit) throws IOException, FileNotFoundException, Exception {
 		List<Map<String, Boolean>> visited = new ArrayList<Map<String, Boolean>>();
 		List<Map<String, Boolean>> explorableStates = new ArrayList<Map<String, Boolean>>();
 
@@ -58,6 +58,7 @@ public class Starter extends AbstractSemantics implements Constants {
 		File file = createFile(OUTPUTFILE);
 		ExampleMaker exampleMaker = new ExampleMaker(3);
 		currentStatesValues = exampleMaker.currentStates();
+		List<String> solutions = new ArrayList<>();
 
 		do {
 			n++;
@@ -84,6 +85,8 @@ public class Starter extends AbstractSemantics implements Constants {
 			w1 = (w1 > 0) ? w1 - 1 : 0;
 
 			dnf.reportSolutions(false);
+			solutions.addAll(dnf.solutionsToList(false));
+			//dnf.toString()
 			System.out.println("In " + (System.currentTimeMillis() - start) + " reported solution");
 			
 		///////	dnf.printFlows();
@@ -101,6 +104,7 @@ public class Starter extends AbstractSemantics implements Constants {
 			System.out.println("Step " + n);
 		} while (currentStatesValues != null && n < maxLimit);
 		System.out.println(".....done in step " + n);
+		return solutions;
 	}
 
 	public static Map<String, Boolean> makeItCurrent(Map<String, Boolean> list) {
