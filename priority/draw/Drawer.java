@@ -9,37 +9,20 @@ import grph.Grph;
 import grph.in_memory.InMemoryGrph;
 
 public class Drawer {
+	private static final String CLOSE_TAG_BRACKET = "]";
+	private static final String OPEN_TAG_BRACKET = "[";
+	private static final String CLOSE_TAG_PARANTHESIS = ")";
+	private static final String OPEN_TAG_PARANTHESIS = "(";
+	private static final String STRING_COMMA = ",";
+	private static final String PREFIX_NOT = "!";
+	private static final String STRING_SPACE = " ";
+	private static final String STRING_EMPTY = "";
+	private static final String SOURCE_END_SIGN = "------";
+	private static final String TARGET_START_SIGN = "------->";
 	/**
 	 * 
 	 */
 	List<String> content;
-	String[] contento = {
-			" [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  } -------> (!cd1cd2xring !el1el2xring !de1de2xring !gh1gh2xring  jk1jk2xring !on1on2xring  ab1ab2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )  ",
-
-			" [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  jk2tilde k2tilde } -------> (!cd1cd2xring !el1el2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring  ab1ab2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )  ",
-
-			 "[!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  k3tilde jk2tilde } -------> (!cd1cd2xring !el1el2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring  ab1ab2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )  ",
-
-			 "[!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  b2tilde cd1tilde ab2tilde c1tilde i1tilde i2tilde b3tilde ij1tilde b1tilde c2tilde } -------> ( ij1ij2xring  cd1cd2xring !el1el2xring !ab1ab2xring !de1de2xring !gh1gh2xring  jk1jk2xring !on1on2xring !fg2fg1xring !lm1lm2xring )  ",
-
-		"	 [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  b2tilde cd1tilde ab2tilde c1tilde i1tilde i2tilde b3tilde ij1tilde jk2tilde b1tilde k2tilde c2tilde } -------> ( ij1ij2xring  cd1cd2xring !el1el2xring !ab1ab2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring !fg2fg1xring !lm1lm2xring ) ", 
-
-		"	 [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  b2tilde cd1tilde ab2tilde c1tilde i1tilde i2tilde b3tilde ij1tilde k3tilde jk2tilde b1tilde c2tilde } -------> ( ij1ij2xring  cd1cd2xring !el1el2xring !ab1ab2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring !fg2fg1xring !lm1lm2xring )  ",
-
-		"	 [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  b2tilde cd1tilde ab2tilde c1tilde i1tilde i3tilde b3tilde b1tilde c2tilde } -------> ( cd1cd2xring !el1el2xring !ab1ab2xring !de1de2xring !gh1gh2xring  jk1jk2xring !on1on2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )  ",
-
-		"	 [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  b2tilde cd1tilde ab2tilde c1tilde i1tilde i3tilde b3tilde jk2tilde b1tilde k2tilde c2tilde } -------> ( cd1cd2xring !el1el2xring !ab1ab2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )  ",
-
-		"	 [!de1de2ring !el1el2ring !on1on2ring ab1ab2ring jk1jk2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !gh1gh2ring !ij1ij2ring ] ------ {  b2tilde cd1tilde ab2tilde c1tilde i1tilde i3tilde b3tilde k3tilde jk2tilde b1tilde c2tilde } -------> ( cd1cd2xring !el1el2xring !ab1ab2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )  ",
-		"	 [!de1de2ring !el1el2ring !on1on2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !ab1ab2ring !jk1jk2ring !gh1gh2ring !ij1ij2ring ] ------ {  j2tilde jk1tilde ab1tilde } -------> (!cd1cd2xring !el1el2xring !de1de2xring !gh1gh2xring  jk1jk2xring !on1on2xring  ab1ab2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )   ",
-
-		"	 [!de1de2ring !el1el2ring !on1on2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !ab1ab2ring !jk1jk2ring !gh1gh2ring !ij1ij2ring ] ------ {  ab1tilde } -------> (!cd1cd2xring !el1el2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring  ab1ab2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )   ",
-
-		"	[!de1de2ring !el1el2ring !on1on2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !ab1ab2ring !jk1jk2ring !gh1gh2ring !ij1ij2ring ] ------ {  j2tilde jk1tilde } -------> (!cd1cd2xring !el1el2xring !ab1ab2xring !de1de2xring !gh1gh2xring  jk1jk2xring !on1on2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring ) ",  
-
-		"	 [!de1de2ring !el1el2ring !on1on2ring !cd1cd2ring !fg2fg1ring !lm1lm2ring !ab1ab2ring !jk1jk2ring !gh1gh2ring !ij1ij2ring ] ------ {  } -------> (!cd1cd2xring !el1el2xring !ab1ab2xring !de1de2xring !gh1gh2xring !jk1jk2xring !on1on2xring !ij1ij2xring !fg2fg1xring !lm1lm2xring )   "
-
-	};	
 
 	public Drawer(List<String> solutions) {
 		this.content = solutions;
@@ -69,20 +52,16 @@ public class Drawer {
         gb.display();
     }
 
-    private Map<Integer, ArrayList<Integer>> extractLinks(List<String> content2, List<String> states) {
+    private Map<Integer, ArrayList<Integer>> extractLinks(List<String> solutions, List<String> states) {
     	Map<Integer, ArrayList<Integer>> res = new HashMap<>();
-    	for (String s : content2) {
-    		int begin = s.indexOf("------");
-    		String from = s.substring(0, begin).replace("[", "").replace("]", "").trim();
+    	for (String s : solutions) {
+    		String from = getSourceStateName(s);
     		int fromIndx = states.indexOf(from);
-    		begin = s.indexOf("------->");
-    		String to = s.substring(0, begin).replace("(", "").replace(")", "").trim();
+    		String to = getTargetStateName(s);
     		int toIndx = states.indexOf(to);
-    		String lbl;
-    		if (res.containsKey(fromIndx)) {
+    		String lbl = getLabel(s);
+    		if (res.containsKey(fromIndx))
     			res.get(fromIndx).add(toIndx);
-    		//	res.put(fromIndx, );
-    		}
     		else {
     			ArrayList<Integer> al = new ArrayList<>();
     			al.add(toIndx);
@@ -92,19 +71,49 @@ public class Drawer {
     	return res;
 	}
 
-	private List<String> extractStates(List<String> content2) {
+	private List<String> extractStates(List<String> solutions) {
     	List <String> states = new ArrayList<>();
-    	for (String s : content2) {
-    		int begin = s.indexOf("------");
-    		String state = s.substring(0, begin).replace("[", "").replace("]", "").trim();
+    	for (String s : solutions) {
+			String state = getSourceStateName(s);
     		if (!states.contains(state))
     			states.add(state);
     		
-    		begin = s.indexOf("------->");
-    		state = s.substring(0, begin).replace("(", "").replace(")", "").trim();
+    		state = getTargetStateName(s);
     		if (!states.contains(state))
     			states.add(state);
     	}
 		return states;
+	}
+
+	private String getTargetStateName(String s) {
+		int begin = s.indexOf(TARGET_START_SIGN);
+		String state = cleanUp(s.substring(begin + TARGET_START_SIGN.length()), OPEN_TAG_PARANTHESIS, CLOSE_TAG_PARANTHESIS);
+		return state;
+	}
+
+	private String getSourceStateName(String s) {
+		int begin = s.indexOf(SOURCE_END_SIGN);
+		String state = cleanUp(s.substring(0, begin), OPEN_TAG_BRACKET, CLOSE_TAG_BRACKET);
+		return state;
+	}
+
+	private String getLabel(String s) {
+		int begin = s.indexOf(CLOSE_TAG_BRACKET);
+		int end = s.indexOf(OPEN_TAG_PARANTHESIS);
+		return s.substring(begin, end).trim();
+	}
+	
+	private String cleanUp(String state, String openTag, String closeTag) {
+		String temp = state.replace(openTag, STRING_EMPTY).replace(closeTag, STRING_EMPTY).trim();
+		String[] variables = temp.split(STRING_SPACE);
+		StringBuilder result = new StringBuilder();
+		for (String v : variables) {
+			if (!v.startsWith(PREFIX_NOT) && v.trim().length() > 0)
+				result.append(v).append(STRING_COMMA);
+		}
+		if (result.length() > 0)
+			return result.substring(0, result.length() - 2).toString();
+
+		return STRING_EMPTY;
 	}
 }
