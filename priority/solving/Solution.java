@@ -2,19 +2,19 @@ package priority.solving;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import priority.common.Constants;
 import priority.states.StateValue;
+import priority.states.StateVariableValue;
 
 public class Solution  implements Constants  {
 	private static final String ZERO = "0";
 	private static final String NEG = "!";
-	Set<String> flow = new HashSet<>();
-	Set<String> priority = new HashSet<>();
-	Set<String> states = new HashSet<>();
-	Set<String> nextStates = new HashSet<>();
-	private Set<StateValue> nextStateValues = new TreeSet<>();
+	private Set<String> flow = new HashSet<>();
+	private Set<String> priority = new HashSet<>();
+	private Set<String> states = new HashSet<>();
+	private Set<String> nextStates = new HashSet<>();
+	private StateValue nextStateValues = new StateValue();
 
 	public Solution(String[] terms) {
 		for (String term : terms) {
@@ -62,7 +62,7 @@ public class Solution  implements Constants  {
 					boolean neg = state.trim().startsWith(NEG);
 					to.append(state).append(' ');
 					String name = neg?state.trim().substring(1, state.trim().length()):state.trim();
-					nextStateValues.add(new StateValue(name, !neg));
+					nextStateValues.add(new StateVariableValue(name, !neg));
 				}
 		}
 		to.append(") ");
@@ -70,7 +70,7 @@ public class Solution  implements Constants  {
 		return from.append(sb.toString()).append(to.toString()).toString();
 	}
 
-	public Set<StateValue> nextStateValuess() {
+	public StateValue nextStateValuess() {
 		return nextStateValues;
 	}
 }

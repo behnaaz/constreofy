@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import priority.connector.ConnectorFactory;
 import priority.connector.ConstraintConnector;
 import priority.primitives.FIFO;
+import priority.states.StateValue;
 
 public class ExampleMaker {
 	ConstraintConnector connector;
@@ -53,7 +53,7 @@ public class ExampleMaker {
 		return connector;
 	}
 
-	public ConstraintConnector getExample(Map<String, Boolean> currentStatesValues, int... tokenNumbers) throws IOException {
+	public ConstraintConnector getExample(StateValue currentStatesValues, int... tokenNumbers) throws IOException {
 		ConstraintConnector example;
 		if (n == 1)
 			example = exampleOne();
@@ -69,7 +69,7 @@ public class ExampleMaker {
 		return example;
 	}
 
-	private ConstraintConnector xaction(Map<String, Boolean> currentStatesValues, int... ios) {
+	private ConstraintConnector xaction(StateValue currentStatesValues, int... ios) {
 		ConnectorFactory connectorFactory = new ConnectorFactory();
 		FIFO ab = buildFIFO("AB1", "AB2", currentStatesValues);
 		connector = ab.constraint();
@@ -133,7 +133,7 @@ public class ExampleMaker {
 		return connector;
 	}
 
-	private FIFO buildFIFO(String p1, String p2, Map<String, Boolean> currentStatesValues) {
+	private FIFO buildFIFO(String p1, String p2, StateValue currentStatesValues) {
 		FIFO fifo = new FIFO(p1, p2, currentStatesValues);
 		fifos.add(fifo);
 		return fifo;

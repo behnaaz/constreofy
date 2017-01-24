@@ -9,7 +9,7 @@ import priority.solving.Solver;
 
 public class Starter extends AbstractSemantics implements Constants {
 	public static void main(String[] args) throws Exception {
-		List<String> solutions = new Solver().solve(10);
+		List<String> solutions = new Solver().solve(-1);
          new Drawer(solutions).draw();
 	}
 }

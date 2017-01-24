@@ -1,7 +1,6 @@
 package priority.solving;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,9 +10,9 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.reader.DimacsReader;
@@ -33,6 +32,7 @@ import priority.init.ExampleMaker;
 import priority.init.Starter;
 import priority.semantics.DNF;
 import priority.states.StateManager;
+import priority.states.StateValue;
 
 public class Solver implements Constants {
 	static final String OUTPUTFILE = "abc" + new Date().toString().replaceAll("\\ |\\:", "") + ".txt";
@@ -62,14 +62,14 @@ public class Solver implements Constants {
 		System.out.println();
 	}
 	
-	public List<String> solve(int maxLimit) throws IOException, FileNotFoundException, Exception {
-		List<Map<String, Boolean>> visited = new ArrayList<Map<String, Boolean>>();
-		List<Map<String, Boolean>> explorableStates = new ArrayList<Map<String, Boolean>>();
+	public List<String> solve(int maxLimit) throws Exception {
+		Set<StateValue> visited = new TreeSet<>();///(new VisitStateComparator());
+		List<StateValue> explorableStates = new ArrayList<>();//Set delete one? TODO
 
 		long start = System.currentTimeMillis();
 		int n=0;
-		int w1 = 1;
-		Map<String, Boolean> currentStatesValues = new HashMap<>();
+		int writer1 = 1;
+		StateValue currentStatesValues = new StateValue();
 		File file = createFile(OUTPUTFILE);
 		ExampleMaker exampleMaker = new ExampleMaker(3);
 		StateManager stateManager = new StateManager();
@@ -78,7 +78,7 @@ public class Solver implements Constants {
 		do {
 			n++;
 			exampleMaker.out(new OutputStreamWriter(new FileOutputStream(file)));
-			ConstraintConnector cc = exampleMaker.getExample(currentStatesValues, w1);
+			ConstraintConnector cc = exampleMaker.getExample(currentStatesValues, writer1);
 
 			System.out.println("in " + (new Date().getTime() - start) +"Constraint is: " + cc.constraint);
 			visited.add(currentStatesValues);
@@ -95,9 +95,9 @@ public class Solver implements Constants {
 			System.out.println("In " + (System.currentTimeMillis() - start) + " did sat4j prep");
 			start = System.currentTimeMillis();
 			
-			if (w1 > 0)
+			if (writer1 > 0)
 				dnf.reportVars();
-			w1 = (w1 > 0) ? w1 - 1 : 0;
+			writer1 = (writer1 > 0) ? writer1 - 1 : 0;
 
 			dnf.reportSolutions(false);
 			solutions.addAll(dnf.solutionsToList(false));
@@ -106,38 +106,30 @@ public class Solver implements Constants {
 			
 		///////	dnf.printFlows();
 			// dnf.printFlowsNPriority();
-			List<Map<String, Boolean>> nexts = stateManager.stateValues(dnf.solutions());
-			for (Map<String, Boolean> i : nexts) {
-				Map<String, Boolean> temp = find(i, visited);
+			List<StateValue> nexts = stateManager.extractStateValues(dnf.solutions());
+			for (StateValue i : nexts) {
+				StateValue temp = find(i, visited);
 				if (temp == null)
 					explorableStates.add(i);
 			}
 
-			currentStatesValues = (explorableStates.size() > 0) ? stateManager.makeItCurrent(explorableStates.remove(0)) : null;
+			if (explorableStates.isEmpty())
+				currentStatesValues = null;
+			else
+				currentStatesValues = explorableStates.remove(0).makeItCurrent();
 
-			
 			System.out.println("Step " + n);
 		} while (currentStatesValues != null && (maxLimit < 0 || n < maxLimit));
 		System.out.println(".....done in step " + n);
 		return solutions;
 	}
 
-	private Map<String, Boolean> find(Map<String, Boolean> elem, List<Map<String, Boolean>> list) {
-		Map<String, Boolean> result = null;
-		for (Map<String, Boolean> t : list) {
-			if (result == null)
-				result = exists(elem, t);
+	private StateValue find(StateValue element, Set<StateValue> list) {
+		for (StateValue item : list) {
+			if (item.equals(element))//TODO
+				return item;
 		}
-		return result;
-	}
-
-	private Map<String, Boolean> exists(Map<String, Boolean> elem, Map<String, Boolean> t) {
-		for (String key : elem.keySet()) {
-			if (!t.containsKey(key) || t.get(key) != elem.get(key)) {
-				return null;
-			}
-		}
-		return elem;
+		return null;
 	}
 
 	private byte[] readFile(File file) {
@@ -159,7 +151,7 @@ public class Solver implements Constants {
 		stdin.flush();
 		stdin.close();
 
-		List<String> output = new ArrayList<String>();
+		List<String> output = new ArrayList<>();
 		BufferedReader out = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line;
 		while ((line = out.readLine()) != null)

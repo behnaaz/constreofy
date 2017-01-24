@@ -1,16 +1,15 @@
 package priority.primitives;
 
-import java.util.Map;
-
 import priority.common.Constants;
 import priority.connector.ConstraintConnector;
+import priority.states.StateValue;
 
 public class FIFO extends Primitive implements Constants {
 
 	private boolean full;
 	private String p1;
 	private String p2;
-	private Map<String, Boolean> currentStatesValues;
+	private StateValue currentStatesValues = new StateValue();
 
 	public FIFO(String p1, String p2, Boolean initState) {//TODO delete
 		full = initState;
@@ -18,7 +17,7 @@ public class FIFO extends Primitive implements Constants {
 		this.p2 = p2;
 	}
 	
-	public FIFO(String p1, String p2, Map<String, Boolean> currentStatesValues) {
+	public FIFO(String p1, String p2, StateValue currentStatesValues) {
 		this.currentStatesValues = currentStatesValues;
 		this.p1 = p1;
 		this.p2 = p2;
@@ -28,7 +27,7 @@ public class FIFO extends Primitive implements Constants {
 		full = false;
 		String m = memory(p1.toLowerCase(), p2.toLowerCase());
 		if (currentStatesValues.containsKey(m))
-			full = currentStatesValues.get(m);
+			full = currentStatesValues.getValue(m);
 
 		String fifo;
 		if (full)
