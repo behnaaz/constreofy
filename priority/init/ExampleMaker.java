@@ -53,8 +53,8 @@ public class ExampleMaker {
 		return connector;
 	}
 
-	public ConstraintConnector getExample(Map<String, Boolean> currentStatesValues, int... ios) throws IOException {
-		ConstraintConnector example = null;
+	public ConstraintConnector getExample(Map<String, Boolean> currentStatesValues, int... tokenNumbers) throws IOException {
+		ConstraintConnector example;
 		if (n == 1)
 			example = exampleOne();
 		else if (n == 2)
@@ -62,7 +62,7 @@ public class ExampleMaker {
 		else if (n < 0)
 			example = sequencer(Math.abs(n));
 		else
-			example = xaction(currentStatesValues, ios);
+			example = xaction(currentStatesValues, tokenNumbers);
 
 		example.output(out);
 		example.close();

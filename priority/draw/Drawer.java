@@ -298,15 +298,10 @@ public class Drawer {
     	List<Set<String>> states = new ArrayList<>();
     	for (String s : solutions) {
 			Set<String> state = getSourceStateName(s);
-			Object b;
-			if (state.size() == 3)
-				b  = "%";
     		if (!states.contains(state))
     			states.add(state);
     		
     		state = getTargetStateName(s);
-    		if (state.size() == 3)
-				b  = "%";
     		if (!states.contains(state))
     			states.add(state);
     	}

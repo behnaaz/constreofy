@@ -39,8 +39,7 @@ public class DNF implements Constants {
 	}
 
 	public void reportVars() {
-		for (String v : variables)
-			System.out.println(variables.indexOf(v.trim().toUpperCase()) + " " + v);
+		variables.forEach(v -> System.out.println(variables.indexOf(v.trim().toUpperCase()) + " " + v));
 	}
 	
 	public void prepareForSat4j(Writer writer) throws Exception {
