@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.TreeSet;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,7 +16,7 @@ import priority.solving.Solution;
 public class DNF implements Constants {
 	private String filePath;
 	private List<String> variables;
-	private Set<Solution> solutions = new HashSet<Solution>();
+	private List<Solution> solutions = new ArrayList<>();
 	private List<String> states;
 	private List<String> nextStates;
 
@@ -72,17 +72,7 @@ public class DNF implements Constants {
 		writer.close();
 	}
 
-	public List<String> solutionsToList(boolean withPriority) {
-		List<String> list = new ArrayList<>();
-		for (Solution s : solutions) {
-			list.add(s.toString(withPriority));
-		}
-		return list;
-	}
-
-	public void reportSolutions(Boolean verbose) throws IOException {
-		if (verbose)
-			System.out.println("====================");
+	public void reportSolutions() throws IOException {
 		StringBuilder sb = new StringBuilder();
 		for (String line : Files.lines(Paths.get(filePath)).filter(s -> s.length() > 0).map(s -> s).collect(Collectors.toList())) {
 			sb.append(line);
@@ -91,31 +81,27 @@ public class DNF implements Constants {
 		String[] ands = sb.toString().split(OR.trim());
 
 		for (String and : ands) {
-			sb = new StringBuilder();
-			String terms[] = and.trim().substring(1, and.trim().length()-1).split(AND.trim());
+			//sb = new StringBuilder();
+			String[] terms = and.trim().substring(1, and.trim().length()-1).split(AND.trim());
 			
-			for (String term : terms) {
-				String[] atoms = term.trim().split(" = ");
+			//for (String term : terms) {
+			//	String[] atoms = term.trim().split(" = ");
 			//	if (variables.indexOf(atoms[0].toUpperCase()) <= -1) 
 				//	throw new Exception(atoms[0]+" not found");
-				sb.append((atoms[1].trim().equals("0")?"!":" ")+(atoms[0].trim())+" ");
-			}
-			Solution newSol = new Solution(terms);
+			//	sb.append((atoms[1].trim().equals("0")?"!":" ")+(atoms[0].trim())+" ");
+			//}
+			Solution newSol = new Solution(terms);//TODO
 			System.out.println(newSol.toString() + " \r\n");
 
-			if (!redundantSolution(solutions, newSol))
+			if (!contains(solutions, newSol))
 				solutions.add(newSol);
-
-			if (verbose)
-				System.out.println(sb.toString() + " \r\n");
 		}		
 	}
-
-	private boolean redundantSolution(Set<Solution> solutions2, Solution newSol) {
-		for (Solution sol : solutions) {
-			if (sol.toString().equals(newSol.toString()))
+	
+	private boolean contains(List<Solution> sols, Solution s) {
+		for (Solution t : sols)
+			if (t.getFlowVariables().equals(s.getFlowVariables()) && t.getFromVariables().equals(s.getFromVariables()) && t.getToVariables().equals(s.getToVariables()))
 				return true;
-		}
 		return false;
 	}
 
@@ -125,7 +111,7 @@ public class DNF implements Constants {
 		}
 	}
 
-	public Set<Solution> solutions() {
+	public List<Solution> getSolutions() {
 		return solutions;
 	}
 }

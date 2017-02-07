@@ -17,20 +17,10 @@ import org.miv.graphstream.distributed.json.JSONObject;
 import grph.Grph;
 import grph.in_memory.InMemoryGrph;
 import grph.properties.Property;
+import priority.common.Constants;
+import priority.solving.Solution;
 
-public class Drawer {
-	private static final char SEPARATOR = ';';
-	private static final String STATE_DELIMINATOR = ":";
-	private static final String CLOSE_TAG_BRACKET = "]";
-	private static final String OPEN_TAG_BRACKET = "[";
-	private static final String CLOSE_TAG_PARANTHESIS = ")";
-	private static final String OPEN_TAG_PARANTHESIS = "(";
-	private static final String STRING_COMMA = ",";
-	private static final String PREFIX_NOT = "!";
-	private static final String STRING_SPACE = " ";
-	private static final String STRING_EMPTY = "";
-	private static final String SOURCE_END_SIGN = "------";
-	private static final String TARGET_START_SIGN = "------->";
+public class Drawer implements Constants {
 	/**
 	 * 
 	 */
@@ -40,9 +30,30 @@ public class Drawer {
     Map<Integer, ArrayList<Integer>> links = new HashMap<>();
     Map<String, String> linkLabels = new HashMap<>();
     
-	public Drawer(List<String> solutions) {
-		this.content = solutions;
+	public Drawer(Set<Solution> solutions) {
+		this.content = solutionsToList(solutions, false);
 	}
+
+	public Drawer(List<Solution> solutions) {
+		this.content = solutionsToList(solutions, false);
+	}
+
+	List<String> solutionsToList(Set<Solution> solutions, boolean withPriority) {
+		List<String> list = new ArrayList<>();//TODO
+		for (Solution s : solutions) {
+			list.add(s.toString(withPriority));
+		}
+		return list;
+	}
+
+	List<String> solutionsToList(List<Solution> solutions, boolean withPriority) {
+		List<String> list = new ArrayList<>();//TODO
+		for (Solution s : solutions) {
+			list.add(s.toString(withPriority));
+		}
+		return list;
+	}
+
 
 	public void draw(){
         states = extractStates(content);

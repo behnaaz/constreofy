@@ -17,7 +17,7 @@ import priority.common.Constants;
 public class ConstraintConnector extends AbstractConnector implements Constants {
 	static final String FORMULA_NAME = "qaz";
 	private static final String WORD_BOUNDARY = "\\b";
-	public String constraint;
+	private String constraint;
 	OutputStreamWriter out;
 	ConnectorFactory cf = new ConnectorFactory();
 	private String[] states;
