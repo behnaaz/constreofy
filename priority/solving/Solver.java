@@ -188,17 +188,16 @@ public class Solver implements Constants, Containable {
 		List<String> output = new ArrayList<>();
 
 		BufferedReader out = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String line = null;
+		String line;
 		try {
 			while ((line = out.readLine()) != null) { 
-				line = out.readLine();
 				System.out.println("....solution line " + line);
 				output.add(line);
 			}
 		} catch (IOException ex) {
 		}
 		finally{ 
-			out.close();
+			//out.close();
 		}
 		return output;
 	}
