@@ -2,7 +2,7 @@ package priority.primitives;
 
 import priority.common.Constants;
 
-public abstract class Primitive implements Constants {
+public class Primitive implements Constants {
 	public String flow(String node) {
 		return new StringBuilder().append(node).append(TILDE).toString();
 	}

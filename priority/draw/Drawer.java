@@ -18,7 +18,7 @@ import grph.Grph;
 import grph.in_memory.InMemoryGrph;
 import grph.properties.Property;
 import priority.common.Constants;
-import priority.solving.Solution;
+import priority.solving.IOAwareSolution;
 
 public class Drawer implements Constants {
 	/**
@@ -30,26 +30,26 @@ public class Drawer implements Constants {
     Map<Integer, ArrayList<Integer>> links = new HashMap<>();
     Map<String, String> linkLabels = new HashMap<>();
     
-	public Drawer(Set<Solution> solutions) {
+	public Drawer(Set<IOAwareSolution> solutions) {
 		this.content = solutionsToList(solutions, false);
 	}
 
-	public Drawer(List<Solution> solutions) {
+	public Drawer(List<IOAwareSolution> solutions) {
 		this.content = solutionsToList(solutions, false);
 	}
 
-	List<String> solutionsToList(Set<Solution> solutions, boolean withPriority) {
+	List<String> solutionsToList(Set<IOAwareSolution> solutions, boolean withPriority) {
 		List<String> list = new ArrayList<>();//TODO
-		for (Solution s : solutions) {
-			list.add(s.toString(withPriority));
+		for (IOAwareSolution s : solutions) {
+			list.add(s.getSolution().toString(withPriority));
 		}
 		return list;
 	}
 
-	List<String> solutionsToList(List<Solution> solutions, boolean withPriority) {
+	List<String> solutionsToList(List<IOAwareSolution> solutions, boolean withPriority) {
 		List<String> list = new ArrayList<>();//TODO
-		for (Solution s : solutions) {
-			list.add(s.toString(withPriority));
+		for (IOAwareSolution s : solutions) {
+			list.add(s.getSolution().toString(withPriority));
 		}
 		return list;
 	}

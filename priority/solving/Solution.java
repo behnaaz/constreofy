@@ -37,8 +37,11 @@ public class Solution implements Constants, Comparable<Object> {
 	}
 
 	private void process(String[] atoms) {//TODO
-		if (atoms[0].trim().endsWith(TILDE) && !isNegative(atoms[1]))
-			flowVariables.add((atoms[1].trim().equals(ZERO)?NEG:SPACE)+(atoms[0].trim()).trim());
+		if (atoms[0].trim().endsWith(TILDE) && !isNegative(atoms[1])) {
+			String name = (atoms[1].trim().equals(ZERO)?NEG:SPACE)+(atoms[0].trim()).trim();
+			name = name.trim();
+			flowVariables.add(name);
+		}
 		else if (atoms[0].trim().endsWith(BULLET) || atoms[0].trim().endsWith(CIRC) && ONE.equals(atoms[1].trim()))
 			priority.add(atoms[0].trim());
 		else if (atoms[0].trim().endsWith(NEXT_MEMORY) && !isNegative(atoms[1])) {
@@ -93,7 +96,7 @@ public class Solution implements Constants, Comparable<Object> {
 	}
 
 	public StateVariableValue makeStateVariable(String state) {
-		return makeStateVariable(state, false);
+		return makeStateVariable(state.trim(), false);
 	}
 	
 	public StateVariableValue makeStateVariable(String state, boolean convertNextToCurrent) {
@@ -101,7 +104,7 @@ public class Solution implements Constants, Comparable<Object> {
 		String name = neg ? EMPTY /*state.trim().substring(1, state.trim().length())*/:state.trim();
 		if (convertNextToCurrent)
 			name = name.replace(NEXT_MEMORY, CURRENT_MEMORY);
-		return new StateVariableValue(name, !neg);
+		return new StateVariableValue(name.trim(), !neg);
 	}
 
 	public StateValue getNextStateValue() {

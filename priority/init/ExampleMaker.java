@@ -8,6 +8,8 @@ import java.util.List;
 import priority.connector.ConnectorFactory;
 import priority.connector.ConstraintConnector;
 import priority.primitives.FIFO;
+import priority.solving.IOAwareStateValue;
+import priority.solving.IOComponent;
 import priority.states.StateValue;
 
 public class ExampleMaker {
@@ -25,6 +27,10 @@ public class ExampleMaker {
 		this.n = n;
 	}
 	
+	public ExampleMaker() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public void out(OutputStreamWriter out) {
 		this.out = out;
 	}
@@ -53,27 +59,37 @@ public class ExampleMaker {
 		return connector;
 	}
 
-	public ConstraintConnector getExample(StateValue currentStatesValues, int... tokenNumbers) throws IOException {
+	public ConstraintConnector getExample(IOAwareStateValue currentStatesValue) throws IOException {
 		ConstraintConnector example;
 		if (n == 1)
 			example = exampleOne();
 		else if (n == 2)
 			example = exampleTwo();
+		else if (n == 3)
+			example = wrongXaction(currentStatesValue.getStateValue(), currentStatesValue.getIOs());
 		else if (n < 0)
 			example = sequencer(Math.abs(n));
 		else
-			example = xaction(currentStatesValues, tokenNumbers);
+			example = xaction(currentStatesValue);
 
 		example.output(out);
 		example.close();
 		return example;
 	}
 
-	private ConstraintConnector xaction(StateValue currentStatesValues, int... ios) {
+	private ConstraintConnector xaction(IOAwareStateValue currentStatesValues) {
+		ConnectorFactory factory = new ConnectorFactory();
+		connector = factory.writer("W1", currentStatesValues.getIOs()[0].getRequests());
+		connector.add(factory.replicator("a1", "a2"), "a1", "w1");
+		connector.add(factory.sync("AB1", "AB2"), "a2", "ab1");
+		return connector;
+	}
+	
+	private ConstraintConnector wrongXaction(StateValue currentStatesValues, IOComponent... ios) {
 		ConnectorFactory connectorFactory = new ConnectorFactory();
 		FIFO ab = buildFIFO("AB1", "AB2", currentStatesValues);
 		connector = ab.constraint();
-		connector.add(connectorFactory.writer("AB1", ios[0]), "ab1", "ab1");
+		connector.add(connectorFactory.writer("AB1", ios[0].getRequests()), "ab1", "ab1");
 		connector.add(connectorFactory.replicator("b1", "b2", "b3"), "b1", "AB2");
 		connector.add(connectorFactory.replicator("c1", "c2"), "c1", "b2");//"BC2");
 		FIFO cd = buildFIFO("CD1", "CD2", currentStatesValues);
@@ -122,11 +138,11 @@ public class ExampleMaker {
 		connector.add(factory.sync("KO2", "o3"), "KO2", "o3");
 */
 		
-		connector.states(connectorFactory.memory("ab1", "ab2"), connectorFactory.memory("cd1", "cd2"), connectorFactory.memory("de1", "de2"),
+		connector.setStates(connectorFactory.memory("ab1", "ab2"), connectorFactory.memory("cd1", "cd2"), connectorFactory.memory("de1", "de2"),
 				connectorFactory.memory("el1", "el2"), connectorFactory.memory("fg2", "fg1"), connectorFactory.memory("gh1", "gh2"),
 				connectorFactory.memory("ij1", "ij2"), connectorFactory.memory("jk1", "jk2"), connectorFactory.memory("lm1", "lm2"),
 				connectorFactory.memory("on1", "on2"));
-		connector.nextStates(connectorFactory.nextMemory("ab1", "ab2"), connectorFactory.nextMemory("cd1", "cd2"),
+		connector.setNextStates(connectorFactory.nextMemory("ab1", "ab2"), connectorFactory.nextMemory("cd1", "cd2"),
 				connectorFactory.nextMemory("de1", "de2"), connectorFactory.nextMemory("el1", "el2"), connectorFactory.nextMemory("fg2", "fg1"),
 				connectorFactory.nextMemory("gh1", "gh2"), connectorFactory.nextMemory("ij1", "ij2"), connectorFactory.nextMemory("jk1", "jk2"),
 				connectorFactory.nextMemory("lm1", "lm2"), connectorFactory.nextMemory("on1", "on2"));

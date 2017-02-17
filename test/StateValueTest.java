@@ -1,23 +1,19 @@
 package test;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import priority.solving.Solution;
-import priority.states.StateValue;
-import priority.states.StateVariableValue;
-
 import static org.junit.Assert.assertEquals;//TODO
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.junit.Assert.assertFalse;
+import org.junit.Test;
+
+import priority.states.StateValue;
+import priority.states.StateVariableValue;
 
 public class StateValueTest {
 	@Test

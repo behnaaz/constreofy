@@ -9,6 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import priority.init.ExampleMaker;
+import priority.solving.IOAwareSolution;
+import priority.solving.IOAwareStateValue;
+import priority.solving.IOComponent;
 import priority.solving.Solution;
 import priority.solving.Solver;
 import priority.states.StateManager;
@@ -16,22 +19,22 @@ import priority.states.StateValue;
 import priority.states.StateVariableValue;
 
 public class SolverTest {
-	List<Solution> s;
+	List<IOAwareSolution> s;
 	Solver solver;
 	
 	@Before
 	public void setUp() throws Exception {
 		solver = new Solver();
-		s = solver.findSolutions(1, new StateValue(), new ExampleMaker(3));
+		s = solver.findSolutions(new IOAwareStateValue(new StateValue(), new IOComponent("a", 1)), new ExampleMaker(3));
 	}
 	@Test
 	public void testFindSolutionFromBigState() throws Exception {
-		StateValue v = new StateValue();
-		v.add(new StateVariableValue("de1de2ring", true));
-		v.add(new StateVariableValue("ij1ij2ring", true));
-		v.add(new StateVariableValue("jk1jk2ring", true));
+		IOAwareStateValue v = new IOAwareStateValue(new StateValue(), new IOComponent("a", 1));
+		v.getStateValue().add(new StateVariableValue("de1de2ring", true));
+		v.getStateValue().add(new StateVariableValue("ij1ij2ring", true));
+		v.getStateValue().add(new StateVariableValue("jk1jk2ring", true));
 
-		s = solver.findSolutions(1, v, new ExampleMaker(3));
+		s = solver.findSolutions(v, new ExampleMaker(3));
 		assertEquals(s.size(), 4);
 
 	}
@@ -44,65 +47,65 @@ public class SolverTest {
 		StateValue temp = new StateValue();
 		temp.add(new StateVariableValue("ab1ab2ring", true));
 		temp.add(new StateVariableValue("jk1jk2ring", true));
-		assertEquals(temp, s.get(0).getNextStateValue());
-		assertEquals(0, s.get(0).getFromVariables().size());
-		assertEquals(2, s.get(0).getToVariables().size());
+		assertEquals(temp, s.get(0).getSolution().getNextStateValue());
+		assertEquals(0, s.get(0).getSolution().getFromVariables().size());
+		assertEquals(2, s.get(0).getSolution().getToVariables().size());
 
 // [] ------ {  ab1tilde } -------> (ab1ab2xringtrue )  
 		temp = new StateValue();
 		temp.add(new StateVariableValue("ab1ab2ring", true));
-		assertEquals(temp, s.get(1).getNextStateValue());
-		assertEquals(0, s.get(1).getFromVariables().size());
-		assertEquals(1, s.get(1).getToVariables().size());
+		assertEquals(temp, s.get(1).getSolution().getNextStateValue());
+		assertEquals(0, s.get(1).getSolution().getFromVariables().size());
+		assertEquals(1, s.get(1).getSolution().getToVariables().size());
 
 // [] ------ {  j2tilde jk1tilde } -------> (jk1jk2xringtrue )  
 		temp = new StateValue();
 		temp.add(new StateVariableValue("jk1jk2ring", true));
-		assertEquals(temp, s.get(2).getNextStateValue());
-		assertEquals(0, s.get(2).getFromVariables().size());
-		assertEquals(1, s.get(2).getToVariables().size());
+		assertEquals(temp, s.get(2).getSolution().getNextStateValue());
+		assertEquals(0, s.get(2).getSolution().getFromVariables().size());
+		assertEquals(1, s.get(2).getSolution().getToVariables().size());
 
 // [] ------ {  } -------> ()  
 		temp = new StateValue();
-		assertEquals(temp, s.get(3).getNextStateValue());
-		assertEquals(0, s.get(3).getFromVariables().size());
-		assertEquals(0, s.get(3).getToVariables().size());
+		assertEquals(temp, s.get(3).getSolution().getNextStateValue());
+		assertEquals(0, s.get(3).getSolution().getFromVariables().size());
+		assertEquals(0, s.get(3).getSolution().getToVariables().size());
 	}
 	
 	@Test
 	public void testUpdateSolution() {
-		List<StateValue> explorableStates = new ArrayList<>();
+		List<IOAwareStateValue> explorableStates = new ArrayList<>();
 		StateManager stateManager = new StateManager();
-		List<StateValue> visitedStates = new ArrayList<>();
-		List<StateValue> t = solver.updateExplorableStates(visitedStates, explorableStates, stateManager, s);
+		List<IOAwareStateValue> visitedStates = new ArrayList<>();
+		List<IOAwareStateValue> t = solver.updateExplorableStates(visitedStates, explorableStates, stateManager, s);
 		assertEquals(s.size(), 4);
 
 		// [] ------ {  ab1tilde j2tilde jk1tilde } -------> (ab1ab2xringtrue jk1jk2xringtrue )  
 		StateValue temp = new StateValue();
 		temp.add(new StateVariableValue("ab1ab2ring", true));
 		temp.add(new StateVariableValue("jk1jk2ring", true));
-		assertEquals(temp, s.get(0).getNextStateValue());
-		assertEquals(0, s.get(0).getFromVariables().size());
-		assertEquals(2, s.get(0).getToVariables().size());
+		assertEquals(temp, s.get(0).getSolution().getNextStateValue());
+		assertEquals(0, s.get(0).getSolution().getFromVariables().size());
+		assertEquals(2, s.get(0).getSolution().getToVariables().size());
 
 		// [] ------ {  ab1tilde } -------> (ab1ab2xringtrue )  
 				temp = new StateValue();
 				temp.add(new StateVariableValue("ab1ab2ring", true));
-				assertEquals(temp, s.get(1).getNextStateValue());
-				assertEquals(0, s.get(1).getFromVariables().size());
-				assertEquals(1, s.get(1).getToVariables().size());
+				assertEquals(temp, s.get(1).getSolution().getNextStateValue());
+				assertEquals(0, s.get(1).getSolution().getFromVariables().size());
+				assertEquals(1, s.get(1).getSolution().getToVariables().size());
 
 		// [] ------ {  j2tilde jk1tilde } -------> (jk1jk2xringtrue )  
 				temp = new StateValue();
 				temp.add(new StateVariableValue("jk1jk2ring", true));
-				assertEquals(temp, s.get(2).getNextStateValue());
-				assertEquals(0, s.get(2).getFromVariables().size());
-				assertEquals(1, s.get(2).getToVariables().size());
+				assertEquals(temp, s.get(2).getSolution().getNextStateValue());
+				assertEquals(0, s.get(2).getSolution().getFromVariables().size());
+				assertEquals(1, s.get(2).getSolution().getToVariables().size());
 
 		// [] ------ {  } -------> ()  
 				temp = new StateValue();
-				assertEquals(temp, s.get(3).getNextStateValue());
-				assertEquals(0, s.get(3).getFromVariables().size());
-				assertEquals(0, s.get(3).getToVariables().size());
+				assertEquals(temp, s.get(3).getSolution().getNextStateValue());
+				assertEquals(0, s.get(3).getSolution().getFromVariables().size());
+				assertEquals(0, s.get(3).getSolution().getToVariables().size());
 	}
 }

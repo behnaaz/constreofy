@@ -1,16 +1,16 @@
 package priority.solving;
 
+import java.util.Arrays;
 import java.util.List;
-
-import priority.states.StateValue;
 
 public interface Containable {
 
-	default boolean contains(List<StateValue> states, StateValue state) {
+	default boolean contains(List<IOAwareStateValue> states, IOAwareStateValue state) {
 		if (state.toString().trim().contains("de1de2ringtrue,ij1ij2ringtrue,jk1jk2ringtrue"))
 			System.out.println("here" + state);
-		for (StateValue t : states) {
-			if (t.getVariableValues().toString().trim().equals(state.getVariableValues().toString().trim())) {
+		for (IOAwareStateValue t : states) {
+			if (t.getIOs().equals(state.getIOs()) &&
+					t.getStateValue().getVariableValues().toString().trim().equals(state.getStateValue().getVariableValues().toString().trim())) {
 				System.out.println("Visited b4: " + state.toString() + " in " + state.toString());
 				return true;
 			}
@@ -18,10 +18,13 @@ public interface Containable {
 		return false;
 	}
 
-	default boolean contains(List<Solution> sols, Solution s) {
-		for (Solution t : sols)
+	default boolean contains(List<IOAwareSolution> sols, IOAwareSolution s2) {
+		for (IOAwareSolution sol : sols) {
+			Solution t = sol.getSolution();
+			Solution s = s2.getSolution();
 			if (t.getFlowVariables().equals(s.getFlowVariables()) && t.getFromVariables().equals(s.getFromVariables()) && t.getToVariables().equals(s.getToVariables()))
-				return true;
+				return Arrays.equals(sol.getIOs(), s2.getIOs());
+		}
 		return false;
 	}
 }

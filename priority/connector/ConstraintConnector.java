@@ -81,7 +81,6 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		try {
 			preamble();
 			printVariables(constraint);
-			//printConstraint(constraint, "sth");
 			out.write(FORMULA_NAME + " := " + constraint+";;");
 			dnf(FORMULA_NAME);
 			out.write("shut; end;");
@@ -134,19 +133,23 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		out.close();
 	}
 
-	public void states(String... mems) {
+	public void setStates(String... mems) {
 		states = mems;
 	}
 	
-	public void nextStates(String... nexts) {
+	public void setNextStates(String... nexts) {
 		nextStates = nexts;
 	}
 	
-	public String[] states() {
+	public String[] getStates() {
+		if (states == null)
+			return new String[0];
 		return states;
 	}
 	
-	public String[] nextStates() {
+	public String[] getNextStates() {
+		if (nextStates == null)
+			return new String[0];//TODO???
 		return nextStates;
 	}
 }
