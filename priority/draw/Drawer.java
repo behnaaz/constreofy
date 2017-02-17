@@ -246,7 +246,9 @@ public class Drawer implements Constants {
 			String target = k.substring(indexOfStateDelim + 1);
 
 			try {
-				jar.put(new JSONObject().put("from", source).put("to", target).put("text", v.replaceAll("tilde", "")));				
+				String[] labels = ((v.endsWith(",")) ? v.concat(" "):v).split(",");
+				for (String label : labels)
+					jar.put(new JSONObject().put("from", source).put("to", target).put("text", label.replaceAll("tilde", "")));				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -300,6 +302,8 @@ public class Drawer implements Constants {
     			res.put(fromIndx, al);
     		}
     		String lbl = getEdgeLabel(s);
+    		if (linkLabels.containsKey(fromIndx + STATE_DELIMINATOR + toIndx))
+    			lbl = linkLabels.get(fromIndx + STATE_DELIMINATOR + toIndx).concat(",").concat(lbl);
     		linkLabels.put(fromIndx + STATE_DELIMINATOR + toIndx, lbl);
     	}
     	return res;

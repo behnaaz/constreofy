@@ -6,12 +6,10 @@ import java.util.List;
 public interface Containable {
 
 	default boolean contains(List<IOAwareStateValue> states, IOAwareStateValue state) {
-		if (state.toString().trim().contains("de1de2ringtrue,ij1ij2ringtrue,jk1jk2ringtrue"))
-			System.out.println("here" + state);
 		for (IOAwareStateValue t : states) {
-			if (t.getIOs().equals(state.getIOs()) &&
+			if (Arrays.equals(t.getIOs(), state.getIOs()) &&
 					t.getStateValue().getVariableValues().toString().trim().equals(state.getStateValue().getVariableValues().toString().trim())) {
-				System.out.println("Visited b4: " + state.toString() + " in " + state.toString());
+				System.out.println("Visited b4: " + state.toString() + " in " + states.toString());
 				return true;
 			}
 		}

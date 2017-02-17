@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.reader.DimacsReader;
@@ -27,6 +28,7 @@ import com.google.common.collect.Lists;
 import priority.common.Constants;
 import priority.connector.ConstraintConnector;
 import priority.init.ExampleMaker;
+import priority.primitives.Primitive;
 import priority.semantics.DNF;
 import priority.states.StateManager;
 import priority.states.StateValue;
@@ -70,9 +72,10 @@ public class Solver implements Constants, Containable {
 		List<IOAwareSolution> solutions = new ArrayList<>();
 
 		do {
+			visitedStates = visit(visitedStates, currentStatesValue);
+
 			// Get solutions from current state
 			solutions = updateSolutions(solutions, findSolutions(currentStatesValue, exampleMaker));
-			visitedStates = visit(visitedStates, currentStatesValue);
 
 			explorableStates = updateExplorableStates(visitedStates, explorableStates, stateManager, solutions);
 			currentStatesValue = getNextUnexploredState(visitedStates, explorableStates, writer1);
@@ -96,23 +99,41 @@ public class Solver implements Constants, Containable {
 		return explorableStates;
 	}
 
-	private List<IOAwareStateValue> visit(List<IOAwareStateValue> visitedStates, IOAwareStateValue currentStatesValues) {
+	private List<IOAwareStateValue> visit(final List<IOAwareStateValue> visitedStates, final IOAwareStateValue currentStatesValues) {
 		System.out.println("B4 visit states: " + visitedStates.size() + " " + visitedStates.toString());
 		if (!contains(visitedStates, currentStatesValues))
-			visitedStates.add(currentStatesValues);
+			visitedStates.add(new IOAwareStateValue(currentStatesValues.getStateValue(), currentStatesValues.getIOs()));
 		System.out.println("After visit states: " + visitedStates.size() + " " + visitedStates.toString());
 		return visitedStates;
 	}
 
-	private List<IOAwareSolution> updateSolutions(List<IOAwareSolution> solutions, List<IOAwareSolution> stepSolutions) {
-		for (IOAwareSolution temp : stepSolutions)
+	private List<IOAwareSolution> updateSolutions(final List<IOAwareSolution> solutions, final List<IOAwareSolution> stepSolutions) {
+		for (IOAwareSolution s : stepSolutions)
 		{
+			IOAwareSolution temp = new IOAwareSolution(s.getSolution(), updateRequests(s.getSolution(), s.getIOs()));
 			if (!contains(solutions, temp)) {
 				System.out.println("Solution added "+temp.toString());
 				solutions.add(temp);
 			}
 		}
 		return solutions;
+	}
+
+	private IOComponent[] updateRequests(final Solution sol, final IOComponent... ios) {
+		List<IOComponent> result =  new ArrayList<>();
+		Set<String> flowVariables = sol.getFlowVariables();
+		if (flowVariables == null || flowVariables.isEmpty())
+			return ios;//??? TODO
+
+		for (IOComponent io : result) {
+			Primitive p = new Primitive();
+			String flowNode = p.flow(io.getNodeName());
+			if (flowVariables.contains(flowNode)) {
+				result.add(new IOComponent(io.getNodeName(), io.consume()));//TODO
+			} else
+				result.add(new IOComponent(io.getNodeName(), io.getRequests()));
+		}
+		return result.toArray(new IOComponent[result.size()]);
 	}
 
 	private IOAwareStateValue getNextUnexploredState(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates, IOComponent... writer1) {
@@ -128,12 +149,12 @@ public class Solver implements Constants, Containable {
 				currentStatesValues = null;
 		} while (!explorableStates.isEmpty() && currentStatesValues == null);
 		
-		if (contains(visitedStates, currentStatesValues))
+		if (currentStatesValues != null && contains(visitedStates, currentStatesValues))
 			currentStatesValues = null;
 		return currentStatesValues;
 	}
 
-	public List<IOAwareSolution> findSolutions(IOAwareStateValue currentStatesValue, ExampleMaker exampleMaker) throws Exception{
+	public List<IOAwareSolution> findSolutions(final IOAwareStateValue currentStatesValue, ExampleMaker exampleMaker) throws Exception{
 		File file = createFile(OUTPUTFILE);
 		exampleMaker.out(new OutputStreamWriter(new FileOutputStream(file)));
 		ConstraintConnector cc = exampleMaker.getExample(currentStatesValue);
@@ -153,15 +174,14 @@ public class Solver implements Constants, Containable {
 	//	System.out.println("In " + (System.currentTimeMillis() - start) + " did sat4j prep");
 
 		dnf.reportSolutions();
-	//	if (writer1 > 0)
-		//	dnf.reportVars();
+
 		return ioAwarify(dnf.getSolutions(), currentStatesValue.getIOs());
 	}
 
-	private List<IOAwareSolution> ioAwarify(List<Solution> solutions, IOComponent[] iOs) {
+	private List<IOAwareSolution> ioAwarify(final List<Solution> solutions, final IOComponent[] iOs) {
 		List<IOAwareSolution> temp = new ArrayList<>();
 		solutions.forEach(s -> {
-			temp.add(new IOAwareSolution(s, iOs));
+			temp.add(new IOAwareSolution(s, iOs));////???? updateRequests(s, iOs)));
 		});
 		return temp;
 	}
