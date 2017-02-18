@@ -6,6 +6,8 @@ import java.util.List;
 public interface Containable {
 
 	default boolean contains(List<IOAwareStateValue> states, IOAwareStateValue state) {
+		if (state == null || states == null)
+			return false;
 		for (IOAwareStateValue t : states) {
 			if (Arrays.equals(t.getIOs(), state.getIOs()) &&
 					t.getStateValue().getVariableValues().toString().trim().equals(state.getStateValue().getVariableValues().toString().trim())) {
