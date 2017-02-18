@@ -21,7 +21,8 @@ public interface Containable {
 			Solution t = sol.getSolution();
 			Solution s = s2.getSolution();
 			if (t.getFlowVariables().equals(s.getFlowVariables()) && t.getFromVariables().equals(s.getFromVariables()) && t.getToVariables().equals(s.getToVariables()))
-				return Arrays.equals(sol.getIOs(), s2.getIOs());
+				return Arrays.equals(sol.getPreIOs(), s2.getPreIOs()) &&
+						Arrays.equals(sol.getPostIOs(), s2.getPostIOs());
 		}
 		return false;
 	}

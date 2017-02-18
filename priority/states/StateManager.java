@@ -25,7 +25,7 @@ public class StateManager implements Containable {
 			System.out.println("find next states for solution " + sol);
 			StateValue aNextState = sol.getSolution().getNextStateValue();//TODO??
 			System.out.println("a next state is " + aNextState.toString());
-			IOAwareStateValue temp = new IOAwareStateValue(aNextState, sol.getIOs());
+			IOAwareStateValue temp = new IOAwareStateValue(aNextState, sol.getPostIOs());
 			if (!contains(nexts, temp) && !contains(visitedStates, temp) && !contains(explorableStates, temp)) {
 				System.out.println("OOOO Adding  " + temp.toString());
 				nexts.add(temp);

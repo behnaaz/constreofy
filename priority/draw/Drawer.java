@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.List;
@@ -47,9 +48,13 @@ public class Drawer implements Constants {
 	}
 
 	List<String> solutionsToList(List<IOAwareSolution> solutions, boolean withPriority) {
-		List<String> list = new ArrayList<>();//TODO
+		List<String> list = new ArrayList<>();
 		for (IOAwareSolution s : solutions) {
-			list.add(s.getSolution().toString(withPriority));
+			StringBuilder sb = new StringBuilder();
+			sb.append(s.getSolution().toString(withPriority));
+			sb.append(Arrays.toString(s.getPostIOs()));
+			sb.append(Arrays.toString(s.getPreIOs()));
+			list.add(sb.toString());
 		}
 		return list;
 	}
@@ -325,12 +330,20 @@ public class Drawer implements Constants {
 
 	private Set<String> getTargetStateName(String s) {
 		int begin = s.indexOf(TARGET_START_SIGN);
-		return cleanUp(s.substring(begin + TARGET_START_SIGN.length()), OPEN_TAG_PARANTHESIS, CLOSE_TAG_PARANTHESIS);
+		String io = s.substring(s.lastIndexOf(OPEN_TAG_BRACKET)).replace(OPEN_TAG_BRACKET, "").replace(CLOSE_TAG_BRACKET, "");
+		String res = s.substring(begin + TARGET_START_SIGN.length());
+		res = res.substring(0, res.indexOf(CLOSE_TAG_PARANTHESIS));		
+		res = res.concat(io);
+		return cleanUp(res, OPEN_TAG_PARANTHESIS, CLOSE_TAG_PARANTHESIS);
 	}
 
 	private Set<String> getSourceStateName(String s) {
 		int begin = s.indexOf(SOURCE_END_SIGN);
-		return cleanUp(s.substring(0, begin), OPEN_TAG_BRACKET, CLOSE_TAG_BRACKET);
+		String res = s.substring(0, begin);
+		int idx = s.indexOf(CLOSE_TAG_PARANTHESIS) + 1;
+		String temp = s.substring(idx);
+		res = res.concat(temp.substring(temp.indexOf(OPEN_TAG_BRACKET), temp.indexOf(CLOSE_TAG_BRACKET)));
+		return cleanUp(res, OPEN_TAG_BRACKET, CLOSE_TAG_BRACKET);
 	}
 
 	private String getEdgeLabel(String s) {
