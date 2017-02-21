@@ -26,10 +26,6 @@ public class ExampleMaker {
 	public ExampleMaker(int n) {
 		this.n = n;
 	}
-	
-	public ExampleMaker() {
-		// TODO Auto-generated constructor stub
-	}
 
 	public void out(OutputStreamWriter out) {
 		this.out = out;
@@ -80,8 +76,17 @@ public class ExampleMaker {
 	private ConstraintConnector xaction(IOAwareStateValue currentStatesValues) {
 		ConnectorFactory factory = new ConnectorFactory();
 		connector = factory.writer("W1", currentStatesValues.getIOs()[0].getRequests());
-		connector.add(factory.replicator("a1", "a2"), "a1", "w1");
-		connector.add(factory.sync("AB1", "AB2"), "a2", "ab1");
+		connector.add(factory.sync("A1", "A2"), "W1", "a1");//replicator bas bashe
+		connector.add(factory.sync("AB1", "AB2"), "a2", "ab2");
+		connector.add(factory.replicator("b1", "b2", "b3"), "b1", "ab1");
+		connector.add(factory.sync("BC1", "BC2"), "b2", "bc2");
+		connector.add(factory.sync("BJ3", "BJ2"), "b3", "bj3");
+		connector.add(factory.sync("c1", "c2"), "c1", "bc1");//repl
+		connector.add(factory.fifo("CD1", "CD2"), "c2", "cd2");
+		connector.add(factory.sync("j1", "j2"), "bj2", "j2");//repl
+		connector.add(factory.fifo("JK1", "JK2"), "c1", "jk1");
+		connector.add(factory.fifo("DE2", "DE1"), "cd1", "de2");
+
 		return connector;
 	}
 	

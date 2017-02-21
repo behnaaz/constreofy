@@ -2,7 +2,6 @@ package priority.connector;
 
 import static java.util.stream.Collectors.joining;
 
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +12,6 @@ public abstract class AbstractConnector {
 	String newLine = isTex ? "\\\\ \r\n \\hline" : "";
 
 	protected List<String> names;
-	public boolean verbose;
 
 	public AbstractConnector(List<String> names) {
 		this.names = names;
@@ -23,14 +21,12 @@ public abstract class AbstractConnector {
 		this.names = convert(names);
 	}
 
-	abstract void output(OutputStreamWriter out);
-
 	public List<String> getNames() {
 		return names;
 	}
 
 	List<String> convert(String... c) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (int i = 0; i < c.length; i++) {
 			if (!result.contains(c[i]))
 				result.add(c[i]);
@@ -39,20 +35,26 @@ public abstract class AbstractConnector {
 	}
 
 	ArrayList<Character> concat(ArrayList<Character> t1, List<Character> t2) {
-		ArrayList<Character> result = new ArrayList<Character>();
+		ArrayList<Character> result = new ArrayList<>();
 		result.addAll(t1);
 		result.addAll(t2);
 		return result;
 	}
 
 	String spaced(Optional<String> content) {
-		return Stream.generate(() -> "&").limit(1).collect(joining()).concat(content.get());
+		String temp = Stream.generate(() -> "&").limit(1).collect(joining());
+		if (content.isPresent())
+			temp = temp.concat(content.get());
+		return temp;
 	}
 
 	String spaced(int n, Optional<String> content) {
 		if (isTex)
 			return spaced(content);
 
-		return Stream.generate(() -> " ").limit(n).collect(joining()).concat(content.get());
+		String temp = Stream.generate(() -> " ").limit(n).collect(joining());
+		if (content.isPresent())
+			temp = temp.concat(content.get());
+		return temp;
 	}
 }

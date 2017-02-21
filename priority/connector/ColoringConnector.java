@@ -1,6 +1,5 @@
 package priority.connector;
 
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,10 +7,6 @@ import java.util.Optional;
 
 public class ColoringConnector extends AbstractConnector {
 		List<ArrayList<Character>> model;
-
-		public List<ArrayList<Character>> getModel() {
-			return model;
-		}
 
 		public ColoringConnector(String[] names, List<ArrayList<Character>> model) {
 			super(names);
@@ -23,8 +18,13 @@ public class ColoringConnector extends AbstractConnector {
 			this.model =  model;
 		}
 
+		
+		public List<ArrayList<Character>> getModel() {
+			return model;
+		}
+
 		public ColoringConnector ground(String... boundaries) {
-			List<ArrayList<Character>> result = new ArrayList<ArrayList<Character>>();
+			List<ArrayList<Character>> result = new ArrayList<>();
 			for (int i = 0; i < model.size(); i++) {
 				boolean copy = true;
 				for (int j = 0; j < boundaries.length; j++) {
@@ -50,35 +50,31 @@ public class ColoringConnector extends AbstractConnector {
 					return " $\\circ$ ";
 				case '.':
 					return " $\\bullet$ ";
+				default:
+					return "UNDEF";
 			}
-			return "UNDEF";
 		}
 
 		public void output() {
-			if (isTex)
-				;
 			for (int i = 0; i < model.size(); i++) {
 				if (i == 0) {
 					System.out.println("Nodes : "+ model.get(i).size() + " Lines : " + model.size());
 					for (int j = 0; j < model.get(i).size(); j++) {
 						String out = texify(names.get(j));
-						if (j == 0)
-							System.out.print(out);
-						else {
-							String res = spaced(names.get(j).length(), Optional.of(out));
-							System.out.print(res);
-						}
+						if (j != 0)
+							out = spaced(names.get(j).length(), Optional.of(out));
+						System.out.print(out);
+
 					}
 					System.out.println(newLine);
 				}
 				for (int j = 0; j < model.get(i).size(); j++) {
 					String out = texify(model.get(i).get(j));
-					if (j == 0)
-						System.out.print(out);
-					else {
-						String res = spaced(names.get(j).length()+1, Optional.of(out));
-						System.out.print(res);
-					}
+					if (j != 0)
+						out = spaced(names.get(j).length()+1, Optional.of(out));
+
+					System.out.print(out);
+
 				}
 				System.out.println(newLine);
 			}
@@ -112,16 +108,16 @@ public class ColoringConnector extends AbstractConnector {
 			int newPort = newPortName == null ? -1 : newTable.getNames().indexOf(newPortName);
 			int existing = existingPortName == null ? -1 : names.indexOf(existingPortName);
 
-			if (model.size() == 0) {
+			if (!model.isEmpty()) {
 				this.model = newTable.getModel();
 				this.names = newTable.getNames();
 				return;
 			}
 			
-			if (model.size() > 0 && verbose )
+			if (!model.isEmpty())
 				System.out.println("Connecting " +  newPortName + " to " + existingPortName);
 			
-			List<ArrayList<Character>> newModel = new ArrayList<ArrayList<Character>>();
+			List<ArrayList<Character>> newModel = new ArrayList<>();
 			for (int i = 0; i < model.size(); i++) {
 				for (int j = 0; j < newTable.getModel().size(); j++) {
 					if (isCompatibel(model.get(i).get(existing), newTable.getModel().get(j).get(newPort))) {
@@ -137,7 +133,7 @@ public class ColoringConnector extends AbstractConnector {
 		public ColoringConnector connect(String name1, String name2) {
 			int port1 = name1 == null ? -1 : names.indexOf(name1);
 			int port2 = name2 == null ? -1 : names.indexOf(name2);
-			List<ArrayList<Character>> result = new ArrayList<ArrayList<Character>>();
+			List<ArrayList<Character>> result = new ArrayList<>();
 
 			for (int i = 0; i < model.size(); i++) {
 				boolean copy = true;
@@ -151,11 +147,4 @@ public class ColoringConnector extends AbstractConnector {
 
 			return new ColoringConnector(names, result);
 		}
-
-		@Override
-		void output(OutputStreamWriter out) {
-			// TODO Auto-generated method stub
-			
-		}
 	}
-

@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.TreeSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import priority.common.Constants;
@@ -51,7 +49,7 @@ public class DNF implements Constants {
 		writer.write("c\r\n");
 		
 		String constraint = sb.toString();
-		if (constraint.trim().equalsIgnoreCase("false"))
+		if ("false".equalsIgnoreCase(constraint.trim()))
 			throw new Exception("NOT FEASIBLE");
 
 		assert(constraint.contains(OR.trim()));//OTHERWISE not supported yet
@@ -60,16 +58,25 @@ public class DNF implements Constants {
 
 		for (String and : ands) {
 			sb = new StringBuilder();
-			String terms[] = and.trim().substring(1, and.trim().length()-1).split(AND.trim());
+			String[] terms = extractTerms(and);
 			for (String term : terms) {
 				String[] atoms = term.trim().split(" = ");
 				if (variables.indexOf(atoms[0].toUpperCase()) <= -1) 
 					throw new Exception(atoms[0]+" not found");
-				sb.append((atoms[1].trim().equals("0")?"-":"")+(variables.indexOf(atoms[0].toUpperCase())+1)+" ");
+				sb.append(("0".equals(atoms[1].trim())?"-":"")+(variables.indexOf(atoms[0].toUpperCase())+1)+" ");
 			}
 			writer.write(sb.toString() + " 0\r\n");
 		}
 		writer.close();
+	}
+
+	private String[] extractTerms(String and) {
+		String res = and.trim();
+		int index = 0;
+		if (!res.matches("^[a-zA-Z].*$"))
+			index++;
+		res = res.substring(index, and.trim().length()-(index));
+		return res.split(AND.trim());
 	}
 
 	public void reportSolutions() throws IOException {

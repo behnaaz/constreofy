@@ -2,7 +2,7 @@ package priority.connector;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,9 +22,14 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	ConnectorFactory cf = new ConnectorFactory();
 	private String[] states;
 	private String[] nextStates;
+
+	public ConstraintConnector(String constraint, String... names) {
+		super(names);
+		this.constraint = constraint;
+	}
 	
 	public Map<String, Boolean> initStateValues() {
-		Map<String, Boolean> result = new HashMap<String, Boolean>();
+		Map<String, Boolean> result = new HashMap<>();
 		for (String state : states) {
 			result.put(state.toLowerCase().replace("ring", "xring"), false);
 		}
@@ -35,34 +40,24 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return constraint;
 	}
 
-	public ConstraintConnector(String constraint, ArrayList<String> names) {
-		super(names);
-		this.constraint = constraint;
-	}
-	
-	public ConstraintConnector(String constraint, String... names) {
-		super(names);
-		this.constraint = constraint;
-	}
-
 	public Set<String> variables() {
 		return variables(constraint);
 	}
 
 	private Set<String> variables(String constraint) {
 		if (Strings.isNullOrEmpty(constraint))
-			return null;
+			return Collections.emptySet();
 
-		Set<String> out = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 		String copy = constraint.replaceAll(AND.trim()+"|"+IMPLIES.trim()+"|"+NOT.trim()+"|\\(|\\)|,|"+RIGHTLEFTARROW.trim()+"|"+OR.trim()+"|"+TRUE.trim()+"|"+FALSE.trim(), "");
 		//constraint
 		for (String s : copy.split(" ")) {
 			if (s.trim().length() > 0) {
-				out.add(s.toUpperCase());
+				result.add(s.toUpperCase());
 				this.constraint = this.constraint.replaceAll(new StringBuilder().append(WORD_BOUNDARY).append(s).append(WORD_BOUNDARY).toString(), s.toUpperCase());//TODO
 			}
 		}
-		return out;
+		return result;
 	}
 	
 	void printVariables(Function<String, Set<String>> ff) throws IOException {
@@ -70,12 +65,10 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	}
 
 	void printVariables(String formulae) throws IOException {
-	//	out.write(formulae);
-		Set<String> vars = this.variables(formulae).stream().filter(e -> e.length()>0).map(e -> e.toUpperCase().toString()).collect(Collectors.toSet());
+		Set<String> vars = this.variables(formulae).stream().filter(e -> e.length()>0).map(String::toUpperCase).collect(Collectors.toSet());
 		out.write("rlpcvar "+vars.toString().substring(1, vars.toString().length()-1)+";");
 	}
 	
-	@Override
 	public void output(OutputStreamWriter out) {
 		this.out = out;
 		try {
@@ -123,9 +116,9 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 				constraint, newConnector.getConstraint(), factory.flow(p1), factory.flow(p2));
 				
 	}
-
+//???TODO
 	public ConstraintConnector connect(String p1, String p2) {
-		return new ConstraintConnector(String.format(" (%s "+ IMPLIES +" %s) ", p1, p2), new ArrayList<>());
+		return new ConstraintConnector(String.format(" (%s %s %s) ", p1, IMPLIES, p2));
 	}
 
 	public void close() throws IOException {
