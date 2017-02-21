@@ -52,8 +52,8 @@ public class Drawer implements Constants {
 		for (IOAwareSolution s : solutions) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(s.getSolution().toString(withPriority));
-			sb.append(Arrays.toString(s.getPostIOs()));
 			sb.append(Arrays.toString(s.getPreIOs()));
+			sb.append(Arrays.toString(s.getPostIOs()));
 			list.add(sb.toString());
 		}
 		return list;
@@ -145,7 +145,7 @@ public class Drawer implements Constants {
         	List<Integer> targets = links.get(i);
         	if (targets != null) {
         		for (Integer j : targets) {
-        			gb.addDirectedSimpleEdge(stateVertex.get(j), stateVertex.get(i));
+        			gb.addDirectedSimpleEdge(stateVertex.get(i), stateVertex.get(j));
         			gb.setEdgesLabel(new Property("edgesLabel") {
         				
         				/**

@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,7 +30,7 @@ public class Convert {
 		    System.out.println("List: " + joined);
 		}		
 	}
-
+/*
 	private static void ls() throws IOException {
 		try (Stream<Path> stream = Files.list(Paths.get(PATH))) {
 		    String joined = stream
@@ -53,6 +52,6 @@ public class Convert {
 		        .collect(Collectors.joining("\n "));
 		    System.out.println("List: " + joined);
 		}
-	}
+	}*/
 }
 //

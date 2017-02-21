@@ -25,6 +25,13 @@ public abstract class AbstractConnector {
 		return names;
 	}
 
+	public String getName(int n) {
+		if (names == null || names.isEmpty() || n >= names.size() || n < 0)
+			return null;
+		
+		return names.get(n);
+	}
+
 	List<String> convert(String... c) {
 		List<String> result = new ArrayList<>();
 		for (int i = 0; i < c.length; i++) {

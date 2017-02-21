@@ -12,11 +12,6 @@ public class StateValue implements Comparable<Object>, Cloneable, Constants {
 	public Set<StateVariableValue> getVariableValues() {
 		return variableValues;
 	}
-/*
-	public StateValue makeItCurrent() {
-		variableValues.forEach(s -> s.stateName(s.makeNextStateCurrent()));
-		return this;
-	}*/
 
 	public boolean containsKey(String m) {
 		for (StateVariableValue v : variableValues) { 
@@ -44,7 +39,7 @@ public class StateValue implements Comparable<Object>, Cloneable, Constants {
 	}
 
 	@Override
-	public String toString() {
+	public String toString() {//TODO ???
 		StringBuilder sb = new StringBuilder();
 		variableValues.forEach(e -> sb.append(e.getStateName()).append(e.getValue()).append(STRING_COMMA));
 		return sb.toString().replaceAll(",$", "");

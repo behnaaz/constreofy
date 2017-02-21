@@ -16,8 +16,9 @@ public class ConnectorFactory extends Primitive implements Constants {
 	}
 
 	public ConstraintConnector sync(String p1, String p2) {
-		String sync = String.format("(%s" + RIGHTLEFTARROW + "%s)" + AND + NOT + "(%sc" + AND + "%sk)", flow(p1),
-				flow(p2), p1, p2);
+		String sync = String.format("(%s %s %s)"/* + AND + NOT + "(%sc" + AND + "%sk)"*/, flow(p1), RIGHTLEFTARROW,
+				flow(p2));
+		//, p1, p2);
 		return new ConstraintConnector(sync, p1, p2);
 	}
 	/*
@@ -93,9 +94,9 @@ public class ConnectorFactory extends Primitive implements Constants {
 	public ConstraintConnector writer(String k, int n) {
 		String writer;
 		if (n > 0)
-			writer = String.format("( %s " + OR + NOT + " %s )", flow(k), flow(k));
+			writer = String.format("( %s %s %s %s )", flow(k), OR, NOT, flow(k));
 		else
-			writer = String.format("( " + NOT + "%s )", flow(k));
+			writer = String.format("( %s %s )", NOT, flow(k));
 		return new ConstraintConnector(writer, k);
 	}
 }
