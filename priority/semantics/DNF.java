@@ -74,7 +74,7 @@ public class DNF extends FileUser implements Constants {
 		return res.split(AND.trim());
 	}
 
-	public void extractSolutions(String reduceOutput) throws IOException {
+	public List<Solution> extractSolutions(String reduceOutput) throws IOException {
 		String[] ands = reduceOutput.split(OR.trim());
 
 		for (String and : ands) {
@@ -95,7 +95,8 @@ public class DNF extends FileUser implements Constants {
 			if (!contains(solutions, newSol))
 				solutions.add(newSol);
 			}
-		}		
+		}
+		return solutions;
 	}
 	
 	private boolean contains(List<Solution> sols, Solution s) {
@@ -109,9 +110,5 @@ public class DNF extends FileUser implements Constants {
 		for (Solution sol : solutions) {
 			System.out.println(sol.toString(true));
 		}
-	}
-
-	public List<Solution> getSolutions() {
-		return solutions;
 	}
 }

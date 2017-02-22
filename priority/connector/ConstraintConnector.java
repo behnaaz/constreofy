@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.google.common.base.Strings;
 
 import priority.common.Constants;
+import priority.solving.IOAwareStateValue;
 
 public class ConstraintConnector extends AbstractConnector implements Constants {
 	private String constraint;
@@ -35,6 +36,11 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return constraint;
 	}
 
+	public String incorporateState(IOAwareStateValue currentStatesValue) {
+		String newConstrint = constraint;
+		return newConstrint;
+	}
+	
 	public Set<String> getVariables() {
 		return extractVariables(constraint);
 	}
@@ -65,6 +71,23 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	}
 	
 	public String output() {
+		StringBuilder sb = new StringBuilder();
+
+		try {
+			sb.append(PREAMBLE);
+			sb.append(printVariables(constraint));
+			sb.append(FORMULA_NAME + " := " + constraint+";;");
+			sb.append(dnf(FORMULA_NAME));
+			sb.append(SHUT);
+			sb.append("; end;");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return sb.toString();
+	}
+	
+	public String output(String constraint) {
 		StringBuilder sb = new StringBuilder();
 
 		try {

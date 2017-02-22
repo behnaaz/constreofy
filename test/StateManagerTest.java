@@ -23,11 +23,11 @@ public class StateManagerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		solver = new Solver();
 		IOComponent ioComponent = new IOComponent("a", 1);
 		StateValue stateValue = new StateValue();
 		IOAwareStateValue currentStatesValue = new IOAwareStateValue(stateValue, ioComponent);
 		ConstraintConnector cc = new ExampleMaker(3).getExample(currentStatesValue);
+		solver = new Solver(cc, currentStatesValue);
 		solutions = solver.findSolutions(currentStatesValue, cc);
 	}
 

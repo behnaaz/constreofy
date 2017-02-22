@@ -45,30 +45,27 @@ public class ExampleMaker extends FileUser {
 		return connector;
 	}
 
-	public ConstraintConnector getExample(IOAwareStateValue currentStatesValue) throws IOException {
-		ConstraintConnector exampleCC;
+	public ConstraintConnector getExample(IOAwareStateValue... currentStatesValues) throws IOException {
 		if (n == 1)
-			exampleCC = exampleOne();
-		else if (n == 2)
-			exampleCC = exampleTwo();
-		else if (n == 3)
-			exampleCC = wrongXaction(currentStatesValue.getStateValue(), currentStatesValue.getIOs());
-		else if (n < 0)
-			exampleCC = sequencer(Math.abs(n));
-		else
-			exampleCC = xaction(currentStatesValue);
-
-		return exampleCC;
+			return exampleOne();
+		if (n == 2)
+			return exampleTwo();
+		if (n == 3)
+			return wrongXaction(currentStatesValues[0].getStateValue(), currentStatesValues[0].getIOs());
+		if (n < 0)
+			return sequencer(Math.abs(n));
+		
+		return xaction(currentStatesValues);
 	}
 
-	private ConstraintConnector xaction(IOAwareStateValue currentStatesValues) {
+	private ConstraintConnector xaction(IOAwareStateValue... currentStatesValue) {
 		ConnectorFactory factory = new ConnectorFactory();
-		connector = factory.writer("W1", currentStatesValues.getIOs()[0].getRequests());
+		connector = factory.writer("w1", currentStatesValue[0].getIOs()[0].getRequests());
 				
-		ConstraintConnector repA1A2 = factory.sync("A1", "A2");
-		connector.add(repA1A2, "W1", repA1A2.getNames().get(0));//replicator bas bashe
+		ConstraintConnector repA1A2 = factory.sync("a1", "a2");
+		connector.add(repA1A2, "w1", repA1A2.getNames().get(0));//replicator bas bashe
 
-		ConstraintConnector syncAB = factory.sync("AB1", "AB2");
+		ConstraintConnector syncAB = factory.sync("ab1", "ab2");
 		connector.add(syncAB, repA1A2.getNames().get(1), syncAB.getName(1));
 /*
 		connector.add(factory.replicator("b1", "b2", "b3"), "b1", syncAB.getName(0));
@@ -78,11 +75,11 @@ public class ExampleMaker extends FileUser {
 		connector.add(factory.fifo("CD1", "CD2"), "c2", "cd2");
 		connector.add(factory.sync("j1", "j2"), "bj2", "j2");//repl
 		connector.add(factory.fifo("JK1", "JK2"), "c1", "jk1");
-		connector.add(factory.fifo("DE2", "DE1"), "cd1", "de2");*/
-
+		connector.add(factory.fifo("DE2", "DE1"), "cd1", "de2");
+*/
 		return connector;
 	}
-	
+
 	private ConstraintConnector wrongXaction(StateValue currentStatesValues, IOComponent... ios) {
 		ConnectorFactory connectorFactory = new ConnectorFactory();
 		FIFO ab = buildFIFO("AB1", "AB2", currentStatesValues);
@@ -127,7 +124,7 @@ public class ExampleMaker extends FileUser {
 		connector.add(factory.sync("OP2", "OP1"), "OP2", "p1");
 		connector.add(factory.syncDrain("IP2", "IP1"), "IP2", "p3");
 		// i3 ip1
-		 */
+		 
 		connector.add(connectorFactory.replicator("o2", "o1", "o3"), "o2", "p1");
 		// ko2 o3
 		connector.add(buildFIFO("ON1", "ON2", currentStatesValues).constraint(), "ON1", "o1");

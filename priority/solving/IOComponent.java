@@ -48,10 +48,8 @@ public class IOComponent implements Comparable<Object>, Constants {
 	}
 
 	public int consume() {
-		return requests-1;
-	}
-	
-	public int unconsume() {
-		return requests+1;
+		if (requests > 0)
+			return requests-1;
+		return requests;
 	}
 }

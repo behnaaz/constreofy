@@ -33,9 +33,9 @@ public class DrawTest {
 		connector.add(syncAB, repA1A2.getNames().get(1), syncAB.getName(1));
 
 		cc = connector;
-		
+		IOAwareStateValue initState = new IOAwareStateValue(new StateValue(), new IOComponent("a1", 1));
 		try {
-			//solutions = new Solver().solve(cc, -1, new IOAwareStateValue(new StateValue(), new IOComponent("a1", 1)));
+			solutions = new Solver(cc, initState).solve(-1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -44,12 +44,11 @@ public class DrawTest {
 	
 	@Test
 	public void test4GoJS() {
-		final String expected = "{\"nodeKeyProperty\":\"id\",\"nodeDataArray\":[{\"id\":0,\"text\":[\"1a1\"]},{\"id\":1,\"text\":[\"0a1\"]}],\"linkDataArray\":[{\"from\":\"0\",\"to\":\"0\",\"text\":\"\"},{\"from\":\"0\",\"to\":\"1\",\"text\":\"a1 a2 ab1 ab2 w1\"},{\"from\":\"1\",\"to\":\"1\",\"text\":\"\"}]}";
-		//{"nodeKeyProperty":"id","nodeDataArray":[{"id":0,"text":["1a1"]},{"id":1,"text":["0a1"]}],"linkDataArray":[{"from":"0","to":"0","text":""},{"from":"0","to":"1","text":"a1 a2 ab1 ab2 w1"},{"from":"1","to":"1","text":""}]}
+		final String expected = "{\"nodeKeyProperty\":\"id\",\"nodeDataArray\":[],\"linkDataArray\":[{\"from\":\"0\",\"to\":\"0\",\"text\":\"\"},{\"from\":\"0\",\"to\":\"1\",\"text\":\"a1 a2 ab1 ab2 w1\"},{\"from\":\"1\",\"to\":\"1\",\"text\":\"a1 a2 ab1 ab2 w1\"},{\"from\":\"1\",\"to\":\"1\",\"text\":\" \"}]}";
 
 		assertNotNull(solutions);		
 		Drawer d = new Drawer(solutions);
-     //   String real = d.toGoJS();
-		//assertEquals(expected, real);
+        String real = d.toGoJS();
+		assertEquals(expected, real);
 	}
 }

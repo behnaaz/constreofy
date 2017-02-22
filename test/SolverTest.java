@@ -24,8 +24,9 @@ public class SolverTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		solver = new Solver();
 		IOAwareStateValue currentStatesValue = new IOAwareStateValue(new StateValue(), new IOComponent("a", 1));
+		ExampleMaker em = new ExampleMaker(3);
+		solver = new Solver(em.getExample(currentStatesValue), currentStatesValue);
 		s = solver.findSolutions(currentStatesValue, new ExampleMaker(3).getExample(currentStatesValue));
 	}
 	@Test
@@ -36,7 +37,7 @@ public class SolverTest {
 		v.getStateValue().add(new StateVariableValue("ij1ij2ring", true));
 		v.getStateValue().add(new StateVariableValue("jk1jk2ring", true));
 
-		s = solver.findSolutions(v, new ExampleMaker(3).getExample(null));
+		s = solver.findSolutions(v, new ExampleMaker(3).getExample());
 		assertEquals(s.size(), 4);
 
 	}
@@ -79,7 +80,7 @@ public class SolverTest {
 		List<IOAwareStateValue> explorableStates = new ArrayList<>();
 		StateManager stateManager = new StateManager();
 		List<IOAwareStateValue> visitedStates = new ArrayList<>();
-		List<IOAwareStateValue> t = solver.updateExplorableStates(visitedStates, explorableStates, stateManager, s);
+		List<IOAwareStateValue> t = solver.addToExplorableStates(visitedStates, explorableStates, stateManager, s);
 		assertEquals(s.size(), 4);
 
 		// [] ------ {  ab1tilde j2tilde jk1tilde } -------> (ab1ab2xringtrue jk1jk2xringtrue )  

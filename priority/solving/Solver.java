@@ -5,70 +5,40 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.sat4j.minisat.SolverFactory;
-import org.sat4j.reader.DimacsReader;
-import org.sat4j.reader.ParseFormatException;
-import org.sat4j.reader.Reader;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IProblem;
-import org.sat4j.specs.ISolver;
-import org.sat4j.specs.TimeoutException;
-import org.sat4j.tools.ModelIterator;
-
 import com.google.common.collect.Lists;
 
 import priority.common.Constants;
 import priority.connector.ConstraintConnector;
-import priority.init.ExampleMaker;
 import priority.semantics.DNF;
 import priority.states.StateManager;
 
 public class Solver implements Constants, Containable {
 	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
-	private String fileName;
-	
-	void solve(List<String> vars) throws TimeoutException {
-		ISolver solver = new ModelIterator(SolverFactory.newMinOneSolver());
-		Reader reader = new DimacsReader(solver);
-		try {
-			IProblem problem = reader.parseInstance(fileName);
-			while (problem.isSatisfiable()) {
-				int[] model = solver.model();
-				printeq(model, true, vars);		
-			} 
-		} catch (ParseFormatException | IOException | ContradictionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private ConstraintConnector cc;
+	private IOAwareStateValue initState;
+
+	public Solver(ConstraintConnector cc, IOAwareStateValue initState) throws IOException {
+		this.cc = cc;
+		this.initState = initState;
 	}
 
-	private void printeq(int[] model, boolean varName, List<String> vars) {
-		for (int i : model)
-			//if (i > 0)
-				System.out.print((varName ? vars.get(Math.abs(i)-1) : Math.abs(i)) + "=" + (i>0?"T ":"F "));
-		System.out.println();
-	}
-	
-	public List<IOAwareSolution> solve(int exampleNo, int maxLimit, IOAwareStateValue initState) throws Exception {
+	public List<IOAwareSolution> solve(int maxLimit) throws Exception {
 		List<IOAwareStateValue> visitedStates = new ArrayList<>();
 		List<IOAwareStateValue> explorableStates = new ArrayList<>();//TODO convert to trrmap and fix cpntains ad delete issues
 		int n = 0;
 		IOAwareStateValue currentStatesValue = initState;
-		ExampleMaker exampleMaker = new ExampleMaker(exampleNo);
 		StateManager stateManager = new StateManager();
 		List<IOAwareSolution> solutions = new ArrayList<>();
 
 		do {
 			visitedStates = visit(visitedStates, currentStatesValue);
-
-			ConstraintConnector cc = exampleMaker.getExample(currentStatesValue);
-
+//currentStatesValues.getIOs()[0].getRequests()
+		//	cc = cc.incorporateState(currentStatesValue);
 			// Get solutions from current state
 			List<IOAwareSolution> foundSolutions = findSolutions(currentStatesValue, cc);
-			solutions = updateSolutions(solutions, foundSolutions);
+			solutions = addToSolutions(solutions, foundSolutions);
 
-			explorableStates = updateExplorableStates(visitedStates, explorableStates, stateManager, solutions);
+			explorableStates = addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
 			currentStatesValue = getNextUnexploredState(visitedStates, explorableStates);
 			if (currentStatesValue != null)
 				System.out.println("Step " + ++n + " from " + currentStatesValue.toString());
@@ -77,7 +47,7 @@ public class Solver implements Constants, Containable {
 		return solutions;
 	}
 
-	public List<IOAwareStateValue> updateExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
+	public List<IOAwareStateValue> addToExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
 			StateManager stateManager, List<IOAwareSolution> solutions) {
 		System.out.println("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
 		List<IOAwareStateValue> nexts = stateManager.findNextStates(solutions, visitedStates, explorableStates);
@@ -97,7 +67,7 @@ public class Solver implements Constants, Containable {
 		return visitedStates;
 	}
 
-	private List<IOAwareSolution> updateSolutions(final List<IOAwareSolution> solutions, final List<IOAwareSolution> stepSolutions) {
+	private List<IOAwareSolution> addToSolutions(final List<IOAwareSolution> solutions, final List<IOAwareSolution> stepSolutions) {
 		for (IOAwareSolution s : stepSolutions)
 		{
 		//	IOAwareSolution temp = new IOAwareSolution(s.getSolution(), /*updateRequests(s.getSolution(),*/ s.getPreIOs());
@@ -126,26 +96,11 @@ public class Solver implements Constants, Containable {
 	}
 
 	public List<IOAwareSolution> findSolutions(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws Exception{
-	//long start = System.currentTimeMillis();
-	//	System.out.println("in " + (new Date().getTime() - start) +"Constraint is: " + cc.getConstraint());
-
-//		System.out.println("In " + (System.currentTimeMillis() - start) + " invoking reduce");
-		//start = System.currentTimeMillis();
-	//	writeToFile(
 		List<String> reduceOutput = getReduceOutput(cc);
 		String strReduceOutput = getOnlyAnswer(reduceOutput);
-	//	System.out.println("reduce done In " + (System.currentTimeMillis() - start) + " wrote cnf file");
-		
-//		start = System.currentTimeMillis();
-		DNF dnf = new DNF(Lists.newArrayList(cc.getVariables()), Lists.newArrayList(cc.getStates()),
-				Lists.newArrayList(cc.getNextStates()));
-		//dnf.solveByReduce(strReduceOutput);
-
-	//	System.out.println("In " + (System.currentTimeMillis() - start) + " did sat4j prep");
-
-		dnf.extractSolutions(strReduceOutput);
-
-		return ioAwarify(dnf.getSolutions(), currentStatesValue.getIOs());
+		DNF dnf = new DNF(Lists.newArrayList(cc.getVariables()), Lists.newArrayList(cc.getStates()), Lists.newArrayList(cc.getNextStates()));
+		List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
+		return ioAwarify(solutions, currentStatesValue.getIOs());
 	}
 
 	private String getOnlyAnswer(List<String> reduceOutput) {

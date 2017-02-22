@@ -227,10 +227,12 @@ public class Drawer implements Constants {
         gb.display();
     }
 	
-    public void toGoJS() {
+	 public String toGoJS() {
+    	String result = toJSON().toString();
     	System.out.println("....................");
-    	System.out.println(toJSON());
-    	//linkLabels.forEach((k,v) -> System.out.println(toJSON(k,v) /*toString(k ,v, true)*/));
+    	System.out.println(result);
+     	//linkLabels.forEach((k,v) -> System.out.println(toJSON(k,v) /*toString(k ,v, true)*/));
+    	return result;
 	}
 
     private JSONObject toJSON() {
