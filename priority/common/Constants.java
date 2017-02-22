@@ -1,6 +1,7 @@
 package priority.common;
 
 public interface Constants {//TODO
+	static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
 	static final String PREAMBLE = "set_bndstk_size 100000;load_package \"redlog\";rlset ibalp;";
 	static final String WORD_BOUNDARY = "\\b";
 	static final String FORMULA_NAME = "qaz";
