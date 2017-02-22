@@ -153,7 +153,7 @@ public class Solver implements Constants, Containable {
 		int resultStart = -1;
 		int resultEnd = -1;
 		for (int i = 0; i < reduceOutput.size() && resultStart == -1; i++) {
-			if (reduceOutput.get(i).contains("qaz :="))//TODO
+			if (reduceOutput.get(i).contains(FORMULA_NAME_EQUAL))//TODO
 				formulaStart = i;
 			if (formulaStart > -1 && 
 				i + 3 < reduceOutput.size() &&
@@ -176,8 +176,7 @@ public class Solver implements Constants, Containable {
 	}
 
 	private boolean isEndOfResult(String s) {
-		String end = "shut";
-		return end.equals(s.trim());
+		return SHUT.equals(s.trim());
 	}
 	private boolean isEmpty(String s) {
 		String nothing = "";//???

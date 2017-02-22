@@ -13,10 +13,8 @@ import com.google.common.base.Strings;
 import priority.common.Constants;
 
 public class ConstraintConnector extends AbstractConnector implements Constants {
-	static final String FORMULA_NAME = "qaz";
-	private static final String WORD_BOUNDARY = "\\b";
 	private String constraint;
-	ConnectorFactory cf = new ConnectorFactory();
+	private ConnectorFactory cf = new ConnectorFactory();
 	private String[] states;
 	private String[] nextStates;
 
@@ -26,7 +24,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	}
 	
 	public Map<String, Boolean> initStateValues() {
-		Map<String, Boolean> result = new HashMap<>();
+		final Map<String, Boolean> result = new HashMap<>();
 		for (String state : states) {
 			result.put(state.toLowerCase().replace("ring", "xring"), false);
 		}
@@ -70,11 +68,12 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		StringBuilder sb = new StringBuilder();
 
 		try {
-			sb.append(preamble());
+			sb.append(PREAMBLE);
 			sb.append(printVariables(constraint));
 			sb.append(FORMULA_NAME + " := " + constraint+";;");
 			sb.append(dnf(FORMULA_NAME));
-			sb.append("shut; end;");
+			sb.append(SHUT);
+			sb.append("; end;");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -86,30 +85,24 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return new StringBuilder().append("rldnf ").append(formulae).append(";").toString();
 	}
 
-	private String preamble() throws IOException {
-		StringBuilder sb = new StringBuilder();
-		sb.append("set_bndstk_size 100000;");
-		sb.append("load_package \"redlog\";");
-		sb.append("rlset ibalp;");
-		return sb.toString();
-	}
+	public void add(final ConstraintConnector newConnector, final String port1, final String port2) {
+		if (port1 != null && port1.length() > 0) {
+			names.add(port1);
+		}
 
-	public void add(ConstraintConnector newConnector, String p1, String p2) {
-		if (p1 != null && p1.length() > 0)
-			names.add(p1);
-		
 		constraint = String.format("%s " + AND + " %s" + AND + 
 				"( %s" + RIGHTLEFTARROW + " %s )"// + AND +
 				//"(" + NEG + "("+ "))"
 				,
-				constraint, newConnector.getConstraint(), cf.flow(p1), cf.flow(p2));
+				constraint, newConnector.getConstraint(), cf.flow(port1), cf.flow(port2));
 				
 	}
 	
 	public void add(ConstraintConnector newConnector, String p1, String p2, boolean use) {
-		if (p1 != null && p1.length() > 0)
+		if (p1 != null && p1.length() > 0) {
 			names.add(p1);
-		ConnectorFactory factory = new ConnectorFactory();
+		}
+		final ConnectorFactory factory = new ConnectorFactory();
 		constraint = String.format("%s " + AND + " %s" + AND + 
 				"( %s" + RIGHTLEFTARROW + " %s)"// + AND +
 				//"(" + NEG + "("+ "))"

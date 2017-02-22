@@ -1,6 +1,10 @@
 package priority.common;
 
 public interface Constants {//TODO
+	static final String PREAMBLE = "set_bndstk_size 100000;load_package \"redlog\";rlset ibalp;";
+	static final String WORD_BOUNDARY = "\\b";
+	static final String FORMULA_NAME = "qaz";
+	static final String FORMULA_NAME_EQUAL = "qaz :=";
 	static final String SHUT = "shut";
 	static final String TILDE = "tilde";
 	static final String CIRC = "circ";
