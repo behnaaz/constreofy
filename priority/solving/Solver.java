@@ -1,17 +1,10 @@
 package priority.solving;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.reader.DimacsReader;
@@ -28,25 +21,21 @@ import com.google.common.collect.Lists;
 import priority.common.Constants;
 import priority.connector.ConstraintConnector;
 import priority.init.ExampleMaker;
-import priority.primitives.Primitive;
 import priority.semantics.DNF;
 import priority.states.StateManager;
-import priority.states.StateValue;
 
 public class Solver implements Constants, Containable {
-	static final String OUTPUTFILE = "abc" + new Date().toString().replaceAll("\\ |\\:", "") + ".txt";
-	static final String CNFFILE = "/Users/behnaz.changizi/reoworkspace/priority/src/Users/behnaz.changizi/Desktop/Dropbox/sol.txt";
-
 	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
-
-	void solve(String file, List<String> vars) throws TimeoutException {
+	private String fileName;
+	
+	void solve(List<String> vars) throws TimeoutException {
 		ISolver solver = new ModelIterator(SolverFactory.newMinOneSolver());
 		Reader reader = new DimacsReader(solver);
 		try {
-			IProblem problem = reader.parseInstance(file);
+			IProblem problem = reader.parseInstance(fileName);
 			while (problem.isSatisfiable()) {
 				int[] model = solver.model();
-				printeq(model, true, vars, !true);		
+				printeq(model, true, vars);		
 			} 
 		} catch (ParseFormatException | IOException | ContradictionException e) {
 			// TODO Auto-generated catch block
@@ -54,18 +43,18 @@ public class Solver implements Constants, Containable {
 		}
 	}
 
-	private void printeq(int[] model, boolean varName, List<String> vars, boolean onlyTrue) {
+	private void printeq(int[] model, boolean varName, List<String> vars) {
 		for (int i : model)
 			//if (i > 0)
 				System.out.print((varName ? vars.get(Math.abs(i)-1) : Math.abs(i)) + "=" + (i>0?"T ":"F "));
 		System.out.println();
 	}
 	
-	public List<IOAwareSolution> solve(int exampleNo, int maxLimit) throws Exception {
+	public List<IOAwareSolution> solve(int exampleNo, int maxLimit, IOAwareStateValue initState) throws Exception {
 		List<IOAwareStateValue> visitedStates = new ArrayList<>();
 		List<IOAwareStateValue> explorableStates = new ArrayList<>();//TODO convert to trrmap and fix cpntains ad delete issues
 		int n = 0;
-		IOAwareStateValue currentStatesValue = new IOAwareStateValue(new StateValue(), new IOComponent("a1", 1));
+		IOAwareStateValue currentStatesValue = initState;
 		ExampleMaker exampleMaker = new ExampleMaker(exampleNo);
 		StateManager stateManager = new StateManager();
 		List<IOAwareSolution> solutions = new ArrayList<>();
@@ -73,15 +62,16 @@ public class Solver implements Constants, Containable {
 		do {
 			visitedStates = visit(visitedStates, currentStatesValue);
 
+			ConstraintConnector cc = exampleMaker.getExample(currentStatesValue);
+
 			// Get solutions from current state
-			List<IOAwareSolution> foundSolutions = findSolutions(currentStatesValue, exampleMaker);
+			List<IOAwareSolution> foundSolutions = findSolutions(currentStatesValue, cc);
 			solutions = updateSolutions(solutions, foundSolutions);
 
 			explorableStates = updateExplorableStates(visitedStates, explorableStates, stateManager, solutions);
 			currentStatesValue = getNextUnexploredState(visitedStates, explorableStates);
 			if (currentStatesValue != null)
 				System.out.println("Step " + ++n + " from " + currentStatesValue.toString());
-			/////writer1 = consumeWriteTokens(writer1);
 		} while (currentStatesValue != null && (maxLimit < 0 || n < maxLimit));
 		System.out.println(".....done in step " + n);
 		return solutions;
@@ -119,23 +109,6 @@ public class Solver implements Constants, Containable {
 		return solutions;
 	}
 
-	private IOComponent[] updateRequests(final Solution sol, final IOComponent... ios) {
-		List<IOComponent> result =  new ArrayList<>();
-		Set<String> flowVariables = sol.getFlowVariables();
-		if (flowVariables == null || flowVariables.isEmpty())
-			return ios;//??? TODO
-
-		for (IOComponent io : result) {
-			Primitive p = new Primitive();
-			String flowNode = p.flow(io.getNodeName());
-			if (flowVariables.contains(flowNode)) {
-				result.add(new IOComponent(io.getNodeName(), io.consume()));//TODO
-			} else
-				result.add(new IOComponent(io.getNodeName(), io.getRequests()));
-		}
-		return result.toArray(new IOComponent[result.size()]);
-	}
-
 	private IOAwareStateValue getNextUnexploredState(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates) {
 		IOAwareStateValue currentStatesValues = null;
 		if (explorableStates.isEmpty())
@@ -152,31 +125,66 @@ public class Solver implements Constants, Containable {
 		return currentStatesValues;
 	}
 
-	public List<IOAwareSolution> findSolutions(final IOAwareStateValue currentStatesValue, ExampleMaker exampleMaker) throws Exception{
-		File file = createFile(OUTPUTFILE);
-		exampleMaker.out(new OutputStreamWriter(new FileOutputStream(file)));
-		ConstraintConnector cc = exampleMaker.getExample(currentStatesValue);
-
-		//long start = System.currentTimeMillis();
+	public List<IOAwareSolution> findSolutions(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws Exception{
+	//long start = System.currentTimeMillis();
 	//	System.out.println("in " + (new Date().getTime() - start) +"Constraint is: " + cc.getConstraint());
 
 //		System.out.println("In " + (System.currentTimeMillis() - start) + " invoking reduce");
 		//start = System.currentTimeMillis();
-		writeToFile(CNFFILE, getReduceOutput(file, cc.getConstraint()));
+	//	writeToFile(
+		List<String> reduceOutput = getReduceOutput(cc);
+		String strReduceOutput = getOnlyAnswer(reduceOutput);
 	//	System.out.println("reduce done In " + (System.currentTimeMillis() - start) + " wrote cnf file");
 		
 //		start = System.currentTimeMillis();
-		DNF dnf = new DNF(CNFFILE, Lists.newArrayList(cc.variables()), Lists.newArrayList(cc.getStates()),
+		DNF dnf = new DNF(Lists.newArrayList(cc.getVariables()), Lists.newArrayList(cc.getStates()),
 				Lists.newArrayList(cc.getNextStates()));
-		dnf.prepareForSat4j(new FileWriter(OUTPUTFILE));
+		//dnf.solveByReduce(strReduceOutput);
+
 	//	System.out.println("In " + (System.currentTimeMillis() - start) + " did sat4j prep");
 
-		dnf.reportSolutions();
+		dnf.extractSolutions(strReduceOutput);
 
 		return ioAwarify(dnf.getSolutions(), currentStatesValue.getIOs());
 	}
 
-	private List<IOAwareSolution> ioAwarify(final List<Solution> solutions, final IOComponent[] iOs) {
+	private String getOnlyAnswer(List<String> reduceOutput) {
+		int formulaStart = -1;
+		int resultStart = -1;
+		int resultEnd = -1;
+		for (int i = 0; i < reduceOutput.size() && resultStart == -1; i++) {
+			if (reduceOutput.get(i).contains("qaz :="))//TODO
+				formulaStart = i;
+			if (formulaStart > -1 && 
+				i + 3 < reduceOutput.size() &&
+					isEmpty(reduceOutput.get(i)) && isEmpty(reduceOutput.get(i+1)) && isEmpty(reduceOutput.get(i+2))) {
+						resultStart = i + 3;
+			}
+		}
+
+		for (int j = reduceOutput.size() - 1; j > resultStart && resultEnd == -1; j--) {
+			resultEnd = isEndOfResult(reduceOutput.get(j)) ? j : -1;
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		if (resultStart > -1 && resultEnd > -1) {
+			for (int i = resultStart; i < resultEnd; i++)
+				sb.append(reduceOutput.get(i));
+		}
+
+		return sb.toString();
+	}
+
+	private boolean isEndOfResult(String s) {
+		String end = "shut";
+		return end.equals(s.trim());
+	}
+	private boolean isEmpty(String s) {
+		String nothing = "";//???
+		return nothing.equals(s.trim());
+	}
+
+	private List<IOAwareSolution> ioAwarify(List<Solution> solutions, IOComponent[] iOs) {
 		List<IOAwareSolution> temp = new ArrayList<>();
 		solutions.forEach(s ->
 			temp.add(new IOAwareSolution(s, iOs))////???? updateRequests(s, iOs)));
@@ -184,21 +192,10 @@ public class Solver implements Constants, Containable {
 		return temp;
 	}
 
-	private byte[] readFile(File file) {
-		try {
-			if (file.exists() && file.canRead()) {
-				return Files.readAllBytes(file.toPath());
-			}
-		} catch (IOException e) {
-			// e.printStackTrace();
-		}
-		return null;
-	}
-
-	private List<String> getReduceOutput(File file, String constraint) throws IOException {
+	private List<String> getReduceOutput(ConstraintConnector cc) throws IOException {
 		Process process = Runtime.getRuntime().exec(REDUCE_PROGRAM);
 		OutputStream stdin = process.getOutputStream();
-		stdin.write(readFile(file));
+		stdin.write(cc.output().getBytes());
 		stdin.flush();
 		stdin.close();
 
@@ -217,50 +214,5 @@ public class Solver implements Constants, Containable {
 			//out.close();
 		}
 		return output;
-	}
-
-	private File createFile(String fileName) throws IOException {
-		File file = new File(fileName);
-		if (file.exists())
-			file.delete();
-		if (!file.exists())
-			file.createNewFile();
-		return file;
-	}
-
-	private void writeToFile(String cnffile, List<String> content) throws IOException {
-	//	System.out.println("Going to write into " + cnffile);
-		File output = createFile(cnffile);
-		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(output));
-	//	System.out.println("Going to extract solutions from " + content);
-		osw.write(extractSolution(content));
-		osw.flush();
-		osw.close();
-	}
-
-	private String extractSolution(List<String> content) {
-		int start = findResultStart(content);
-		if (start > -1) {
-			StringBuilder sb = new StringBuilder();
-			for (int i = start; i < content.size() - 1 && !content.get(i).contains(SHUT); i++) {
-				if (content.get(i).trim().length() > 0)
-					sb.append(content.get(i));
-			}
-			return sb.toString();
-		}
-		return null;
-	}
-
-	private int findResultStart(List<String> content) {
-		for (int i = content.lastIndexOf(SHUT) - 1; i > -1; i--) {
-			if (content.get(i - 1).trim().length() == 0 && content.get(i - 2).trim().length() == 0) {
-				if (content.get(i).trim().endsWith(":")
-						&& Integer.parseInt(content.get(i).replaceAll(":", "").trim()) > 0)
-					i++;
-				return i;
-			}
-		}
-
-		return -1;
 	}
 }

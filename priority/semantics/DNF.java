@@ -1,22 +1,27 @@
 package priority.semantics;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import priority.common.Constants;
+import priority.init.FileUser;
 import priority.solving.Solution;
 
-public class DNF implements Constants {
-	private String filePath;
+public class DNF extends FileUser implements Constants {
 	private List<String> variables;
 	private List<Solution> solutions = new ArrayList<>();
 	private List<String> states;
 	private List<String> nextStates;
+	static final String CNFFILE = "/Users/behnaz.changizi/reoworkspace/priority/src/Users/behnaz.changizi/Desktop/Dropbox/sol.txt";
+
+	public DNF(List<String> variables, List<String> states, List<String> nextStates) throws IOException {
+		this.variables = variables;
+		this.states = states;
+		this.nextStates = nextStates;
+	}
 
 	public void printFlows() {
 		System.out.println("Flows~~~~~~~~~~~");
@@ -25,30 +30,20 @@ public class DNF implements Constants {
 		}
 	}
 
-	public List<String> variables() {
+	public List<String> getVariables() {
 		return variables;
-	}
-
-	public DNF(String file, List<String> variables, List<String> states, List<String> nextStates) {
-		this.filePath = file;
-		this.variables = variables;
-		this.states = states;
-		this.nextStates = nextStates;
 	}
 
 	public void reportVars() {
 		variables.forEach(v -> System.out.println(variables.indexOf(v.trim().toUpperCase()) + " " + v));
 	}
 	
-	public void prepareForSat4j(Writer writer) throws Exception {
-		StringBuilder sb = new StringBuilder();
-		for (String line : Files.lines(Paths.get(filePath)).filter(s -> s.length() > 0).map(s -> s).collect(Collectors.toList())) {
-			sb.append(line);
-		}
+	public void solveByReduce(String constraint) throws Exception {
+		Writer writer = new FileWriter(OUTPUTFILE);
+
 		writer.write("c test\r\n");
 		writer.write("c\r\n");
 		
-		String constraint = sb.toString();
 		if ("false".equalsIgnoreCase(constraint.trim()))
 			throw new Exception("NOT FEASIBLE");
 
@@ -57,7 +52,7 @@ public class DNF implements Constants {
 		writer.write("p cnf " + variables.size() + " " + ands.length + "\r\n");
 
 		for (String and : ands) {
-			sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 			String[] terms = extractTerms(and);
 			for (String term : terms) {
 				String[] atoms = term.trim().split(" = ");
@@ -79,15 +74,12 @@ public class DNF implements Constants {
 		return res.split(AND.trim());
 	}
 
-	public void reportSolutions() throws IOException {
-		StringBuilder sb = new StringBuilder();
-		for (String line : Files.lines(Paths.get(filePath)).filter(s -> s.length() > 0).map(s -> s).collect(Collectors.toList())) {
-			sb.append(line);
-		}
-
-		String[] ands = sb.toString().split(OR.trim());
+	public void extractSolutions(String reduceOutput) throws IOException {
+		String[] ands = reduceOutput.split(OR.trim());
 
 		for (String and : ands) {
+			if (!and.trim().isEmpty()) {
+				
 			//sb = new StringBuilder();
 			String[] terms = and.trim().substring(1, and.trim().length()-1).split(AND.trim());
 			
@@ -102,6 +94,7 @@ public class DNF implements Constants {
 
 			if (!contains(solutions, newSol))
 				solutions.add(newSol);
+			}
 		}		
 	}
 	

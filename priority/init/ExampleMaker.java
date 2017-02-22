@@ -1,7 +1,7 @@
 package priority.init;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,23 +12,13 @@ import priority.solving.IOAwareStateValue;
 import priority.solving.IOComponent;
 import priority.states.StateValue;
 
-public class ExampleMaker {
-	ConstraintConnector connector;
+public class ExampleMaker extends FileUser {
+	private ConstraintConnector connector;
 	private int n;
-	private OutputStreamWriter out;
 	private List<FIFO> fifos = new ArrayList<>();
 
-	public ExampleMaker(int n, OutputStreamWriter out) {
+	public ExampleMaker(int n) throws FileNotFoundException {
 		this.n = n;
-		this.out = out;
-	}
-
-	public ExampleMaker(int n) {
-		this.n = n;
-	}
-
-	public void out(OutputStreamWriter out) {
-		this.out = out;
 	}
 
 	private ConstraintConnector exampleTwo() throws IOException {
@@ -56,21 +46,19 @@ public class ExampleMaker {
 	}
 
 	public ConstraintConnector getExample(IOAwareStateValue currentStatesValue) throws IOException {
-		ConstraintConnector example;
+		ConstraintConnector exampleCC;
 		if (n == 1)
-			example = exampleOne();
+			exampleCC = exampleOne();
 		else if (n == 2)
-			example = exampleTwo();
+			exampleCC = exampleTwo();
 		else if (n == 3)
-			example = wrongXaction(currentStatesValue.getStateValue(), currentStatesValue.getIOs());
+			exampleCC = wrongXaction(currentStatesValue.getStateValue(), currentStatesValue.getIOs());
 		else if (n < 0)
-			example = sequencer(Math.abs(n));
+			exampleCC = sequencer(Math.abs(n));
 		else
-			example = xaction(currentStatesValue);
+			exampleCC = xaction(currentStatesValue);
 
-		example.output(out);
-		example.close();
-		return example;
+		return exampleCC;
 	}
 
 	private ConstraintConnector xaction(IOAwareStateValue currentStatesValues) {

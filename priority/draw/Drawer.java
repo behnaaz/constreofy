@@ -33,14 +33,21 @@ public class Drawer implements Constants {
     
 	public Drawer(Set<IOAwareSolution> solutions) {
 		this.content = solutionsToList(solutions, false);
+		init();
 	}
 
 	public Drawer(List<IOAwareSolution> solutions) {
 		this.content = solutionsToList(solutions, false);
+		init();
 	}
 
+	public void init() {
+		states = extractStates(content);
+		links = extractLinks(content, states);
+	}
+	
 	List<String> solutionsToList(Set<IOAwareSolution> solutions, boolean withPriority) {
-		List<String> list = new ArrayList<>();//TODO
+		List<String> list = new ArrayList<>();
 		for (IOAwareSolution s : solutions) {
 			list.add(s.getSolution().toString(withPriority));
 		}
@@ -60,10 +67,7 @@ public class Drawer implements Constants {
 	}
 
 
-	public void draw(){
-        states = extractStates(content);
-		links = extractLinks(content, states);
-		
+	public void draw(){	
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
        // Creating a 4x4 grid and display it in a graphical view:
         Grph gb = new InMemoryGrph();
@@ -221,10 +225,9 @@ public class Drawer implements Constants {
         	}
         }
         gb.display();
-        print(linkLabels);
     }
-
-    private void print(Map<String, String> linkLabels) {
+	
+    public void toGoJS() {
     	System.out.println("....................");
     	System.out.println(toJSON());
     	//linkLabels.forEach((k,v) -> System.out.println(toJSON(k,v) /*toString(k ,v, true)*/));

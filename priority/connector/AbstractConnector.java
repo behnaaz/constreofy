@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public abstract class AbstractConnector {
+import priority.init.FileUser;
+
+public abstract class AbstractConnector extends FileUser {
 	boolean isTex = true;
 	String newLine = isTex ? "\\\\ \r\n \\hline" : "";
 

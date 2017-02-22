@@ -1,7 +1,6 @@
 package priority.connector;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 
 import priority.common.Constants;
@@ -18,7 +16,6 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	static final String FORMULA_NAME = "qaz";
 	private static final String WORD_BOUNDARY = "\\b";
 	private String constraint;
-	OutputStreamWriter out;
 	ConnectorFactory cf = new ConnectorFactory();
 	private String[] states;
 	private String[] nextStates;
@@ -40,11 +37,11 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return constraint;
 	}
 
-	public Set<String> variables() {
-		return variables(constraint);
+	public Set<String> getVariables() {
+		return extractVariables(constraint);
 	}
 
-	private Set<String> variables(String constraint) {
+	private Set<String> extractVariables(String constraint) {
 		if (Strings.isNullOrEmpty(constraint))
 			return Collections.emptySet();
 
@@ -59,38 +56,42 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		}
 		return result;
 	}
-	
-	void printVariables(Function<String, Set<String>> ff) throws IOException {
-		out.write(ff.apply(this.constraint).toString());
-	}
 
-	void printVariables(String formulae) throws IOException {
-		Set<String> vars = this.variables(formulae).stream().filter(e -> e.length()>0).map(String::toUpperCase).collect(Collectors.toSet());
-		out.write("rlpcvar "+vars.toString().substring(1, vars.toString().length()-1)+";");
+	private String printVariables(String formulae) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		Set<String> vars = this.extractVariables(formulae).stream().filter(e -> e.length()>0).map(String::toUpperCase).collect(Collectors.toSet());
+		sb.append("rlpcvar ");
+		sb.append(vars.toString().substring(1, vars.toString().length()-1));
+		sb.append(";");
+		return sb.toString();
 	}
 	
-	public void output(OutputStreamWriter out) {
-		this.out = out;
+	public String output() {
+		StringBuilder sb = new StringBuilder();
+
 		try {
-			preamble();
-			printVariables(constraint);
-			out.write(FORMULA_NAME + " := " + constraint+";;");
-			dnf(FORMULA_NAME);
-			out.write("shut; end;");
+			sb.append(preamble());
+			sb.append(printVariables(constraint));
+			sb.append(FORMULA_NAME + " := " + constraint+";;");
+			sb.append(dnf(FORMULA_NAME));
+			sb.append("shut; end;");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return sb.toString();
 	}
 
-	private void dnf(String formulae) throws IOException {
-		out.write("rldnf " + formulae +";");
+	private String dnf(String formulae) throws IOException {
+		return new StringBuilder().append("rldnf ").append(formulae).append(";").toString();
 	}
 
-	private void preamble() throws IOException {
-		out.write("set_bndstk_size 100000;");
-		out.write("load_package \"redlog\";");
-		out.write("rlset ibalp;");
+	private String preamble() throws IOException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("set_bndstk_size 100000;");
+		sb.append("load_package \"redlog\";");
+		sb.append("rlset ibalp;");
+		return sb.toString();
 	}
 
 	public void add(ConstraintConnector newConnector, String p1, String p2) {
@@ -119,11 +120,6 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 //???TODO
 	public ConstraintConnector connect(String p1, String p2) {
 		return new ConstraintConnector(String.format(" (%s %s %s) ", p1, IMPLIES, p2));
-	}
-
-	public void close() throws IOException {
-		out.flush();
-		out.close();
 	}
 
 	public void setStates(String... mems) {

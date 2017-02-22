@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import priority.connector.ConstraintConnector;
 import priority.init.ExampleMaker;
 import priority.solving.IOAwareSolution;
 import priority.solving.IOAwareStateValue;
@@ -23,7 +24,11 @@ public class StateManagerTest {
 	@Before
 	public void setUp() throws Exception {
 		solver = new Solver();
-		solutions = solver.findSolutions(new IOAwareStateValue(new StateValue(), new IOComponent("a", 1)), new ExampleMaker(3));
+		IOComponent ioComponent = new IOComponent("a", 1);
+		StateValue stateValue = new StateValue();
+		IOAwareStateValue currentStatesValue = new IOAwareStateValue(stateValue, ioComponent);
+		ConstraintConnector cc = new ExampleMaker(3).getExample(currentStatesValue);
+		solutions = solver.findSolutions(currentStatesValue, cc);
 	}
 
 	@Test
