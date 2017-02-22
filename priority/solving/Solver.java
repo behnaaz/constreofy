@@ -111,9 +111,9 @@ public class Solver implements Constants, Containable {
 			if (reduceOutput.get(i).contains(FORMULA_NAME_EQUAL))//TODO
 				formulaStart = i;
 			if (formulaStart > -1 && 
-				i + 3 < reduceOutput.size() &&
-					isEmpty(reduceOutput.get(i)) && isEmpty(reduceOutput.get(i+1)) && isEmpty(reduceOutput.get(i+2))) {
-						resultStart = i + 3;
+				i + 2 < reduceOutput.size() &&
+					isEmpty(reduceOutput.get(i)) && isEmpty(reduceOutput.get(i+1))) {
+						resultStart = i + 2;
 			}
 		}
 
