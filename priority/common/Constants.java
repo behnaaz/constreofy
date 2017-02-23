@@ -19,7 +19,8 @@ public interface Constants {//TODO
 	static final String AND = " and ";
 	static final String TRUE = " true ";
 	static final String FALSE = " false ";
-	final char SEPARATOR = ';';
+	static final char SEPARATOR = ';';
+	static final String SPACE =  " ";
 	static final String STATE_DELIMINATOR = ":";
 	static final String CLOSE_TAG_BRACKET = "]";
 	static final String OPEN_TAG_BRACKET = "[";

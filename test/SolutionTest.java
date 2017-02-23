@@ -8,13 +8,6 @@ import priority.solving.Solution;
 public class SolutionTest {
 	private static final String TILDE = "tilde";
 	private static final String XRING = "xring";
-	private static final String RING = "ring";
-	private static final String ONE = "1";
-	private static final String SPACE = " ";
-	private static final String REGEX_EQUAL = " = ";
-	private static final String ZERO = "0";
-	private static final String NEG = "!";
-	private static final String EMPTY = "";
 	@Test
 	public void testSolution()  {
 		Solution s = new Solution(new String[]{"a = 0", "b = 1"});

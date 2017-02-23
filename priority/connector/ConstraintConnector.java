@@ -1,160 +1,260 @@
 package priority.connector;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 
+import javassist.bytecode.stackmap.TypeData.ClassName;
 import priority.common.Constants;
-import priority.solving.IOAwareStateValue;
-
+import priority.states.StateValue;
+import priority.states.StateVariableValue;
+/**
+ * The building block of a network 
+ * (representing connectors using constraint semantics)
+ * @author behnaz.changizi
+ *
+ */
 public class ConstraintConnector extends AbstractConnector implements Constants {
+	private static final Logger LOGGER = Logger.getLogger( ClassName.class.getName() );
 	private String constraint;
-	private ConnectorFactory cf = new ConnectorFactory();
+	private final transient ConnectorFactory factory = new ConnectorFactory();
 	private String[] states;
 	private String[] nextStates;
 
-	public ConstraintConnector(String constraint, String... names) {
+	/**
+	 * The constraint representing the connector and lists of its port ends
+	 * @param constraint
+	 * @param names
+	 */
+	public ConstraintConnector(final String constraint, final String... names) {
 		super(names);
-		this.constraint = constraint;
+		setConstraint(constraint);
 	}
-	
+
+	/**
+	 * Initializing the state variables
+	 * @return
+	 *///????TODO
 	public Map<String, Boolean> initStateValues() {
-		final Map<String, Boolean> result = new HashMap<>();
-		for (String state : states) {
-			result.put(state.toLowerCase().replace("ring", "xring"), false);
+		final Map<String, Boolean> result = new ConcurrentHashMap<>();
+		for (final String state : states) {
+			final String lowerCaseState = state.toLowerCase(Locale.US);
+			result.put(lowerCaseState.replace(CURRENT_MEMORY, NEXT_MEMORY), false);
 		}
 		return result;
 	}
-	
+
+	/**
+	 * Constraint
+	 * @return
+	 */
 	public String getConstraint() {
 		return constraint;
 	}
 
-	public String incorporateState(IOAwareStateValue currentStatesValue) {
-		String newConstrint = constraint;
-		return newConstrint;
+	/**
+	 * Sets constraint
+	 * @return
+	 */
+	public void setConstraint(final String constraint) {
+		this.constraint = constraint;
 	}
-	
+
+	/**
+	 * Variables used in the constraint
+	 * @return
+	 */
 	public Set<String> getVariables() {
 		return extractVariables(constraint);
 	}
 
-	private Set<String> extractVariables(String constraint) {
-		if (Strings.isNullOrEmpty(constraint))
-			return Collections.emptySet();
+	private Set<String> extractVariables(final String newConstraint) {
+		final Set<String> result = new HashSet<>();
 
-		Set<String> result = new HashSet<>();
-		String copy = constraint.replaceAll(AND.trim()+"|"+IMPLIES.trim()+"|"+NOT.trim()+"|\\(|\\)|,|"+RIGHTLEFTARROW.trim()+"|"+OR.trim()+"|"+TRUE.trim()+"|"+FALSE.trim(), "");
-		//constraint
-		for (String s : copy.split(" ")) {
-			if (s.trim().length() > 0) {
-				result.add(s.toUpperCase());
-				this.constraint = this.constraint.replaceAll(new StringBuilder().append(WORD_BOUNDARY).append(s).append(WORD_BOUNDARY).toString(), s.toUpperCase());//TODO
+		if (!Strings.isNullOrEmpty(newConstraint)) {
+			final String copy = newConstraint.replaceAll(AND.trim() + "|" + IMPLIES.trim() + "|" + NOT.trim()
+					+ "|\\(|\\)|,|" + RIGHTLEFTARROW.trim() + "|" + OR.trim() + "|" + TRUE.trim() + "|" + FALSE.trim(),
+					"");
+			// constraint
+			final StringBuilder builder = new StringBuilder();
+			for (final String temp : copy.split(SPACE)) { // NOPMD by behnaz.changizi on 2/23/17 11:27 AM
+				builder.setLength(0);//Empty
+				if (!temp.trim().isEmpty()) {
+					result.add(temp.toUpperCase(Locale.US));
+					builder.append(WORD_BOUNDARY);
+					builder.append(temp);
+					builder.append(WORD_BOUNDARY);
+					constraint = constraint.replaceAll(builder.toString(), temp.toUpperCase(Locale.US));
+				}
 			}
 		}
 		return result;
 	}
 
-	private String printVariables(String formulae) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		Set<String> vars = this.extractVariables(formulae).stream().filter(e -> e.length()>0).map(String::toUpperCase).collect(Collectors.toSet());
-		sb.append("rlpcvar ");
-		sb.append(vars.toString().substring(1, vars.toString().length()-1));
-		sb.append(";");
-		return sb.toString();
+	private String printVariables(final String formulae) throws IOException {
+		final StringBuilder builder = new StringBuilder();
+		final Set<String> vars = this.extractVariables(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
+				.map(String::toUpperCase).collect(Collectors.toSet());
+		builder.append("rlpcvar ");
+		final String variable = vars.toString(); // NOPMD by behnaz.changizi on 2/23/17 11:27 AM
+		builder.append(variable.substring(1, variable.length() - 1)).append(';');
+		return builder.toString();
 	}
 	
-	public String output() {
-		StringBuilder sb = new StringBuilder();
+	/**
+	* Wrap the constraints with required by REDUCE 
+	* @param constraint
+	* @return
+	*///TPDP ?? retire one 
+	public String output(final StateValue stateValue) {
+		final StringBuilder builder = new StringBuilder();
 
 		try {
-			sb.append(PREAMBLE);
-			sb.append(printVariables(constraint));
-			sb.append(FORMULA_NAME + " := " + constraint+";;");
-			sb.append(dnf(FORMULA_NAME));
-			sb.append(SHUT);
-			sb.append("; end;");
+			builder.append(PREAMBLE);
+			builder.append(printVariables(constraint));
+			builder.append(FORMULA_NAME + " := " + conjunction(constraint, stateValue) + ";;");
+			builder.append(dnf(FORMULA_NAME));
+			builder.append(SHUT);
+			builder.append("; end;");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.toString());
 		}
-		return sb.toString();
+		return builder.toString();
 	}
-	
-	public String output(String constraint) {
-		StringBuilder sb = new StringBuilder();
+
+	private String conjunction(final String mainConstraint, final StateValue stateValue) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(mainConstraint);
+		for (final StateVariableValue sv : stateValue.getVariableValues()) {
+			builder.append(AND);
+			if (Boolean.TRUE.equals(Optional.of(sv.getValue()))) {
+				builder.append(NOT);
+			}
+			final String stateName = sv.getStateName();
+			builder.append(stateName.toUpperCase(Locale.US));//???
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * Wrap the constraints with required by REDUCE 
+	 * @param constraint
+	 * @return
+	 */
+	public String output(final String constraint) {
+		final StringBuilder builder = new StringBuilder();
 
 		try {
-			sb.append(PREAMBLE);
-			sb.append(printVariables(constraint));
-			sb.append(FORMULA_NAME + " := " + constraint+";;");
-			sb.append(dnf(FORMULA_NAME));
-			sb.append(SHUT);
-			sb.append("; end;");
+			builder.append(PREAMBLE);
+			builder.append(printVariables(constraint));
+			builder.append(FORMULA_NAME + " := " + constraint + ";;");
+			builder.append(dnf(FORMULA_NAME));
+			builder.append(SHUT);
+			builder.append("; end;");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.toString());
 		}
-		return sb.toString();
+		return builder.toString();
 	}
 
-	private String dnf(String formulae) throws IOException {
+	private String dnf(final String formulae) throws IOException {
 		return new StringBuilder().append("rldnf ").append(formulae).append(";").toString();
 	}
 
+	/**
+	 * adds p1 equiv p2 to the passed connector constraint and adds p1 to the
+	 * port names
+	 * 
+	 * @param newConnector
+	 * @param port1
+	 * @param port2
+	 */
 	public void add(final ConstraintConnector newConnector, final String port1, final String port2) {
 		if (port1 != null && port1.length() > 0) {
 			names.add(port1);
 		}
 
-		constraint = String.format("%s " + AND + " %s" + AND + 
-				"( %s" + RIGHTLEFTARROW + " %s )"// + AND +
-				//"(" + NEG + "("+ "))"
-				,
-				constraint, newConnector.getConstraint(), cf.flow(port1), cf.flow(port2));
-				
-	}
-	
-	public void add(ConstraintConnector newConnector, String p1, String p2, boolean use) {
-		if (p1 != null && p1.length() > 0) {
-			names.add(p1);
-		}
-		final ConnectorFactory factory = new ConnectorFactory();
-		constraint = String.format("%s " + AND + " %s" + AND + 
-				"( %s" + RIGHTLEFTARROW + " %s)"// + AND +
-				//"(" + NEG + "("+ "))"
-				,
-				constraint, newConnector.getConstraint(), factory.flow(p1), factory.flow(p2));
-				
-	}
-//???TODO
-	public ConstraintConnector connect(String p1, String p2) {
-		return new ConstraintConnector(String.format(" (%s %s %s) ", p1, IMPLIES, p2));
+		constraint = String.format("%s %s %s %s ( %s %s %s )", // + AND + "(" +
+																// NEG + "("+
+																// "))",
+				constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), AND, factory.flow(port2));
 	}
 
-	public void setStates(String... mems) {
+	/**
+	 * Conjuncts the new connector logic to the existing and
+	 *  adds the first passed port to the list of names
+	 * @param newConnector
+	 * @param port1
+	 * @param port2
+	 * @param use
+	 */
+	public void add(final ConstraintConnector newConnector, final String port1, final String port2, final boolean use) {
+		if (port1 != null && port1.length() > 0) {
+			names.add(port1);
+		}
+		final ConnectorFactory factory = new ConnectorFactory();
+		constraint = String.format("%s %s %s %s ( %s %s  %s)"// AND "(" + NEG + "("+ "))"
+				, constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
+	}
+
+	// ???TODO
+	/**
+	 * Adds p1 IMPLIES p2
+	 * 
+	 * @param nexts
+	 */
+	public ConstraintConnector connect(final String port1, final String port2) {
+		return new ConstraintConnector(String.format(" (%s %s %s) ", port1, IMPLIES, port2));
+	}
+
+	/**
+	 * Sets states
+	 * 
+	 * @param nexts
+	 */
+	public void setStates(final String... mems) {
 		states = mems;
 	}
-	
-	public void setNextStates(String... nexts) {
+
+	/**
+	 * Sets next states
+	 * 
+	 * @param nexts
+	 */
+	public void setNextStates(final String... nexts) {
 		nextStates = nexts;
 	}
-	
+
+	/**
+	 * Returns the states and initializes if null
+	 * 
+	 * @return
+	 */
 	public String[] getStates() {
-		if (states == null)
-			return new String[0];
-		return states;
+		if (states == null) {
+			states = new String[0];
+		}
+		return states.clone();
 	}
-	
+
+	/**
+	 * Returns an array of next states and initializes if null
+	 * 
+	 * @return
+	 */
 	public String[] getNextStates() {
-		if (nextStates == null)
-			return new String[0];//TODO???
-		return nextStates;
+		if (nextStates == null) {
+			nextStates = new String[0];// TODO???
+		}
+		return nextStates.clone();
 	}
 }

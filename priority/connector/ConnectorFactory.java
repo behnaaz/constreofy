@@ -1,7 +1,8 @@
 package priority.connector;
 
+import java.util.Optional;
+
 import priority.common.Constants;
-import priority.primitives.FIFO;
 import priority.primitives.Primitive;
 
 public class ConnectorFactory extends Primitive implements Constants {
@@ -21,20 +22,10 @@ public class ConnectorFactory extends Primitive implements Constants {
 		//, p1, p2);
 		return new ConstraintConnector(sync, p1, p2);
 	}
-	/*
-	 * public ConstraintConnector fullFifo(String p1, String p2) { String
-	 * fullFifo = String.format( "(" + NOT + "%s)" + AND + "%s" + AND + "(%s" +
-	 * IMPLIES + "("+ NOT +"%s))", flow(p1), mem(p1, p2), flow(p2), nextMem(p1,
-	 * p2) ); return new ConstraintConnector(fullFifo, p1, p2, mem(p1, p2),
-	 * nextMem(p1, p2)); }
-	 */
 
-	public ConstraintConnector fifo(String p1, String p2) {
-		return fifo(p1, p2, false);
-	}
-
-	public ConstraintConnector fifo(String p1, String p2, Boolean full) {
-		return new FIFO(p1, p2, full).constraint();
+	public ConstraintConnector fifoNotInit(String source, String sink, Optional<Boolean> full) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public ConstraintConnector router(String c, String k1, String k2) {
@@ -75,10 +66,6 @@ public class ConnectorFactory extends Primitive implements Constants {
 				// "%sbullet",
 				flow(c), flow(k));
 		return new ConstraintConnector(replicator, c, k);
-	}
-
-	public ConstraintConnector fullFifo(String c, String k) {
-		return fifo(c, k, true);
 	}
 
 	public ConstraintConnector join(String c1, String c2, String k) {

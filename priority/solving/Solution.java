@@ -1,6 +1,7 @@
 package priority.solving;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -104,7 +105,8 @@ public class Solution implements Constants, Comparable<Object> {
 		String name = neg ? EMPTY /*state.trim().substring(1, state.trim().length())*/:state.trim();
 		if (convertNextToCurrent)
 			name = name.replace(NEXT_MEMORY, CURRENT_MEMORY);
-		return new StateVariableValue(name.trim(), !neg);
+		Optional<Boolean> optTemp = neg ? Optional.of(Boolean.FALSE) : Optional.of(Boolean.TRUE);
+		return new StateVariableValue(name.trim(), optTemp);
 	}
 
 	public StateValue getNextStateValue() {

@@ -1,26 +1,31 @@
 package priority.states;
 
-public class StateVariableValue implements Comparable<Object> {
+import java.util.Optional;
+
+import priority.common.Constants;
+
+public class StateVariableValue implements Comparable<Object>, Constants {
 	private String stateName;
-	private Boolean value;
-	public StateVariableValue(String name, Boolean value) {
-		this.stateName(name);
-		this.value(value);
+	private Optional<Boolean> value;
+	public StateVariableValue(String name, Optional<Boolean> value) {
+		this.getStateName(name);
+		this.setValue(value);
 	}
-	String getStateName() {
+	public String getStateName() {
 		return stateName;
 	}
-	void stateName(String stateName) {
-		this.stateName = stateName;
+	public void getStateName(String stateName) {
+		this.stateName = stateName.trim().toLowerCase();
 	}
-	Boolean getValue() {
+	public Optional<Boolean> getValue() {
 		return value;
 	}
-	void value(Boolean value) {
+	
+	public void setValue(Optional<Boolean> value) {
 		this.value = value;
 	}
 	public String makeNextStateCurrent() {
-		return getStateName().toLowerCase().replace("xring", "ring");//TODO constant;
+		return getStateName().toLowerCase().replace(NEXT_MEMORY, CURRENT_MEMORY);
 	}
 	
 	@Override

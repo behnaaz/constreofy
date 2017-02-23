@@ -1,6 +1,7 @@
 package priority.states;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -21,12 +22,12 @@ public class StateValue implements Comparable<Object>, Cloneable, Constants {
 		return false;
 	}
 
-	public boolean getValue(String m) {
+	public Optional<Boolean> getValue(String m) {
 		for (StateVariableValue v : getVariableValues()) { 
 			if (v.getStateName().equals(m))
 				return v.getValue();
 		}
-		return false;
+		return Optional.empty();
 	}
 	public void add(StateVariableValue stateVariableValue) {
 		boolean found = false;
@@ -41,7 +42,9 @@ public class StateValue implements Comparable<Object>, Cloneable, Constants {
 	@Override
 	public String toString() {//TODO ???
 		StringBuilder sb = new StringBuilder();
-		variableValues.forEach(e -> sb.append(e.getStateName()).append(e.getValue()).append(STRING_COMMA));
+		variableValues.forEach(e -> { 
+			sb.append(e.getStateName()).append(e.getValue().get()).append(STRING_COMMA); 
+			});
 		return sb.toString().replaceAll(",$", "");
 	}
 
@@ -74,10 +77,5 @@ public class StateValue implements Comparable<Object>, Cloneable, Constants {
 	@Override
 	public int hashCode() {
 		return variableValues.hashCode();//??
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {//TODO
-		return super.clone();
 	}
 }

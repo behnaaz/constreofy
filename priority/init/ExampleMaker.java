@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import priority.connector.ConnectorFactory;
 import priority.connector.ConstraintConnector;
@@ -24,7 +25,7 @@ public class ExampleMaker extends FileUser {
 	private ConstraintConnector exampleTwo() throws IOException {
 		ConnectorFactory factory = new ConnectorFactory();
 		connector = factory.router("a1", "a2", "a3");
-		connector.add(factory.fullFifo("b1", "b2"), "b1", "a2");
+		connector.add(factory.fifoNotInit("b1", "b2", Optional.of(Boolean.FALSE)), "b1", "a2");
 		connector.add(factory.router("c1", "c2", "c3"), "c1", "b2");
 		connector.add(factory.prioritySync("d1", "d2"), "d1", "c3");
 		connector.add(factory.syncDrain("e1", "e2"), "e1", "d2");
@@ -70,54 +71,54 @@ public class ExampleMaker extends FileUser {
 
 		ConstraintConnector repB = factory.replicator("b1", "b2", "b3");
 		connector.add(repB, "b1", "ab2");// syncAB.getName(0));
-/*		connector.add(factory.sync("BC1", "BC2"), "b2", "bc2");
+		connector.add(factory.sync("BC1", "BC2"), "b2", "bc2");
 		connector.add(factory.sync("BJ3", "BJ2"), "b3", "bj3");
 		connector.add(factory.sync("c1", "c2"), "c1", "bc1");//repl
-		connector.add(factory.fifo("CD1", "CD2"), "c2", "cd2");
+		connector.add(factory.fifoNotInit("CD1", "CD2", Optional.of(Boolean.FALSE)), "c2", "cd2");
 		connector.add(factory.sync("j1", "j2"), "bj2", "j2");//repl
-		connector.add(factory.fifo("JK1", "JK2"), "c1", "jk1");
-		connector.add(factory.fifo("DE2", "DE1"), "cd1", "de2");
-*/
+		connector.add(factory.fifoNotInit("JK1", "JK2", Optional.of(Boolean.FALSE)), "c1", "jk1");
+		connector.add(factory.fifoNotInit("DE2", "DE1", Optional.of(Boolean.FALSE)), "cd1", "de2");
+
 		return connector;
 	}
 
 	private ConstraintConnector wrongXaction(StateValue currentStatesValues, IOComponent... ios) {
 		ConnectorFactory connectorFactory = new ConnectorFactory();
 		FIFO ab = buildFIFO("AB1", "AB2", currentStatesValues);
-		connector = ab.constraint();
+		connector = ab.generateConstraint();
 		connector.add(connectorFactory.writer("AB1", ios[0].getRequests()), "ab1", "ab1");
 		connector.add(connectorFactory.replicator("b1", "b2", "b3"), "b1", "AB2");
 		connector.add(connectorFactory.replicator("c1", "c2"), "c1", "b2");//"BC2");
 		FIFO cd = buildFIFO("CD1", "CD2", currentStatesValues);
-		connector.add(cd.constraint(), "CD1", "c2");
+		connector.add(cd.generateConstraint(), "CD1", "c2");
 		FIFO de = buildFIFO("DE1", "DE2", currentStatesValues);
-		connector.add(de.constraint(),
+		connector.add(de.generateConstraint(),
 				"DE1", "CD2");
 		connector.add(connectorFactory.router("e1", "e2", "e3"), "e1", "DE2");
 		FIFO el = buildFIFO("EL1", "EL2", currentStatesValues);
-		connector.add(el.constraint(),
+		connector.add(el.generateConstraint(),
 				"EL1", "e2");
 		//connector.add(factory.sync("EG1", "EG2"), "EG1", "e3");
 		connector.add(connectorFactory.replicator("g3", "g1", "g2"), "g3", "e3");
 		FIFO fg = buildFIFO("FG2", "FG1", currentStatesValues);
-		connector.add(fg.constraint(),
+		connector.add(fg.generateConstraint(),
 				"FG2", "g1");
 		FIFO gh = buildFIFO("GH1", "GH2", currentStatesValues);
-		connector.add(gh.constraint(), "GH1", "g2");
+		connector.add(gh.generateConstraint(), "GH1", "g2");
 		
 		//connector.add(factory.replicator("h1", "h2"), "h1", "GH2");
 		//connector.add(factory.sync("HP1", "HP2"), "HP1", "h2");// prio
 		//connector.add(factory.sync("BI1", "BI2"), "BI1", "b3");
 		connector.add(connectorFactory.router("i1", "i2", "i3"), "i1", "b3");
 		FIFO ij = buildFIFO("IJ1", "IJ2", currentStatesValues);
-		connector.add(ij.constraint(), "IJ1", "i2");
+		connector.add(ij.generateConstraint(), "IJ1", "i2");
 	//	connector.add(factory.replicator("j1", "j2"), "j1", "IJ2");
-		connector.add(buildFIFO("JK1", "JK2", currentStatesValues).constraint(), "JK1", "j2");
+		connector.add(buildFIFO("JK1", "JK2", currentStatesValues).generateConstraint(), "JK1", "j2");
 		connector.add(connectorFactory.router("JK2", "k2", "k3"), "JK2", "JK2");
 	//	connector.add(factory.sync("KL1", "KL2"), "KL1", "k2");
 		connector.add(connectorFactory.join("EL2", "l3", "l2"), "EL2", "EL2");
 		// kl2 l3
-		connector.add(buildFIFO("LM1", "LM2", currentStatesValues).constraint(), "LM1", "l2");
+		connector.add(buildFIFO("LM1", "LM2", currentStatesValues).generateConstraint(), "LM1", "l2");
 	//	connector.add(factory.syncDrain("KO1", "KO2"), "KO1", "k3");
 	//	connector.add(factory.router("p2", "p1", "p3"), "p2", "HP2");
 		connector.add(connectorFactory.router("p2", "p1", "p3"), "p2", "GH2");
@@ -155,9 +156,9 @@ public class ExampleMaker extends FileUser {
 		ConnectorFactory factory = new ConnectorFactory();
 		for (int i = 1; i <= n; i++) {
 			if (i == 1)
-				connector = factory.fullFifo("a" + i, "b" + i);
+				connector = factory.fifoNotInit("a" + i, "b" + i, Optional.of(Boolean.FALSE));
 			else
-				connector.add(factory.fifo("a" + i, "b" + i), "a" + i, "e" + (i - 1), true);
+				connector.add(factory.fifoNotInit("a" + i, "b" + i, Optional.of(Boolean.FALSE)), "a" + i, "e" + (i - 1), true);
 			connector.add(factory.replicator("c" + i, "d" + i, "e" + i), "c" + i, "b" + i, true);
 		}
 		// connector.add(factory.replicator("c"+(n-1), "d"+(n-1), "e"+(n-1)),

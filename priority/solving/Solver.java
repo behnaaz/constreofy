@@ -11,6 +11,7 @@ import priority.common.Constants;
 import priority.connector.ConstraintConnector;
 import priority.semantics.DNF;
 import priority.states.StateManager;
+import priority.states.StateValue;
 
 public class Solver implements Constants, Containable {
 	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
@@ -32,8 +33,6 @@ public class Solver implements Constants, Containable {
 
 		do {
 			visitedStates = visit(visitedStates, currentStatesValue);
-//currentStatesValues.getIOs()[0].getRequests()
-		//	cc = cc.incorporateState(currentStatesValue);
 			// Get solutions from current state
 			List<IOAwareSolution> foundSolutions = findSolutions(currentStatesValue, cc);
 			solutions = addToSolutions(solutions, foundSolutions);
@@ -96,7 +95,7 @@ public class Solver implements Constants, Containable {
 	}
 
 	public List<IOAwareSolution> findSolutions(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws Exception{
-		List<String> reduceOutput = getReduceOutput(cc);
+		List<String> reduceOutput = getReduceOutput(cc, currentStatesValue.getStateValue());
 		String strReduceOutput = getOnlyAnswer(reduceOutput);
 		DNF dnf = new DNF(Lists.newArrayList(cc.getVariables()), Lists.newArrayList(cc.getStates()), Lists.newArrayList(cc.getNextStates()));
 		List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
@@ -146,10 +145,10 @@ public class Solver implements Constants, Containable {
 		return temp;
 	}
 
-	private List<String> getReduceOutput(ConstraintConnector cc) throws IOException {
+	private List<String> getReduceOutput(ConstraintConnector cc, StateValue stateValue) throws IOException {
 		Process process = Runtime.getRuntime().exec(REDUCE_PROGRAM);
 		OutputStream stdin = process.getOutputStream();
-		stdin.write(cc.output().getBytes());
+		stdin.write(cc.output(stateValue).getBytes());
 		stdin.flush();
 		stdin.close();
 
