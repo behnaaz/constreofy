@@ -8,13 +8,13 @@ public class StateVariableValue implements Comparable<Object>, Constants {
 	private String stateName;
 	private Optional<Boolean> value;
 	public StateVariableValue(String name, Optional<Boolean> value) {
-		this.getStateName(name);
+		this.setStateName(name);
 		this.setValue(value);
 	}
 	public String getStateName() {
 		return stateName;
 	}
-	public void getStateName(String stateName) {
+	public void setStateName(String stateName) {
 		this.stateName = stateName.trim().toLowerCase();
 	}
 	public Optional<Boolean> getValue() {

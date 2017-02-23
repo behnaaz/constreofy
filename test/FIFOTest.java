@@ -1,14 +1,12 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import priority.connector.ConnectorFactory;
@@ -19,39 +17,39 @@ import priority.solving.IOComponent;
 import priority.solving.Solver;
 import priority.states.StateValue;
 
+/**
+ * Tests functionality of a FIFO connected to a writer
+ */
 public class FIFOTest {
-	private ConstraintConnector cc;
-	private List<IOAwareSolution> solutions;
+	ConstraintConnector connector;
 
-	@Before
-	public void setUp() {
+	private List<IOAwareSolution> initializeData(Optional<Boolean> full) {
 		ConnectorFactory factory = new ConnectorFactory();
-		ConstraintConnector connector = factory.writer("w1", 1);
-/*
-		ConstraintConnector repA1A2 = factory.sync("A1", "A2");
-		connector.add(repA1A2, "W1", repA1A2.getNames().get(0));// replicator
-																// bas bashe
-		ConstraintConnector syncAB = factory.sync("AB1", "AB2");
-		connector.add(syncAB, repA1A2.getNames().get(1), syncAB.getName(1));
-
-*/
-		ConstraintConnector fifoCD = factory.fifoNotInit("cd1", "cd2", Optional.of(Boolean.FALSE));
-//		connector.add(fifoCD, syncAB.getNames().get(1), fifoCD.getName(0));
-
+		connector = factory.writer("w1", 1);
+		ConstraintConnector fifoCD = factory.fifoNotInit("cd1", "cd2", full);
+		//TODO [cd1, cd2, cd1cd2ring, cd1cd2xring] names to check
 		connector.add(fifoCD, "w1", fifoCD.getName(0));
 
-		cc = connector;
 		IOAwareStateValue initState = new IOAwareStateValue(new StateValue(), new IOComponent("w1", 1));
 		try {
-			solutions = new Solver(cc, initState).solve(-1);
+			return new Solver(connector, initState).solve(-1);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
-
+//TODO using uninit fifo must be prevented
 	@Test
-	public void testFIFO() {
+	public void testNonInitializedFIFO() {
+		String expectedConstraint = "(W1TILDE  or   not  W1TILDE)  and  (CD1TILDE  equiv  (CD1CD2XRING  and   not  CD1CD2RING))  and  (CD2TILDE  equiv  (CD1CD2RING  and   not  CD1CD2XRING))  and  (( not  (CD1TILDE  or  CD2TILDE))  impl  (CD1CD2RING  equiv  CD1CD2XRING))  and  ( not  (CD1TILDE  and  CD2TILDE))  and  ( W1TILDE  equiv  CD1TILDE )";
+		List<IOAwareSolution> solutions = initializeData(Optional.empty());
+		assertEquals(expectedConstraint, connector.getConstraint());
+		assertEquals(0, solutions.size());
+	}
+	
+	@Test
+	public void testEmpyFIFO() {
+		List<IOAwareSolution> solutions = initializeData(Optional.of(Boolean.FALSE));
 		String allSolutions = "[[1w1] [] ------ {  cd1tilde w1tilde } -------> (cd1cd2xringtrue ) [0w1], [1w1] [] ------ {  } -------> () [1w1], [0w1] [] ------ {  } -------> () [0w1], [0w1] [] ------ {  cd1tilde w1tilde } -------> (cd1cd2xringtrue ) [0w1], [0w1] [] ------ {  } -------> () [0w1]]";
 		assertNotNull(solutions);
 		assertEquals(5, solutions.size());
@@ -63,7 +61,9 @@ public class FIFOTest {
 		assertTrue(ioAwareSolution.getSolution().getFromVariables().isEmpty());
 		assertEquals(1, ioAwareSolution.getSolution().getToVariables().size());
 		assertEquals("[ cd1cd2xring]", ioAwareSolution.getSolution().getToVariables().toString());
-		assertEquals(0, ioAwareSolution.getPostIOs().length);
+		assertEquals(1, ioAwareSolution.getPostIOs().length);
+		assertEquals("w1", ioAwareSolution.getPreIOs()[0].getNodeName());
+		assertEquals(1, ioAwareSolution.getPreIOs()[0].getRequests());
 		assertEquals(1, ioAwareSolution.getPreIOs().length);
 		assertEquals("1w1", ioAwareSolution.getPreIOs()[0].toString());
 
@@ -76,5 +76,4 @@ public class FIFOTest {
 		assertEquals(1, ioAwareSolution.getPreIOs().length);
 		assertEquals("1w1", ioAwareSolution.getPreIOs()[0].toString());
 	}
-
 }

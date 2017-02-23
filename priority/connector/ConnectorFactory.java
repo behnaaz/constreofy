@@ -85,12 +85,12 @@ public class ConnectorFactory extends Primitive implements Constants {
 		return replicator(k, c1, c2);
 	}
 
-	public ConstraintConnector writer(String k, int n) {
+	public ConstraintConnector writer(String source, int capacity) {
 		String writer;
-		if (n > 0)
-			writer = String.format("(%s %s %s %s)", flow(k), OR, NOT, flow(k));
+		if (capacity > 0)
+			writer = String.format("(%s %s %s %s)", flow(source), OR, NOT, flow(source));
 		else
-			writer = String.format("( %s %s)", NOT, flow(k));
-		return new ConstraintConnector(writer, k);
+			writer = String.format("( %s %s)", NOT, flow(source));
+		return new ConstraintConnector(writer, source);
 	}
 }

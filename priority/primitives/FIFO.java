@@ -12,30 +12,56 @@ public class FIFO extends Primitive implements Constants {
 	private String port1;
 	private String port2;
 	private StateValue currentStatesValues = new StateValue();
+	private String stateless;
 
 	public FIFO(final String port1, final String port2, final Optional<Boolean> initState) {
 		full = initState;
 		this.port1 = port1;
 		this.port2 = port2;
+		this.stateless = getStatelessConstraint();
 	}
 
-	public FIFO(final String p1, final String p2, final StateValue currentStatesValues) {
-		this.currentStatesValues = currentStatesValues;
-		this.port1 = p1;
-		this.port2 = p2;
+	private String getStatelessConstraint() {
+		return String.format("(%s %s (%s %s %s %s)) %s (%s %s (%s %s %s %s)) %s ((%s (%s %s %s)) %s (%s %s %s)) %s (%s (%s %s %s))", 
+				flow(port1), RIGHTLEFTARROW, nextMemory(port1, port2), AND, NOT, memory(port1, port2),
+				AND,
+				flow(port2), RIGHTLEFTARROW, memory(port1, port2), AND, NOT, nextMemory(port1, port2),
+				AND,
+				NOT, flow(port1), OR, flow(port2), IMPLIES, memory(port1, port2), RIGHTLEFTARROW, nextMemory(port1, port2),
+				AND,
+				NOT, flow(port1), AND, flow(port2));
 	}
 
+	/**
+	 * Sets the full state of the FIFO
+	 * 
+	 * @param full
+	 */
+	public void setState(Boolean full) {
+		this.full = Optional.of(full); 
+	}
 	/**
 	 * Generates constraintConnector for the FIFO
 	 * 
 	 * @return
 	 */
 	public ConstraintConnector generateConstraint() {
+		String fifo = stateless;
+		if (full.isPresent()) {
+			String memory = memory(port1, port2);
+			if (!full.get()) {
+				memory = String.format("(%s %s)", NOT, memory);
+			}
+			fifo = String.format("%s %s %s", stateless, AND, memory);
+		}
+		return new ConstraintConnector(fifo, port1, port2, memory(port1, port2), nextMemory(port1, port2));
+	}
+	private ConstraintConnector generateConstraint2() {
 		String m = memory(port1.toLowerCase(), port2.toLowerCase());
 		if (currentStatesValues.containsKey(m))
 			full = currentStatesValues.getValue(m);
 
-		String fifo;
+		String fifo = null;
 		if (full.isPresent()) {
 			if (full.get()) {
 				fifo = String.format(
@@ -74,8 +100,8 @@ public class FIFO extends Primitive implements Constants {
 				// mem(p1, p2, full), nextMem(p1, p2)
 				);
 			}
-		} else
-			fifo = "";
+		} else {
+		}
 		return new ConstraintConnector(fifo, port1, port2, memory(port1, port2), nextMemory(port1, port2));
 	}
 
