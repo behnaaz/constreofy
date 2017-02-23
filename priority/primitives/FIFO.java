@@ -18,7 +18,7 @@ public class FIFO extends Primitive implements Constants {
 		this.port1 = port1;
 		this.port2 = port2;
 	}
-	
+
 	public FIFO(final String p1, final String p2, final StateValue currentStatesValues) {
 		this.currentStatesValues = currentStatesValues;
 		this.port1 = p1;
@@ -27,6 +27,7 @@ public class FIFO extends Primitive implements Constants {
 
 	/**
 	 * Generates constraintConnector for the FIFO
+	 * 
 	 * @return
 	 */
 	public ConstraintConnector generateConstraint() {
@@ -37,45 +38,50 @@ public class FIFO extends Primitive implements Constants {
 		String fifo;
 		if (full.isPresent()) {
 			if (full.get()) {
-				fifo = String.format("( " + NOT + "%s )" + AND + " %s " + AND + "(%s" + RIGHTLEFTARROW + "( " + NOT + "%s )) "// AND +
-			// "(%s" + IMPLIES + "(%s" + ")) " + AND +
-			// "(%s" + IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND +
-			// (full ? "%s" : "%s")
-							, flow(port1), memory(port1, port2), flow(port2), nextMemory(port1, port2)// ,
-			// flow(p1), nextMem(p1, p2),
-			// flow(p2), mem(p1, p2, full), nextMem(p1, p2),
-			// mem(p1, p2, full), nextMem(p1, p2)
-			);
-		/*
-		 * fifo = String.format( "(" + NOT + "(%s" + OR + "%s)" + IMPLIES +
-		 * " (%s" + RIGHTLEFTARROW + "%s)) " + AND + "(%s" + IMPLIES + "(%s" +
-		 * AND + "("+ NOT +"%s))) " + AND + "(%s" + IMPLIES + "(%s" + AND + "("+
-		 * NOT +"%s))) " + AND + (full ? "%s" : "%s") , flow(p1), flow(p2),
-		 * mem(p1, p2, full), nextMem(p1, p2), flow(p1), nextMem(p1, p2),
-		 * mem(p1, p2, full), flow(p2), mem(p1, p2, full), nextMem(p1, p2),
-		 * mem(p1, p2, full), nextMem(p1, p2) );
-		 */
-		}
-		else {
-			fifo = String
-					.format("( %s %s ) %s ( %s %s ) %s (%s %s %s) "// + AND +
-			// "(%s" + IMPLIES + "(%s" + ")) " + AND +
-			// "(%s" + IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND +
-			// (full ? "%s" : "%s")
-							,NOT, flow(port2), AND, NOT, memory(port1, port2), AND, flow(port1), RIGHTLEFTARROW, nextMemory(port1, port2)// ,
-			// flow(p1), nextMem(p1, p2),
-			// flow(p2), mem(p1, p2, full), nextMem(p1, p2),
-			// mem(p1, p2, full), nextMem(p1, p2)
-			);
-		}
-		}
-		else
+				fifo = String.format(
+						"( " + NOT + "%s )" + AND + " %s " + AND + "(%s" + RIGHTLEFTARROW + "( " + NOT + "%s )) "// AND
+																													// +
+						// "(%s" + IMPLIES + "(%s" + ")) " + AND +
+						// "(%s" + IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " +
+						// AND +
+						// (full ? "%s" : "%s")
+						, flow(port1), memory(port1, port2), flow(port2), nextMemory(port1, port2)// ,
+				// flow(p1), nextMem(p1, p2),
+				// flow(p2), mem(p1, p2, full), nextMem(p1, p2),
+				// mem(p1, p2, full), nextMem(p1, p2)
+				);
+				/*
+				 * fifo = String.format( "(" + NOT + "(%s" + OR + "%s)" +
+				 * IMPLIES + " (%s" + RIGHTLEFTARROW + "%s)) " + AND + "(%s" +
+				 * IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND + "(%s" +
+				 * IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND + (full ?
+				 * "%s" : "%s") , flow(p1), flow(p2), mem(p1, p2, full),
+				 * nextMem(p1, p2), flow(p1), nextMem(p1, p2), mem(p1, p2,
+				 * full), flow(p2), mem(p1, p2, full), nextMem(p1, p2), mem(p1,
+				 * p2, full), nextMem(p1, p2) );
+				 */
+			} else {
+				fifo = String.format("( %s %s ) %s ( %s %s ) %s (%s %s %s) "// +
+																			// AND
+																			// +
+				// "(%s" + IMPLIES + "(%s" + ")) " + AND +
+				// "(%s" + IMPLIES + "(%s" + AND + "("+ NOT +"%s))) " + AND +
+				// (full ? "%s" : "%s")
+						, NOT, flow(port2), AND, NOT, memory(port1, port2), AND, flow(port1), RIGHTLEFTARROW,
+						nextMemory(port1, port2)// ,
+				// flow(p1), nextMem(p1, p2),
+				// flow(p2), mem(p1, p2, full), nextMem(p1, p2),
+				// mem(p1, p2, full), nextMem(p1, p2)
+				);
+			}
+		} else
 			fifo = "";
 		return new ConstraintConnector(fifo, port1, port2, memory(port1, port2), nextMemory(port1, port2));
 	}
 
 	/**
 	 * Getter
+	 * 
 	 * @return
 	 */
 	public String getMemory() {
@@ -84,6 +90,7 @@ public class FIFO extends Primitive implements Constants {
 
 	/**
 	 * Getter
+	 * 
 	 * @return
 	 */
 	public Optional<Boolean> isFull() {

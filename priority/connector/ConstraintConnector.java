@@ -186,7 +186,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		constraint = String.format("%s %s %s %s ( %s %s %s )", // + AND + "(" +
 																// NEG + "("+
 																// "))",
-				constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), AND, factory.flow(port2));
+				constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
 	}
 
 	/**

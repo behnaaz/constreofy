@@ -51,8 +51,10 @@ public class StateVariableValue implements Comparable<Object>, Constants {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(stateName);
-		sb.append(value);
+		if (value.isPresent()) {
+			sb.append(stateName);
+			sb.append(value.get());
+		}
 		return sb.toString();
 	}
 }

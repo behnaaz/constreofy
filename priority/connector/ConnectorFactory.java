@@ -3,6 +3,7 @@ package priority.connector;
 import java.util.Optional;
 
 import priority.common.Constants;
+import priority.primitives.FIFO;
 import priority.primitives.Primitive;
 
 public class ConnectorFactory extends Primitive implements Constants {
@@ -23,9 +24,15 @@ public class ConnectorFactory extends Primitive implements Constants {
 		return new ConstraintConnector(sync, p1, p2);
 	}
 
-	public ConstraintConnector fifoNotInit(String source, String sink, Optional<Boolean> full) {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Returns the constarints of a new instance of FIFO initialized or uninitialized depending on the third parameter
+	 * @param source
+	 * @param sink
+	 * @param full
+	 * @return
+	 */
+	public ConstraintConnector fifoNotInit(final String source, final String sink, final Optional<Boolean> full) {
+		return new FIFO(source, sink, full).generateConstraint();
 	}
 
 	public ConstraintConnector router(String c, String k1, String k2) {
@@ -81,9 +88,9 @@ public class ConnectorFactory extends Primitive implements Constants {
 	public ConstraintConnector writer(String k, int n) {
 		String writer;
 		if (n > 0)
-			writer = String.format("( %s %s %s %s )", flow(k), OR, NOT, flow(k));
+			writer = String.format("(%s %s %s %s)", flow(k), OR, NOT, flow(k));
 		else
-			writer = String.format("( %s %s )", NOT, flow(k));
+			writer = String.format("( %s %s)", NOT, flow(k));
 		return new ConstraintConnector(writer, k);
 	}
 }
