@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
@@ -16,7 +18,6 @@ import com.google.common.base.Strings;
 import javassist.bytecode.stackmap.TypeData.ClassName;
 import priority.common.Constants;
 import priority.states.StateValue;
-import priority.states.StateVariableValue;
 /**
  * The building block of a network 
  * (representing connectors using constraint semantics)
@@ -121,6 +122,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		try {
 			builder.append(PREAMBLE);
 			builder.append(printVariables(constraint));
+			//???
 			builder.append(FORMULA_NAME + " := " + conjunction(constraint, stateValue) + ";;");
 			builder.append(dnf(FORMULA_NAME));
 			builder.append(SHUT);
@@ -133,7 +135,27 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 
 	private String conjunction(final String mainConstraint, final StateValue stateValue) {
 		final StringBuilder builder = new StringBuilder();
+		Set<String> fifos = getAllFIFOs(mainConstraint);
 		builder.append(mainConstraint);
+		
+		for (String capitalLetterFIFO : fifos) {
+			String fifo = capitalLetterFIFO.toLowerCase(Locale.ENGLISH).replaceAll("xring", "ring"); 
+			if (stateValue.getValue(fifo) == null || !stateValue.getValue(fifo).isPresent() || stateValue.getValue(fifo).get() == false) {
+				builder.append(AND);
+				builder.append(" (");
+				builder.append(NOT);
+				builder.append(fifo.toUpperCase(Locale.ENGLISH));
+				builder.append(") ");
+			} else {
+				if (stateValue.getValue(fifo).get()) {
+					builder.append(AND);
+					builder.append(fifo.toUpperCase(Locale.ENGLISH));
+				} else {
+					assert(false);
+				}
+			}
+		}
+		/*
 		for (final StateVariableValue sv : stateValue.getVariableValues()) {
 			builder.append(AND);
 			if (Boolean.TRUE.equals(Optional.of(sv.getValue()))) {
@@ -141,8 +163,22 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 			}
 			final String stateName = sv.getStateName();
 			builder.append(stateName.toUpperCase(Locale.US));//???
-		}
+		}*/
 		return builder.toString();
+	}
+
+	private Set<String> getAllFIFOs(String mainConstraint) {
+		Set<String> result = new TreeSet<>();
+		Pattern pattern = Pattern.compile("\\w+XRING");
+		Matcher matcher = pattern.matcher(mainConstraint);
+		
+		while(matcher.find()){
+			int start = matcher.start();
+			int end = matcher.end();
+			result.add(mainConstraint.substring(start, end));
+		}
+	//	mainConstraint
+		return result;
 	}
 
 	/**
@@ -171,9 +207,8 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	}
 
 	/**
-	 * adds p1 equiv p2 to the passed connector constraint and adds p1 to the
-	 * port names
-	 * 
+	 * Conjuncts the new connector logic to the existing and
+	 *  adds the first passed port to the list of names
 	 * @param newConnector
 	 * @param port1
 	 * @param port2
@@ -183,27 +218,14 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 			names.add(port1);
 		}
 
-		constraint = String.format("%s %s %s %s ( %s %s %s )", // + AND + "(" +
-																// NEG + "("+
-																// "))",
-				constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
-	}
-
-	/**
-	 * Conjuncts the new connector logic to the existing and
-	 *  adds the first passed port to the list of names
-	 * @param newConnector
-	 * @param port1
-	 * @param port2
-	 * @param use
-	 */
-	public void add(final ConstraintConnector newConnector, final String port1, final String port2, final boolean use) {
-		if (port1 != null && port1.length() > 0) {
-			names.add(port1);
+		if (newConnector == null) {
+			constraint = String.format("%s %s ( %s %s  %s)",
+					constraint, AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
 		}
-		final ConnectorFactory factory = new ConnectorFactory();
-		constraint = String.format("%s %s %s %s ( %s %s  %s)"// AND "(" + NEG + "("+ "))"
-				, constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
+		else {
+			constraint = String.format("%s %s %s %s ( %s %s  %s)",
+				constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
+		}
 	}
 
 	// ???TODO

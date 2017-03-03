@@ -93,7 +93,7 @@ public class Solution implements Constants, Comparable<Object> {
 		}
 		sb.append(") ");
 	
-		return sb.toString();
+		return sb.toString().replaceAll("\\ \\ ", "\\ ").replaceAll("\\ }", "}").replaceAll("\\ \\)", "\\)").replaceAll("\\ ]", "]").replaceAll("\\{ \\ ", "\\{");
 	}
 
 	public StateVariableValue makeStateVariable(String state) {

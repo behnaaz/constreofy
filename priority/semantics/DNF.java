@@ -13,14 +13,10 @@ import priority.solving.Solution;
 public class DNF extends FileUser implements Constants {
 	private List<String> variables;
 	private List<Solution> solutions = new ArrayList<>();
-	private List<String> states;
-	private List<String> nextStates;
 	static final String CNFFILE = "/Users/behnaz.changizi/reoworkspace/priority/src/Users/behnaz.changizi/Desktop/Dropbox/sol.txt";
 
-	public DNF(List<String> variables, List<String> states, List<String> nextStates) throws IOException {
+	public DNF(List<String> variables) throws IOException {
 		this.variables = variables;
-		this.states = states;
-		this.nextStates = nextStates;
 	}
 
 	public void printFlows() {
@@ -38,16 +34,18 @@ public class DNF extends FileUser implements Constants {
 		variables.forEach(v -> System.out.println(variables.indexOf(v.trim().toUpperCase()) + " " + v));
 	}
 	
-	public void solveByReduce(String constraint) throws Exception {
+	public void solveByReduce(String constraint) throws NotFeasibleException, IOException, VaiableNotFoundException {
 		Writer writer = new FileWriter(OUTPUTFILE);
 
 		writer.write("c test\r\n");
 		writer.write("c\r\n");
 		
-		if ("false".equalsIgnoreCase(constraint.trim()))
-			throw new Exception("NOT FEASIBLE");
+		if ("false".equalsIgnoreCase(constraint.trim())) {
+			writer.close();
+			throw new NotFeasibleException();
+		}
 
-		assert(constraint.contains(OR.trim()));//OTHERWISE not supported yet
+		
 		String[] ands = constraint.split(OR.trim());
 		writer.write("p cnf " + variables.size() + " " + ands.length + "\r\n");
 
@@ -56,13 +54,16 @@ public class DNF extends FileUser implements Constants {
 			String[] terms = extractTerms(and);
 			for (String term : terms) {
 				String[] atoms = term.trim().split(" = ");
-				if (variables.indexOf(atoms[0].toUpperCase()) <= -1) 
-					throw new Exception(atoms[0]+" not found");
+				if (variables.indexOf(atoms[0].toUpperCase()) <= -1) {
+					writer.close();
+					throw new VaiableNotFoundException(atoms[0]);
+				}
 				sb.append(("0".equals(atoms[1].trim())?"-":"")+(variables.indexOf(atoms[0].toUpperCase())+1)+" ");
 			}
 			writer.write(sb.toString() + " 0\r\n");
 		}
 		writer.close();
+		assert(constraint.contains(OR.trim()));//OTHERWISE not supported yet
 	}
 
 	private String[] extractTerms(String and) {
@@ -93,7 +94,7 @@ public class DNF extends FileUser implements Constants {
 			System.out.println(newSol.toString() + " \r\n");
 
 			if (!contains(solutions, newSol))
-				solutions.add(newSol);
+				solutions.add(newSol); //???TODO
 			}
 		}
 		return solutions;

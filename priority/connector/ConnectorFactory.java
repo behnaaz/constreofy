@@ -1,7 +1,5 @@
 package priority.connector;
 
-import java.util.Optional;
-
 import priority.common.Constants;
 import priority.primitives.FIFO;
 import priority.primitives.Primitive;
@@ -31,8 +29,8 @@ public class ConnectorFactory extends Primitive implements Constants {
 	 * @param full
 	 * @return
 	 */
-	public ConstraintConnector fifoNotInit(final String source, final String sink, final Optional<Boolean> full) {
-		return new FIFO(source, sink, full).generateConstraint();
+	public ConstraintConnector fifoNotInit(final String source, final String sink) {
+		return new FIFO(source, sink).generateConstraint();
 	}
 
 	public ConstraintConnector router(String c, String k1, String k2) {

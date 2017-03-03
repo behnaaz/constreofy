@@ -4,14 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import priority.connector.ConnectorFactory;
 import priority.connector.ConstraintConnector;
 import priority.primitives.FIFO;
 import priority.solving.IOAwareStateValue;
-import priority.solving.IOComponent;
-import priority.states.StateValue;
 
 public class ExampleMaker extends FileUser {
 	private ConstraintConnector connector;
@@ -25,7 +22,7 @@ public class ExampleMaker extends FileUser {
 	private ConstraintConnector exampleTwo() throws IOException {
 		ConnectorFactory factory = new ConnectorFactory();
 		connector = factory.router("a1", "a2", "a3");
-		connector.add(factory.fifoNotInit("b1", "b2", Optional.of(Boolean.FALSE)), "b1", "a2");
+		connector.add(factory.fifoNotInit("b1", "b2"), "b1", "a2");//empty TODO
 		connector.add(factory.router("c1", "c2", "c3"), "c1", "b2");
 		connector.add(factory.prioritySync("d1", "d2"), "d1", "c3");
 		connector.add(factory.syncDrain("e1", "e2"), "e1", "d2");
@@ -85,18 +82,21 @@ public class ExampleMaker extends FileUser {
 	private ConstraintConnector sequencer(int n) {
 		ConnectorFactory factory = new ConnectorFactory();
 		for (int i = 1; i <= n; i++) {
-			if (i == 1)
-				connector = factory.fifoNotInit("a" + i, "b" + i, Optional.of(Boolean.FALSE));
+			if (i == 1) {
+				connector = factory.fifoNotInit("a" + i, "b" + i);
+				//connector.add(connector., port1, port2);
+			}
 			else
-				connector.add(factory.fifoNotInit("a" + i, "b" + i, Optional.of(Boolean.FALSE)), "a" + i, "e" + (i - 1), true);
-			connector.add(factory.replicator("c" + i, "d" + i, "e" + i), "c" + i, "b" + i, true);
+				connector.add(factory.fifoNotInit("a" + i, "b" + i), "a" + i, "e" + (i - 1));//???
+			connector.add(factory.replicator("c" + i, "d" + i, "e" + i), "c" + i, "b" + i);
+		}
+		if (n > 1) {
+			connector.add(null, "a1", "e" + n);
 		}
 		// connector.add(factory.replicator("c"+(n-1), "d"+(n-1), "e"+(n-1)),
-		// "c"+(n-1), "b"+(n-1), true);
-		// connector.add(factory.fullFifo("a"+n, "b"+n), "a"+n, "e"+(n-1),
-		// true);
-		// connector.add(factory.replicator("c"+n, "d"+n, "e"+n), "c"+n, "b"+n,
-		// true);
+		// "c"+(n-1), "b"+(n-1));
+		// connector.add(factory.fullFifo("a"+n, "b"+n), "a"+n, "e"+(n-1));
+		// connector.add(factory.replicator("c"+n, "d"+n, "e"+n), "c"+n, "b"+n);
 		// connector.add(factory.merger("h", "i", "j"), "h", "g");
 		return connector;
 	}

@@ -25,7 +25,8 @@ public class Solver implements Constants, Containable {
 
 	public List<IOAwareSolution> solve(int maxLimit) throws Exception {
 		List<IOAwareStateValue> visitedStates = new ArrayList<>();
-		List<IOAwareStateValue> explorableStates = new ArrayList<>();//TODO convert to trrmap and fix cpntains ad delete issues
+		List<IOAwareStateValue> explorableStates = new ArrayList<>();
+		//TODO convert to trrmap and fix cpntains ad delete issues
 		int n = 0;
 		IOAwareStateValue currentStatesValue = initState;
 		StateManager stateManager = new StateManager();
@@ -97,7 +98,7 @@ public class Solver implements Constants, Containable {
 	public List<IOAwareSolution> findSolutions(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws Exception{
 		List<String> reduceOutput = getReduceOutput(cc, currentStatesValue.getStateValue());
 		String strReduceOutput = getOnlyAnswer(reduceOutput);
-		DNF dnf = new DNF(Lists.newArrayList(cc.getVariables()), Lists.newArrayList(cc.getStates()), Lists.newArrayList(cc.getNextStates()));
+		DNF dnf = new DNF(Lists.newArrayList(cc.getVariables()));
 		List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
 		return ioAwarify(solutions, currentStatesValue.getIOs());
 	}
