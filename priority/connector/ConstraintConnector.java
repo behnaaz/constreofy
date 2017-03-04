@@ -33,7 +33,8 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	private String[] states;
 	private String[] nextStates;
 	private Connection connection;
-	private int method = 26;
+	// Reduce the number of variables by omitting equal ones
+	private boolean useEqualSet = true;
 
 	/**
 	 * The constraint representing the connector and lists of its port ends
@@ -160,7 +161,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 				}
 			}
 		}
-		if (method == 2)
+		if (useEqualSet)
 			return replaceEquals(builder.toString(), connection.getEquals());
 
 		return builder.toString();
@@ -215,7 +216,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		if (port1 != null && port1.length() > 0) {
 			names.add(port1);
 		}
-		if (method == 2) {
+		if (useEqualSet) {
 			connection.addEqual(port1, port2);
 		} else {
 			if (newConnector == null) {
