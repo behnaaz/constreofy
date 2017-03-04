@@ -49,10 +49,11 @@ public class Solver implements Constants, Containable {
 
 	public List<IOAwareStateValue> addToExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
 			StateManager stateManager, List<IOAwareSolution> solutions) {
-		System.out.println("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
+		//if (debug)
+//	System.out.println("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
 		List<IOAwareStateValue> nexts = stateManager.findNextStates(solutions, visitedStates, explorableStates);
 		for (IOAwareStateValue state : nexts) {
-			System.out.println("  " + state.toString() + " exporable  ");
+	//		System.out.println("  " + state.toString() + " exporable  ");
 			explorableStates.add(state);
 		}
 		System.out.println("Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
@@ -60,10 +61,10 @@ public class Solver implements Constants, Containable {
 	}
 
 	private List<IOAwareStateValue> visit(final List<IOAwareStateValue> visitedStates, final IOAwareStateValue currentStatesValues) {
-		System.out.println("B4 visit states: " + visitedStates.size() + " " + visitedStates.toString());
+		//System.out.println("B4 visit states: " + visitedStates.size() + " " + visitedStates.toString());
 		if (!contains(visitedStates, currentStatesValues))
 			visitedStates.add(new IOAwareStateValue(currentStatesValues.getStateValue(), currentStatesValues.getIOs()));
-		System.out.println("After visit states: " + visitedStates.size() + " " + visitedStates.toString());
+		//System.out.println("After visit states: " + visitedStates.size() + " " + visitedStates.toString());
 		return visitedStates;
 	}
 
@@ -159,7 +160,8 @@ public class Solver implements Constants, Containable {
 		String line;
 		try {
 			while ((line = out.readLine()) != null) { 
-				System.out.println("....solution line " + line);
+				//if (debug)
+					//System.out.println("....solution line " + line);
 				output.add(line);
 			}
 		} catch (IOException ex) {

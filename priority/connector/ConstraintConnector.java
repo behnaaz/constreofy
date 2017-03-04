@@ -216,17 +216,14 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		if (port1 != null && port1.length() > 0) {
 			names.add(port1);
 		}
+		if (newConnector != null) {
+			constraint = String.format("%s %s %s", constraint, AND, newConnector.getConstraint());
+		}
 		if (useEqualSet) {
 			connection.addEqual(port1, port2);
 		} else {
-			if (newConnector == null) {
-				constraint = String.format("%s %s ( %s %s  %s)",
+			constraint = String.format("%s %s ( %s %s  %s)",
 					constraint, AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
-			}
-			else {
-				constraint = String.format("%s %s %s %s ( %s %s  %s)",
-						constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
-			}
 		}
 	}
 
