@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +18,7 @@ import com.google.common.base.Strings;
 
 import javassist.bytecode.stackmap.TypeData.ClassName;
 import priority.common.Constants;
+import priority.primitives.Primitive;
 import priority.states.StateValue;
 /**
  * The building block of a network 
@@ -30,6 +32,8 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	private final transient ConnectorFactory factory = new ConnectorFactory();
 	private String[] states;
 	private String[] nextStates;
+	private Connection connection;
+	private int method = 26;
 
 	/**
 	 * The constraint representing the connector and lists of its port ends
@@ -38,6 +42,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	 */
 	public ConstraintConnector(final String constraint, final String... names) {
 		super(names);
+		connection = new Connection();
 		setConstraint(constraint);
 	}
 
@@ -123,7 +128,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 			builder.append(PREAMBLE);
 			builder.append(printVariables(constraint));
 			//???
-			builder.append(FORMULA_NAME + " := " + conjunction(constraint, stateValue) + ";;");
+			builder.append(FORMULA_NAME + " := " + getFinalConstraints(constraint, stateValue) + ";;");
 			builder.append(dnf(FORMULA_NAME));
 			builder.append(SHUT);
 			builder.append("; end;");
@@ -133,7 +138,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return builder.toString();
 	}
 
-	private String conjunction(final String mainConstraint, final StateValue stateValue) {
+	private String getFinalConstraints(final String mainConstraint, final StateValue stateValue) {
 		final StringBuilder builder = new StringBuilder();
 		Set<String> fifos = getAllFIFOs(mainConstraint);
 		builder.append(mainConstraint);
@@ -155,15 +160,9 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 				}
 			}
 		}
-		/*
-		for (final StateVariableValue sv : stateValue.getVariableValues()) {
-			builder.append(AND);
-			if (Boolean.TRUE.equals(Optional.of(sv.getValue()))) {
-				builder.append(NOT);
-			}
-			final String stateName = sv.getStateName();
-			builder.append(stateName.toUpperCase(Locale.US));//???
-		}*/
+		if (method == 2)
+			return replaceEquals(builder.toString(), connection.getEquals());
+
 		return builder.toString();
 	}
 
@@ -177,7 +176,6 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 			int end = matcher.end();
 			result.add(mainConstraint.substring(start, end));
 		}
-	//	mainConstraint
 		return result;
 	}
 
@@ -217,14 +215,17 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		if (port1 != null && port1.length() > 0) {
 			names.add(port1);
 		}
-
-		if (newConnector == null) {
-			constraint = String.format("%s %s ( %s %s  %s)",
+		if (method == 2) {
+			connection.addEqual(port1, port2);
+		} else {
+			if (newConnector == null) {
+				constraint = String.format("%s %s ( %s %s  %s)",
 					constraint, AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
-		}
-		else {
-			constraint = String.format("%s %s %s %s ( %s %s  %s)",
-				constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
+			}
+			else {
+				constraint = String.format("%s %s %s %s ( %s %s  %s)",
+						constraint, AND, newConnector.getConstraint(), AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
+			}
 		}
 	}
 
@@ -278,5 +279,20 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 			nextStates = new String[0];// TODO???
 		}
 		return nextStates.clone();
+	}
+
+	public String replaceEquals(String rawConstraint, Set<HashSet<String>> equalsSuperSet) {
+		Primitive prim = new Primitive();
+		for (HashSet<String> equals : equalsSuperSet) {
+			Optional<String> representor = equals.stream().findFirst();
+			if (representor.isPresent()) {
+				equals.remove(representor);
+				for (String var : equals) {
+					rawConstraint = rawConstraint.replaceAll(prim.flow(var), prim.flow(representor.get()));
+				}
+			}
+		}
+		System.out.println("reduced" + rawConstraint);
+		return rawConstraint;
 	}
 }

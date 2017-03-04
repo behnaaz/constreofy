@@ -15,11 +15,11 @@ import priority.states.StateValue;
 
 public class Solver implements Constants, Containable {
 	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
-	private ConstraintConnector cc;
+	private ConstraintConnector connectorConstraint;
 	private IOAwareStateValue initState;
 
 	public Solver(ConstraintConnector cc, IOAwareStateValue initState) throws IOException {
-		this.cc = cc;
+		this.connectorConstraint = cc;
 		this.initState = initState;
 	}
 
@@ -35,7 +35,7 @@ public class Solver implements Constants, Containable {
 		do {
 			visitedStates = visit(visitedStates, currentStatesValue);
 			// Get solutions from current state
-			List<IOAwareSolution> foundSolutions = findSolutions(currentStatesValue, cc);
+			List<IOAwareSolution> foundSolutions = findSolutions(currentStatesValue, connectorConstraint);
 			solutions = addToSolutions(solutions, foundSolutions);
 
 			explorableStates = addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);

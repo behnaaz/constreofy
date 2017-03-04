@@ -21,7 +21,7 @@ public class Starter {
 		StateValue sv = new StateValue();
 		sv.add(svv);
 		IOAwareStateValue initState = new IOAwareStateValue(sv, null/*new IOComponent("w1", 10000000)*/);
-		ExampleMaker exampleMaker = new ExampleMaker(-370);
+		ExampleMaker exampleMaker = new ExampleMaker(-80);
 		ConstraintConnector cc = exampleMaker.getExample(initState);
 		List<IOAwareSolution> solutions = new Solver(cc, initState).solve(-1);
         Drawer d = new Drawer(solutions);
