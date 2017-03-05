@@ -112,7 +112,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return result;
 	}
 
-	private String printVariables(final String formulae) throws IOException {
+	private String prepareVariables(final String formulae) throws IOException {
 		final StringBuilder builder = new StringBuilder();
 		final Set<String> vars = this.extractVariablesAndUpdtateConstraint(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
 				.map(String::toUpperCase).collect(Collectors.toSet());
@@ -127,7 +127,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	* @param constraint
 	* @return
 	*///TPDP ?? retire one 
-	public String output(final StateValue stateValue) {
+	public String buildConstraint(final StateValue stateValue) {
 		final StringBuilder builder = new StringBuilder();
 
 		try {
@@ -171,34 +171,13 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 
 	private Set<String> getAllFIFOs(final String mainConstraint) {
 		final Set<String> result = new TreeSet<>();
-		final Pattern pattern = Pattern.compile("\\w+XRING");
+		final Pattern pattern = Pattern.compile("\\w+XRING", Pattern.CASE_INSENSITIVE);
 		final Matcher matcher = pattern.matcher(mainConstraint);
 		
-		while(matcher.find()){
+		while(matcher.find())
 			result.add(mainConstraint.substring(matcher.start(), matcher.end()));
-		}
+
 		return result;
-	}
-
-	/**
-	 * Wrap the constraints with required by REDUCE 
-	 * @param constraint
-	 * @return
-	 */
-	public String output(final String constraint) {
-		final StringBuilder builder = new StringBuilder();
-
-		try {
-			builder.append(PREAMBLE);
-			builder.append(printVariables(constraint));
-			builder.append(FORMULA_NAME + " := " + constraint + ";;");
-			builder.append(dnf(FORMULA_NAME));
-			builder.append(SHUT);
-			builder.append("; end;");
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.toString());
-		}
-		return builder.toString();
 	}
 
 	private String dnf(final String formulae) throws IOException {
@@ -219,7 +198,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		if (USE_EQUAL_SET_ON) {
 			connection.addEqual(port1, port2);
 		} else {
-			if (port1 != null && port1.length() > 0) {
+			if (!Strings.isNullOrEmpty(port1)) {
 				variableNames.add(port1);
 			}
 			constraint = String.format("%s %s ( %s %s  %s)",
@@ -240,10 +219,10 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	/**
 	 * Sets states
 	 * 
-	 * @param nexts
+	 * @param currents
 	 */
-	public void setStates(final String... mems) {
-		states = mems;
+	public void setStates(final String... currents) {
+		states = currents;
 	}
 
 	/**
@@ -286,9 +265,8 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 			final Optional<String> representor = equals.stream().findFirst();
 			if (representor.isPresent()) {
 				equals.remove(representor);
-				for (final String var : equals) {
+				for (final String var : equals)
 					wipConstraint = wipConstraint.replaceAll(prim.flow(var), prim.flow(representor.get()));//TODO
-				}
 			}
 		}
 		System.out.println("reduced by method 2" + wipConstraint);

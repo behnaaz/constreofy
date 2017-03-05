@@ -35,7 +35,7 @@ public class Solver implements Constants, Containable {
 		do {
 			visitedStates = visit(visitedStates, currentStatesValue);
 			// Get solutions from current state
-			List<IOAwareSolution> foundSolutions = findSolutions(currentStatesValue, connectorConstraint);
+			List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, connectorConstraint);
 			solutions = addToSolutions(solutions, foundSolutions);
 
 			explorableStates = addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
@@ -96,8 +96,8 @@ public class Solver implements Constants, Containable {
 		return currentStatesValues;
 	}
 
-	public List<IOAwareSolution> findSolutions(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws Exception{
-		List<String> reduceOutput = getReduceOutput(cc, currentStatesValue.getStateValue());
+	public List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws Exception {
+		List<String> reduceOutput = executeReduce(cc, currentStatesValue.getStateValue());
 		String strReduceOutput = getOnlyAnswer(reduceOutput);
 		DNF dnf = new DNF(Lists.newArrayList(cc.getVariables()));
 		List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
@@ -147,10 +147,10 @@ public class Solver implements Constants, Containable {
 		return temp;
 	}
 
-	private List<String> getReduceOutput(ConstraintConnector cc, StateValue stateValue) throws IOException {
+	private List<String> executeReduce(ConstraintConnector cc, StateValue stateValue) throws IOException {
 		Process process = Runtime.getRuntime().exec(REDUCE_PROGRAM);
 		OutputStream stdin = process.getOutputStream();
-		stdin.write(cc.output(stateValue).getBytes());
+		stdin.write(cc.buildConstraint(stateValue).getBytes());
 		stdin.flush();
 		stdin.close();
 

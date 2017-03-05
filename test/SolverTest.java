@@ -27,7 +27,7 @@ public class SolverTest {
 		IOAwareStateValue currentStatesValue = new IOAwareStateValue(new StateValue(), new IOComponent("a", 1));
 		ExampleMaker em = new ExampleMaker(3);
 		solver = new Solver(em.getExample(currentStatesValue), currentStatesValue);
-		s = solver.findSolutions(currentStatesValue, new ExampleMaker(3).getExample(currentStatesValue));
+		s = solver.doSolve(currentStatesValue, new ExampleMaker(3).getExample(currentStatesValue));
 	}
 	@Test
 	@Ignore
@@ -37,7 +37,7 @@ public class SolverTest {
 		v.getStateValue().add(new StateVariableValue("ij1ij2ring", optTrue));
 		v.getStateValue().add(new StateVariableValue("jk1jk2ring", optTrue));
 
-		s = solver.findSolutions(v, new ExampleMaker(3).getExample(v));
+		s = solver.doSolve(v, new ExampleMaker(3).getExample(v));
 		assertEquals(s.size(), 4);
 
 	}
