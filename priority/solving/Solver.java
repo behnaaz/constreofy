@@ -31,8 +31,11 @@ public class Solver implements Constants, Containable {
 		IOAwareStateValue currentStatesValue = initState;
 		StateManager stateManager = new StateManager();
 		List<IOAwareSolution> solutions = new ArrayList<>();
+		long startTime0 = System.nanoTime();
 
 		do {
+			long startTime1 = System.nanoTime();
+
 			visitedStates = visit(visitedStates, currentStatesValue);
 			// Get solutions from current state
 			List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, connectorConstraint);
@@ -42,7 +45,19 @@ public class Solver implements Constants, Containable {
 			currentStatesValue = getNextUnexploredState(visitedStates, explorableStates);
 			if (currentStatesValue != null)
 				System.out.println("Step " + ++n + " from " + currentStatesValue.toString());
+			
+			
+			long endTime1 = System.nanoTime();
+
+			long duration = endTime1 - startTime1;
+			System.out.println("One solution took in miliseconds: " + duration/1000000);
+			
 		} while (currentStatesValue != null && (maxLimit < 0 || n < maxLimit));
+		long endTime0 = System.nanoTime();
+
+		long duration = endTime0 - startTime0;
+		System.out.println("whole solutions took in miliseconds: " + duration/1000000 + " #solutions: " 
+		+ solutions.size() + " #cons len:" + connectorConstraint.getConstraint().length());
 		System.out.println(".....done in step " + n);
 		return solutions;
 	}
@@ -50,13 +65,13 @@ public class Solver implements Constants, Containable {
 	public List<IOAwareStateValue> addToExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
 			StateManager stateManager, List<IOAwareSolution> solutions) {
 		//if (debug)
-//	System.out.println("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
+	//System.out.println("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
 		List<IOAwareStateValue> nexts = stateManager.findNextStates(solutions, visitedStates, explorableStates);
 		for (IOAwareStateValue state : nexts) {
-	//		System.out.println("  " + state.toString() + " exporable  ");
+		//	System.out.println("  " + state.toString() + " exporable  ");
 			explorableStates.add(state);
 		}
-		System.out.println("Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
+		//System.out.println("Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
 		return explorableStates;
 	}
 

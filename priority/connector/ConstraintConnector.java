@@ -40,7 +40,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	/** 
 	 * Reduce the number of variables by omitting equal ones
 	 */
-	private static final boolean USE_EQUAL_SET_ON = true;
+	private static final boolean USE_EQUAL_SET_ON = !true;
 
 	/**
 	 * The constraint representing the connector and lists of its port ends
@@ -259,6 +259,8 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	}
 
 	public String replaceEquals(final String rawConstraint, final Set<HashSet<String>> equalsSuperSet) {
+		long startTime = System.nanoTime();
+
 		final Primitive prim = new Primitive();
 		String wipConstraint = rawConstraint;
 		for (final HashSet<String> equals : equalsSuperSet) {
@@ -269,7 +271,11 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 					wipConstraint = wipConstraint.replaceAll(prim.flow(var), prim.flow(representor.get()));//TODO
 			}
 		}
-		System.out.println("reduced by method 2" + wipConstraint);
+	//	System.out.println("replaceEquals: reduced by method 2" + wipConstraint);
+		long endTime = System.nanoTime();
+
+		long duration = (endTime - startTime);
+		System.out.println("replaceEquals took in miliseconds: " + duration/1000000);
 		return wipConstraint;
 	}
 }
