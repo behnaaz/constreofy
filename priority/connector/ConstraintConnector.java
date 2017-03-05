@@ -87,10 +87,10 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	 * @return
 	 */
 	public Set<String> getVariables() {
-		return extractVariables(constraint);
+		return extractVariablesAndUpdtateConstraint(constraint);
 	}
 
-	private Set<String> extractVariables(final String newConstraint) {
+	private Set<String> extractVariablesAndUpdtateConstraint(final String newConstraint) {
 		final Set<String> result = new HashSet<>();
 
 		if (!Strings.isNullOrEmpty(newConstraint)) {
@@ -114,10 +114,10 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 
 	private String printVariables(final String formulae) throws IOException {
 		final StringBuilder builder = new StringBuilder();
-		final Set<String> vars = this.extractVariables(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
+		final Set<String> vars = this.extractVariablesAndUpdtateConstraint(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
 				.map(String::toUpperCase).collect(Collectors.toSet());
 		builder.append("rlpcvar ");
-		final String variable = vars.toString(); // NOPMD by behnaz.changizi on 2/23/17 11:27 AM
+		final String variable = vars.toString();
 		builder.append(variable.substring(1, variable.length() - 1)).append(';');
 		return builder.toString();
 	}
@@ -214,7 +214,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	 */
 	public void add(final ConstraintConnector newConnector, final String port1, final String port2) {
 		if (port1 != null && port1.length() > 0) {
-			names.add(port1);
+			variableNames.add(port1);
 		}
 		if (newConnector != null) {
 			constraint = String.format("%s %s %s", constraint, AND, newConnector.getConstraint());

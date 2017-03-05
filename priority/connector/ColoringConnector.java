@@ -28,7 +28,7 @@ public class ColoringConnector extends AbstractConnector {
 			for (int i = 0; i < model.size(); i++) {
 				boolean copy = true;
 				for (int j = 0; j < boundaries.length; j++) {
-					if (model.get(i).get(names.indexOf(boundaries[j])) == 'o') {
+					if (model.get(i).get(variableNames.indexOf(boundaries[j])) == 'o') {
 						copy = false;
 						break;
 					}
@@ -36,7 +36,7 @@ public class ColoringConnector extends AbstractConnector {
 				if (copy)
 					result.add(model.get(i));
 			}
-			return new ColoringConnector(names, result);
+			return new ColoringConnector(variableNames, result);
 		}
 		
 		private String texify(Character ch) {
@@ -60,9 +60,9 @@ public class ColoringConnector extends AbstractConnector {
 				if (i == 0) {
 					System.out.println("Nodes : "+ model.get(i).size() + " Lines : " + model.size());
 					for (int j = 0; j < model.get(i).size(); j++) {
-						String out = texify(names.get(j));
+						String out = texify(variableNames.get(j));
 						if (j != 0)
-							out = spaced(names.get(j).length(), Optional.of(out));
+							out = spaced(variableNames.get(j).length(), Optional.of(out));
 						System.out.print(out);
 
 					}
@@ -71,7 +71,7 @@ public class ColoringConnector extends AbstractConnector {
 				for (int j = 0; j < model.get(i).size(); j++) {
 					String out = texify(model.get(i).get(j));
 					if (j != 0)
-						out = spaced(names.get(j).length()+1, Optional.of(out));
+						out = spaced(variableNames.get(j).length()+1, Optional.of(out));
 
 					System.out.print(out);
 
@@ -105,12 +105,12 @@ public class ColoringConnector extends AbstractConnector {
 		}
 
 		public void add(ColoringConnector newTable, String newPortName, String existingPortName) {
-			int newPort = newPortName == null ? -1 : newTable.getNames().indexOf(newPortName);
-			int existing = existingPortName == null ? -1 : names.indexOf(existingPortName);
+			int newPort = newPortName == null ? -1 : newTable.getVariableNames().indexOf(newPortName);
+			int existing = existingPortName == null ? -1 : variableNames.indexOf(existingPortName);
 
 			if (!model.isEmpty()) {
 				this.model = newTable.getModel();
-				this.names = newTable.getNames();
+				this.variableNames = newTable.getVariableNames();
 				return;
 			}
 			
@@ -127,12 +127,12 @@ public class ColoringConnector extends AbstractConnector {
 			}
 			
 			this.model = newModel;
-			this.names.addAll(newTable.getNames());
+			this.variableNames.addAll(newTable.getVariableNames());
 		}
 
 		public ColoringConnector connect(String name1, String name2) {
-			int port1 = name1 == null ? -1 : names.indexOf(name1);
-			int port2 = name2 == null ? -1 : names.indexOf(name2);
+			int port1 = name1 == null ? -1 : variableNames.indexOf(name1);
+			int port2 = name2 == null ? -1 : variableNames.indexOf(name2);
 			List<ArrayList<Character>> result = new ArrayList<>();
 
 			for (int i = 0; i < model.size(); i++) {
@@ -145,6 +145,6 @@ public class ColoringConnector extends AbstractConnector {
 					result.add(model.get(i));
 			}
 
-			return new ColoringConnector(names, result);
+			return new ColoringConnector(variableNames, result);
 		}
 	}

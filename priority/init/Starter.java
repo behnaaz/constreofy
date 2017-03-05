@@ -16,16 +16,20 @@ public class Starter {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Optional<Boolean> optTrue = Optional.of(Boolean.TRUE);
-		StateVariableValue svv = new StateVariableValue("a1b1ring", optTrue);
-		StateValue sv = new StateValue();
-		sv.add(svv);
-		IOAwareStateValue initState = new IOAwareStateValue(sv, null/*new IOComponent("w1", 10000000)*/);
-		ExampleMaker exampleMaker = new ExampleMaker(-80);
+		StateValue initStateValue = makeInitState();
+		IOAwareStateValue initState = new IOAwareStateValue(initStateValue, null/*new IOComponent("w1", 10000000)*/);
+		ExampleMaker exampleMaker = new ExampleMaker(-4);
 		ConstraintConnector cc = exampleMaker.getExample(initState);
 		List<IOAwareSolution> solutions = new Solver(cc, initState).solve(-1);
         Drawer d = new Drawer(solutions);
         d.draw();
         d.toGoJS();
+	}
+
+	private static StateValue makeInitState() {
+		StateVariableValue svv = new StateVariableValue("a1b1ring", Optional.of(Boolean.TRUE));
+		StateValue sv = new StateValue();
+		sv.add(svv);
+		return sv;
 	}
 }

@@ -21,6 +21,7 @@ public interface Constants {//TODO
 	static final String FALSE = " false ";
 	static final char SEPARATOR = ';';
 	static final String SPACE =  " ";
+	static final String AMPER =  "&";//???TODO
 	static final String STATE_DELIMINATOR = ":";
 	static final String CLOSE_TAG_BRACKET = "]";
 	static final String OPEN_TAG_BRACKET = "[";
@@ -28,8 +29,8 @@ public interface Constants {//TODO
 	static final String OPEN_TAG_PARANTHESIS = "(";
 	static final String STRING_COMMA = ",";
 	static final String PREFIX_NOT = "!";
-	static final String STRING_SPACE = " ";
 	static final String STRING_EMPTY = "";
 	static final String SOURCE_END_SIGN = "------";
 	static final String TARGET_START_SIGN = "------->";
+	static final String TXT =".txt";
 }

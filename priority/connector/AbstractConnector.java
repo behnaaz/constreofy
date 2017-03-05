@@ -11,27 +11,27 @@ import priority.init.FileUser;
 
 public abstract class AbstractConnector extends FileUser {
 	boolean isTex = true;
-	String newLine = isTex ? "\\\\ \r\n \\hline" : "";
+	String newLine = isTex ? "\\\\ \r\n \\hline" : STRING_EMPTY;
 
-	protected List<String> names;
+	protected List<String> variableNames;
 
-	public AbstractConnector(List<String> names) {
-		this.names = names;
+	public AbstractConnector(List<String> variableNames) {
+		this.variableNames = variableNames;
 	}
 
-	public AbstractConnector(String... names) {
-		this.names = convert(names);
+	public AbstractConnector(String... variableNames) {
+		this.variableNames = convert(variableNames);
 	}
 
-	public List<String> getNames() {
-		return names;
+	public List<String> getVariableNames() {
+		return variableNames;
 	}
 
 	public String getName(int n) {
-		if (names == null || names.isEmpty() || n >= names.size() || n < 0)
+		if (variableNames == null || variableNames.isEmpty() || n >= variableNames.size() || n < 0)
 			return null;
 		
-		return names.get(n);
+		return variableNames.get(n);
 	}
 
 	List<String> convert(String... c) {
@@ -51,7 +51,7 @@ public abstract class AbstractConnector extends FileUser {
 	}
 
 	String spaced(Optional<String> content) {
-		String temp = Stream.generate(() -> "&").limit(1).collect(joining());
+		String temp = Stream.generate(() -> AMPER).limit(1).collect(joining());
 		if (content.isPresent())
 			temp = temp.concat(content.get());
 		return temp;
@@ -61,7 +61,7 @@ public abstract class AbstractConnector extends FileUser {
 		if (isTex)
 			return spaced(content);
 
-		String temp = Stream.generate(() -> " ").limit(n).collect(joining());
+		String temp = Stream.generate(() -> SPACE).limit(n).collect(joining());
 		if (content.isPresent())
 			temp = temp.concat(content.get());
 		return temp;

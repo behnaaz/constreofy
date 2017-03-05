@@ -61,10 +61,10 @@ public class ExampleMaker extends FileUser {
 		connector = factory.writer("w1", currentStatesValue[0].getIOs()[0].getRequests());
 				
 		ConstraintConnector repA1A2 = factory.sync("a1", "a2");
-		connector.add(repA1A2, "w1", repA1A2.getNames().get(0));//replicator bas bashe
+		connector.add(repA1A2, "w1", repA1A2.getVariableNames().get(0));//replicator bas bashe
 
 		ConstraintConnector syncAB = factory.sync("ab1", "ab2");
-		connector.add(syncAB, repA1A2.getNames().get(1), syncAB.getName(0));
+		connector.add(syncAB, repA1A2.getVariableNames().get(1), syncAB.getName(0));
 /*
 		ConstraintConnector repB = factory.replicator("b1", "b2", "b3");
 		connector.add(repB, "b1", "ab2");// syncAB.getName(0));

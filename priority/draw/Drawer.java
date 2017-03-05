@@ -360,15 +360,15 @@ public class Drawer implements Constants {
 	private Set<String> cleanUp(String state, String openTag, String closeTag) {
 		Set<String> res = new TreeSet<>();
 		String temp = state.replace(openTag, STRING_EMPTY).replace(closeTag, STRING_EMPTY).trim();
-		String[] variables = temp.split(STRING_SPACE);
+		String[] variables = temp.split(SPACE);
 		StringBuilder result = new StringBuilder();
 		for (String v : variables) {
-			v = v.replace("xring", "ring").replace("ring", "");
+			v = v.replace(NEXT_MEMORY, CURRENT_MEMORY).replace(CURRENT_MEMORY, STRING_EMPTY);
 			if (!v.startsWith(PREFIX_NOT) && v.trim().length() > 0)
 				result.append(v).append(STRING_COMMA);
 		}
 		if (result.length() > 0) {
-			String[] vars = result.substring(0, result.length() - 1).toString().split(STRING_COMMA);
+			String[] vars = result.substring(0, result.length() - 1).split(STRING_COMMA);
 			for (String v : vars)
 				res.add(v);
 		}
