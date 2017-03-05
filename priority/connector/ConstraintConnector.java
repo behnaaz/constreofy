@@ -40,7 +40,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	/** 
 	 * Reduce the number of variables by omitting equal ones
 	 */
-	private static final boolean USE_EQUAL_SET_ON = !true;
+	private static final boolean USE_EQUAL_SET_ON = true;
 
 	/**
 	 * The constraint representing the connector and lists of its port ends
@@ -87,10 +87,10 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	 * @return
 	 */
 	public Set<String> getVariables() {
-		return extractVariablesAndUpdtateConstraint(constraint);
+		return extractVariablesAndUpdtateConstraint(constraint, true);//TODO bad design side effect
 	}
 
-	private Set<String> extractVariablesAndUpdtateConstraint(final String newConstraint) {
+	private Set<String> extractVariablesAndUpdtateConstraint(final String newConstraint, boolean updateConstraint) {
 		final Set<String> result = new HashSet<>();
 
 		if (!Strings.isNullOrEmpty(newConstraint)) {
@@ -102,10 +102,12 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 				if (!term.trim().isEmpty()) {
 					result.add(term.toUpperCase(Locale.US));
 
-					// Update constraint
-					builder.setLength(0); // Empty builder
-					builder.append(WORD_BOUNDARY).append(term).append(WORD_BOUNDARY);
-					constraint = constraint.replaceAll(builder.toString(), term.toUpperCase(Locale.US));
+					if (updateConstraint) {
+						// Update constraint
+						builder.setLength(0); // Empty builder
+						builder.append(WORD_BOUNDARY).append(term).append(WORD_BOUNDARY);
+						constraint = constraint.replaceAll(builder.toString(), term.toUpperCase(Locale.US));
+					}
 				}
 			}
 		}
@@ -114,7 +116,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 
 	private String prepareVariables(final String formulae) throws IOException {
 		final StringBuilder builder = new StringBuilder();
-		final Set<String> vars = this.extractVariablesAndUpdtateConstraint(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
+		final Set<String> vars = this.extractVariablesAndUpdtateConstraint(formulae, true).stream().filter(item -> !item.isEmpty())//TODO orElse??
 				.map(String::toUpperCase).collect(Collectors.toSet());
 		builder.append("rlpcvar ");
 		final String variable = vars.toString();
@@ -132,8 +134,6 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 
 		try {
 			builder.append(PREAMBLE);
-			if (USE_EQUAL_SET_ON)
-				constraint = replaceEquals(constraint, connection.getEquals());
 			builder.append(prepareVariables(constraint));
 			builder.append(FORMULA_NAME + " := " + applyFIFOStates(constraint, stateValue) + ";;");
 			builder.append(dnf(FORMULA_NAME));
@@ -193,15 +193,20 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	 */
 	public void add(final ConstraintConnector newConnector, final String port1, final String port2) {
 		if (newConnector != null) {
-			constraint = String.format("%s %s %s", constraint, AND, newConnector.getConstraint());
+			String newConstraint = newConnector.getConstraint();
+			if (USE_EQUAL_SET_ON)
+				newConstraint = replaceEquals(newConnector);
+			if (TRUE.equals(constraint))
+				constraint = newConstraint;
+			else
+				constraint = String.format("%s %s %s", constraint, AND, newConstraint);
 		}
-		if (USE_EQUAL_SET_ON) {
-			connection.addEqual(port1, port2);
-		} else {
+		if (!USE_EQUAL_SET_ON) {
 			if (!Strings.isNullOrEmpty(port1)) {
 				variableNames.add(port1);
 			}
-			constraint = String.format("%s %s ( %s %s  %s)",
+			if (!Strings.isNullOrEmpty(port1) && !Strings.isNullOrEmpty(port2))
+				constraint = String.format("%s %s ( %s %s  %s)",
 					constraint, AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
 		}
 	}
@@ -258,24 +263,35 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return nextStates.clone();
 	}
 
-	public String replaceEquals(final String rawConstraint, final Set<HashSet<String>> equalsSuperSet) {
+	private String replaceEquals(final ConstraintConnector rawConstraint) {
 		long startTime = System.nanoTime();
 
 		final Primitive prim = new Primitive();
-		String wipConstraint = rawConstraint;
-		for (final HashSet<String> equals : equalsSuperSet) {
-			final Optional<String> representor = equals.stream().findFirst();
-			if (representor.isPresent()) {
-				equals.remove(representor);
-				for (final String var : equals)
-					wipConstraint = wipConstraint.replaceAll(prim.flow(var), prim.flow(representor.get()));//TODO
-			}
-		}
-	//	System.out.println("replaceEquals: reduced by method 2" + wipConstraint);
+		String wipConstraint = rawConstraint.getConstraint();
+
+		wipConstraint = doReplace(prim, rawConstraint);
+
 		long endTime = System.nanoTime();
 
-		long duration = (endTime - startTime);
+		long duration = endTime - startTime;
 		System.out.println("replaceEquals took in miliseconds: " + duration/1000000);
 		return wipConstraint;
+	}
+
+	private String doReplace(final Primitive prim, final ConstraintConnector cc) {
+		String newConstraint = cc.getConstraint();
+		for (String var : cc.getVariableNames()) {
+			final Set<String> equals = connection.findEquals(var);
+			final Optional<String> representor = equals.stream().findFirst();
+			if (representor.isPresent() && !var.equals(representor.get()) && newConstraint.contains(var))
+				newConstraint = newConstraint.replaceAll(prim.flow(var), prim.flow(representor.get()));
+		}
+		return newConstraint;
+	}
+
+	public void addEquals(String port1, String port2) {
+		if (USE_EQUAL_SET_ON) {
+			connection.addEqual(port1, port2);
+		}
 	}
 }

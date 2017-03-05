@@ -26,7 +26,7 @@ public class Connection {
 		for (String var : vars) {
 			temp.add(var);
 			if (set == null || set.isEmpty()) {
-				set = findEntry(var);
+				set = findEquals(var);
 			}
 		}
 		if (set != null) {
@@ -38,8 +38,7 @@ public class Connection {
 		}
 	}
 
-
-	private Set<String> findEntry(String var) {
+	public Set<String> findEquals(String var) {
 		for (Set<String> s : equals) {
 			if (s.contains(var))
 				return s;

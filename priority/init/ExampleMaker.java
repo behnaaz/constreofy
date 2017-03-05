@@ -80,24 +80,28 @@ public class ExampleMaker extends FileUser {
 	}
 
 	private ConstraintConnector sequencer(int n) {
+		// newer method: add connections first
+		connector = new ConstraintConnector(TRUE);
+		for (int i = 1; i <= n; i++) {
+			if (i > 1)
+				connector.addEquals("a" + i, "e" + (i - 1));
+			connector.addEquals("c" + i, "b" + i);
+		}
+		if (n > 1)
+			connector.addEquals("a1", "e" + n);
+
 		ConnectorFactory factory = new ConnectorFactory();
 		for (int i = 1; i <= n; i++) {
-			if (i == 1) {
-				connector = factory.getFIFOConstraint("a" + i, "b" + i);
-				//connector.add(connector., port1, port2);
-			}
+			if (i == 1)
+				connector.add(factory.getFIFOConstraint("a" + i, "b" + i), null, null);
 			else
-				connector.add(factory.getFIFOConstraint("a" + i, "b" + i), "a" + i, "e" + (i - 1));//???
-			connector.add(factory.replicator("c" + i, "d" + i, "e" + i), "c" + i, "b" + i);
+				connector.add(factory.getFIFOConstraint("a" + i, "b" + i), "a" + i, "e" + (i - 1));
+
+			connector.add(factory.replicator("c" + i, /*"d" + i,*/ "e" + i), "c" + i, "b" + i);
 		}
 		if (n > 1) {
 			connector.add(null, "a1", "e" + n);
 		}
-		// connector.add(factory.replicator("c"+(n-1), "d"+(n-1), "e"+(n-1)),
-		// "c"+(n-1), "b"+(n-1));
-		// connector.add(factory.fullFifo("a"+n, "b"+n), "a"+n, "e"+(n-1));
-		// connector.add(factory.replicator("c"+n, "d"+n, "e"+n), "c"+n, "b"+n);
-		// connector.add(factory.merger("h", "i", "j"), "h", "g");
 		return connector;
 	}
 
