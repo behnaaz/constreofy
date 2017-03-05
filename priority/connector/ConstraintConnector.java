@@ -27,14 +27,20 @@ import priority.states.StateValue;
  *
  */
 public class ConstraintConnector extends AbstractConnector implements Constants {
+	private static final String BAR = "|";
+	private static final String KEY_WORDS_REGEX = String.format("%s%s%s%s%s%s%s%s%s%s%s%s%s", 
+			AND.trim(), BAR, IMPLIES.trim(), BAR, NOT.trim(), "|\\(|\\)|,|", RIGHTLEFTARROW.trim(), BAR,
+			OR.trim(), BAR, TRUE.trim(), BAR, FALSE.trim());
 	private static final Logger LOGGER = Logger.getLogger( ClassName.class.getName() );
 	private String constraint;
-	private final transient ConnectorFactory factory = new ConnectorFactory();
+	private final ConnectorFactory factory = new ConnectorFactory();
 	private String[] states;
 	private String[] nextStates;
-	private Connection connection;
-	// Reduce the number of variables by omitting equal ones
-	private boolean useEqualSet = true;
+	private final Connection connection;
+	/** 
+	 * Reduce the number of variables by omitting equal ones
+	 */
+	private static final boolean USE_EQUAL_SET_ON = !true;
 
 	/**
 	 * The constraint representing the connector and lists of its port ends
@@ -88,19 +94,18 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		final Set<String> result = new HashSet<>();
 
 		if (!Strings.isNullOrEmpty(newConstraint)) {
-			final String copy = newConstraint.replaceAll(AND.trim() + "|" + IMPLIES.trim() + "|" + NOT.trim()
-					+ "|\\(|\\)|,|" + RIGHTLEFTARROW.trim() + "|" + OR.trim() + "|" + TRUE.trim() + "|" + FALSE.trim(),
-					"");
-			// constraint
+			// Replace all keywords with empty string
+			final String onlyVariables = newConstraint.replaceAll(KEY_WORDS_REGEX, "");
+			// Constraint
 			final StringBuilder builder = new StringBuilder();
-			for (final String temp : copy.split(SPACE)) { // NOPMD by behnaz.changizi on 2/23/17 11:27 AM
-				builder.setLength(0);//Empty
-				if (!temp.trim().isEmpty()) {
-					result.add(temp.toUpperCase(Locale.US));
-					builder.append(WORD_BOUNDARY);
-					builder.append(temp);
-					builder.append(WORD_BOUNDARY);
-					constraint = constraint.replaceAll(builder.toString(), temp.toUpperCase(Locale.US));
+			for (final String term : onlyVariables.split(SPACE)) {
+				if (!term.trim().isEmpty()) {
+					result.add(term.toUpperCase(Locale.US));
+
+					// Update constraint
+					builder.setLength(0); // Empty builder
+					builder.append(WORD_BOUNDARY).append(term).append(WORD_BOUNDARY);
+					constraint = constraint.replaceAll(builder.toString(), term.toUpperCase(Locale.US));
 				}
 			}
 		}
@@ -141,41 +146,36 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 
 	private String getFinalConstraints(final String mainConstraint, final StateValue stateValue) {
 		final StringBuilder builder = new StringBuilder();
-		Set<String> fifos = getAllFIFOs(mainConstraint);
+		final Set<String> fifos = getAllFIFOs(mainConstraint);
 		builder.append(mainConstraint);
 		
-		for (String capitalLetterFIFO : fifos) {
-			String fifo = capitalLetterFIFO.toLowerCase(Locale.ENGLISH).replaceAll("xring", "ring"); 
-			if (stateValue.getValue(fifo) == null || !stateValue.getValue(fifo).isPresent() || stateValue.getValue(fifo).get() == false) {
+		for (final String capitalFIFO : fifos) {
+			final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll("xring", "ring"); 
+			if (stateValue.getValue(fifo).isPresent() && stateValue.getValue(fifo).get()) {
+				if (stateValue.getValue(fifo).get()) {
+					builder.append(AND);
+					builder.append(fifo.toUpperCase(Locale.ENGLISH));
+				} else {
+					assert false;
+				}
+			} else {
 				builder.append(AND);
 				builder.append(" (");
 				builder.append(NOT);
 				builder.append(fifo.toUpperCase(Locale.ENGLISH));
 				builder.append(") ");
-			} else {
-				if (stateValue.getValue(fifo).get()) {
-					builder.append(AND);
-					builder.append(fifo.toUpperCase(Locale.ENGLISH));
-				} else {
-					assert(false);
-				}
 			}
 		}
-		if (useEqualSet)
-			return replaceEquals(builder.toString(), connection.getEquals());
-
-		return builder.toString();
+		return USE_EQUAL_SET_ON ? replaceEquals(builder.toString(), connection.getEquals()) : builder.toString();
 	}
 
-	private Set<String> getAllFIFOs(String mainConstraint) {
-		Set<String> result = new TreeSet<>();
-		Pattern pattern = Pattern.compile("\\w+XRING");
-		Matcher matcher = pattern.matcher(mainConstraint);
+	private Set<String> getAllFIFOs(final String mainConstraint) {
+		final Set<String> result = new TreeSet<>();
+		final Pattern pattern = Pattern.compile("\\w+XRING");
+		final Matcher matcher = pattern.matcher(mainConstraint);
 		
 		while(matcher.find()){
-			int start = matcher.start();
-			int end = matcher.end();
-			result.add(mainConstraint.substring(start, end));
+			result.add(mainConstraint.substring(matcher.start(), matcher.end()));
 		}
 		return result;
 	}
@@ -219,7 +219,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		if (newConnector != null) {
 			constraint = String.format("%s %s %s", constraint, AND, newConnector.getConstraint());
 		}
-		if (useEqualSet) {
+		if (USE_EQUAL_SET_ON) {
 			connection.addEqual(port1, port2);
 		} else {
 			constraint = String.format("%s %s ( %s %s  %s)",
@@ -279,18 +279,19 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return nextStates.clone();
 	}
 
-	public String replaceEquals(String rawConstraint, Set<HashSet<String>> equalsSuperSet) {
-		Primitive prim = new Primitive();
-		for (HashSet<String> equals : equalsSuperSet) {
-			Optional<String> representor = equals.stream().findFirst();
+	public String replaceEquals(final String rawConstraint, final Set<HashSet<String>> equalsSuperSet) {
+		final Primitive prim = new Primitive();
+		String wipConstraint = rawConstraint;
+		for (final HashSet<String> equals : equalsSuperSet) {
+			final Optional<String> representor = equals.stream().findFirst();
 			if (representor.isPresent()) {
 				equals.remove(representor);
-				for (String var : equals) {
-					rawConstraint = rawConstraint.replaceAll(prim.flow(var), prim.flow(representor.get()));
+				for (final String var : equals) {
+					wipConstraint = wipConstraint.replaceAll(prim.flow(var), prim.flow(representor.get()));//TODO
 				}
 			}
 		}
-		System.out.println("reduced" + rawConstraint);
-		return rawConstraint;
+		System.out.println("reduced by method 2" + wipConstraint);
+		return wipConstraint;
 	}
 }
