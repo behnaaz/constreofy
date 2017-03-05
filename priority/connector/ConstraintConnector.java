@@ -213,15 +213,15 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	 * @param port2
 	 */
 	public void add(final ConstraintConnector newConnector, final String port1, final String port2) {
-		if (port1 != null && port1.length() > 0) {
-			variableNames.add(port1);
-		}
 		if (newConnector != null) {
 			constraint = String.format("%s %s %s", constraint, AND, newConnector.getConstraint());
 		}
 		if (USE_EQUAL_SET_ON) {
 			connection.addEqual(port1, port2);
 		} else {
+			if (port1 != null && port1.length() > 0) {
+				variableNames.add(port1);
+			}
 			constraint = String.format("%s %s ( %s %s  %s)",
 					constraint, AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
 		}
