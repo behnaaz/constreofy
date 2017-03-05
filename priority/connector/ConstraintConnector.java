@@ -267,9 +267,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		long startTime = System.nanoTime();
 
 		final Primitive prim = new Primitive();
-		String wipConstraint = rawConstraint.getConstraint();
-
-		wipConstraint = doReplace(prim, rawConstraint);
+		String wipConstraint = doReplace(prim, rawConstraint);
 
 		long endTime = System.nanoTime();
 
@@ -290,8 +288,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	}
 
 	public void addEquals(String port1, String port2) {
-		if (USE_EQUAL_SET_ON) {
+		if (USE_EQUAL_SET_ON)
 			connection.addEqual(port1, port2);
-		}
 	}
 }
