@@ -132,7 +132,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 
 		try {
 			builder.append(PREAMBLE);
-			builder.append(printVariables(constraint));
+			builder.append(prepareVariables(constraint));
 			//???
 			builder.append(FORMULA_NAME + " := " + getFinalConstraints(constraint, stateValue) + ";;");
 			builder.append(dnf(FORMULA_NAME));
