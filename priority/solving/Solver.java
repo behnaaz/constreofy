@@ -26,7 +26,7 @@ public class Solver implements Constants, Containable {
 	public List<IOAwareSolution> solve(int maxLimit) throws Exception {
 		List<IOAwareStateValue> visitedStates = new ArrayList<>();
 		List<IOAwareStateValue> explorableStates = new ArrayList<>();
-		//TODO convert to trrmap and fix cpntains ad delete issues
+		//TODO convert to treemap and fix contains ad delete issues
 		int n = 0;
 		IOAwareStateValue currentStatesValue = initState;
 		StateManager stateManager = new StateManager();
@@ -164,10 +164,9 @@ public class Solver implements Constants, Containable {
 					//System.out.println("....solution line " + line);
 				output.add(line);
 			}
-		} catch (IOException ex) {
 		}
 		finally{ 
-			//out.close();
+			out.close();
 		}
 		return output;
 	}

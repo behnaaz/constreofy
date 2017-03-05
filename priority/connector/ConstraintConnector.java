@@ -40,7 +40,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	/** 
 	 * Reduce the number of variables by omitting equal ones
 	 */
-	private static final boolean USE_EQUAL_SET_ON = !true;
+	private static final boolean USE_EQUAL_SET_ON = true;
 
 	/**
 	 * The constraint representing the connector and lists of its port ends
@@ -126,15 +126,16 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	* Wrap the constraints with required by REDUCE 
 	* @param constraint
 	* @return
-	*///TPDP ?? retire one 
+	*/ 
 	public String buildConstraint(final StateValue stateValue) {
 		final StringBuilder builder = new StringBuilder();
 
 		try {
 			builder.append(PREAMBLE);
+			if (USE_EQUAL_SET_ON)
+				constraint = replaceEquals(constraint, connection.getEquals());
 			builder.append(prepareVariables(constraint));
-			//???
-			builder.append(FORMULA_NAME + " := " + getFinalConstraints(constraint, stateValue) + ";;");
+			builder.append(FORMULA_NAME + " := " + applyFIFOStates(constraint, stateValue) + ";;");
 			builder.append(dnf(FORMULA_NAME));
 			builder.append(SHUT);
 			builder.append("; end;");
@@ -144,7 +145,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 		return builder.toString();
 	}
 
-	private String getFinalConstraints(final String mainConstraint, final StateValue stateValue) {
+	private String applyFIFOStates(final String mainConstraint, final StateValue stateValue) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append(mainConstraint);
 		
@@ -165,7 +166,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 				builder.append(") ");
 			}
 		}
-		return USE_EQUAL_SET_ON ? replaceEquals(builder.toString(), connection.getEquals()) : builder.toString();
+		return builder.toString();
 	}
 
 	private Set<String> getAllFIFOs(final String mainConstraint) {
