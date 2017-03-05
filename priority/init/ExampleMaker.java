@@ -22,7 +22,7 @@ public class ExampleMaker extends FileUser {
 	private ConstraintConnector exampleTwo() throws IOException {
 		ConnectorFactory factory = new ConnectorFactory();
 		connector = factory.router("a1", "a2", "a3");
-		connector.add(factory.fifoNotInit("b1", "b2"), "b1", "a2");//empty TODO
+		connector.add(factory.getFIFOConstraint("b1", "b2"), "b1", "a2");//empty TODO
 		connector.add(factory.router("c1", "c2", "c3"), "c1", "b2");
 		connector.add(factory.prioritySync("d1", "d2"), "d1", "c3");
 		connector.add(factory.syncDrain("e1", "e2"), "e1", "d2");
@@ -83,11 +83,11 @@ public class ExampleMaker extends FileUser {
 		ConnectorFactory factory = new ConnectorFactory();
 		for (int i = 1; i <= n; i++) {
 			if (i == 1) {
-				connector = factory.fifoNotInit("a" + i, "b" + i);
+				connector = factory.getFIFOConstraint("a" + i, "b" + i);
 				//connector.add(connector., port1, port2);
 			}
 			else
-				connector.add(factory.fifoNotInit("a" + i, "b" + i), "a" + i, "e" + (i - 1));//???
+				connector.add(factory.getFIFOConstraint("a" + i, "b" + i), "a" + i, "e" + (i - 1));//???
 			connector.add(factory.replicator("c" + i, "d" + i, "e" + i), "c" + i, "b" + i);
 		}
 		if (n > 1) {

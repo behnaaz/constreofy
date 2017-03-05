@@ -16,9 +16,8 @@ public class ConnectorFactory extends Primitive implements Constants {
 	}
 
 	public ConstraintConnector sync(String p1, String p2) {
-		String sync = String.format("(%s %s %s)"/* + AND + NOT + "(%sc" + AND + "%sk)"*/, flow(p1), RIGHTLEFTARROW,
-				flow(p2));
-		//, p1, p2);
+		String sync = String.format("(%s %s %s)"/* + AND + NOT + "(%sc" + AND + "%sk)"*/, 
+				flow(p1), RIGHTLEFTARROW, flow(p2));//, p1, p2);
 		return new ConstraintConnector(sync, p1, p2);
 	}
 
@@ -29,25 +28,24 @@ public class ConnectorFactory extends Primitive implements Constants {
 	 * @param full
 	 * @return
 	 */
-	public ConstraintConnector fifoNotInit(final String source, final String sink) {
+	public ConstraintConnector getFIFOConstraint(final String source, final String sink) {
 		return new FIFO(source, sink).generateConstraint();
 	}
 
 	public ConstraintConnector router(String c, String k1, String k2) {
 		String router = String.format(
-				"(%s" + RIGHTLEFTARROW + "( %s" + OR + "%s ))" + AND + "(" + NOT + "(%s" + AND + "%s))", 
-				flow(c), flow(k1),	flow(k2), 
-				flow(k1), flow(k2));
+				"(%s %s ( %s %s %s )) %s (%s (%s %s %s))", 
+				flow(c), RIGHTLEFTARROW, flow(k1),	OR, flow(k2), AND, NOT, flow(k1), AND, flow(k2));
 		return new ConstraintConnector(router, c, k1, k2);
 	}
 
 	public ConstraintConnector lossyDrain(String p1, String p2) {
-		String lossyDrain = String.format("(%s" + IMPLIES + "%s)", flow(p2), flow(p1));
+		String lossyDrain = String.format("(%s %s %s)", flow(p2), IMPLIES, flow(p1));
 		return new ConstraintConnector(lossyDrain, p1, p2);
 	}
 
 	public ConstraintConnector syncDrain(String p1, String p2) {
-		String syncDrain = String.format("(%s" + RIGHTLEFTARROW + "%s)", flow(p1), flow(p2));
+		String syncDrain = String.format("(%s %s %s)", flow(p1), RIGHTLEFTARROW, flow(p2));
 		return new ConstraintConnector(syncDrain, p1, p2);
 	}
 

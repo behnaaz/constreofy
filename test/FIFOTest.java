@@ -26,7 +26,7 @@ public class FIFOTest {
 	private List<IOAwareSolution> initializeData(Optional<Boolean> full) {
 		ConnectorFactory factory = new ConnectorFactory();
 		connector = factory.writer("w1", 1);
-		ConstraintConnector fifoCD = factory.fifoNotInit("cd1", "cd2");//TODO, full);
+		ConstraintConnector fifoCD = factory.getFIFOConstraint("cd1", "cd2");//TODO, full);
 		//TODO [cd1, cd2, cd1cd2ring, cd1cd2xring] names to check
 		connector.add(fifoCD, "w1", fifoCD.getName(0));
 
