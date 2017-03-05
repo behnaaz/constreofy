@@ -23,7 +23,7 @@ public class ConnectorFactory extends Primitive implements Constants {
 	}
 
 	/**
-	 * Returns the constarints of a new instance of FIFO initialized or uninitialized depending on the third parameter
+	 * Returns the constraints of a new instance of FIFO initialized or uninitialized depending on the third parameter
 	 * @param source
 	 * @param sink
 	 * @param full
@@ -58,18 +58,18 @@ public class ConnectorFactory extends Primitive implements Constants {
 	}
 
 	public ConstraintConnector replicator(String c, String k1, String k2) {
-		String replicator = String.format("(%s" + RIGHTLEFTARROW + "%s)" + AND + "(%s" + RIGHTLEFTARROW + "%s)",
+		String replicator = String.format("(%s %s %s) %s (%s %s %s)",
 				// + NOT + "(%sc" + AND + "%sk)" + AND + "%sbullet" + AND +
 				// "%sbullet",
-				flow(c), flow(k1), flow(c), flow(k2));
+				flow(c), RIGHTLEFTARROW, flow(k1), AND, flow(c), RIGHTLEFTARROW, flow(k2));
 		return new ConstraintConnector(replicator, c, k1, k2);
 	}
 
 	public ConstraintConnector replicator(String c, String k) {
-		String replicator = String.format("(%s" + RIGHTLEFTARROW + "%s)",
+		String replicator = String.format("(%s %s %s)",
 				// + NOT + "(%sc" + AND + "%sk)" + AND + "%sbullet" + AND +
 				// "%sbullet",
-				flow(c), flow(k));
+				flow(c), RIGHTLEFTARROW, flow(k));
 		return new ConstraintConnector(replicator, c, k);
 	}
 

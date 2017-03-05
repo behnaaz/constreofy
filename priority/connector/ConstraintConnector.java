@@ -45,10 +45,10 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	/**
 	 * The constraint representing the connector and lists of its port ends
 	 * @param constraint
-	 * @param names
+	 * @param boundaryPortNames
 	 */
-	public ConstraintConnector(final String constraint, final String... names) {
-		super(names);
+	public ConstraintConnector(final String constraint, final String... boundaryPortNames) {
+		super(boundaryPortNames);
 		connection = new Connection();
 		setConstraint(constraint);
 	}
