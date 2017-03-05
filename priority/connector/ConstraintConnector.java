@@ -146,11 +146,10 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 
 	private String getFinalConstraints(final String mainConstraint, final StateValue stateValue) {
 		final StringBuilder builder = new StringBuilder();
-		final Set<String> fifos = getAllFIFOs(mainConstraint);
 		builder.append(mainConstraint);
 		
-		for (final String capitalFIFO : fifos) {
-			final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll("xring", "ring"); 
+		for (final String capitalFIFO : getAllFIFOs(mainConstraint)) {
+			final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll(NEXT_MEMORY, CURRENT_MEMORY); 
 			if (stateValue.getValue(fifo).isPresent() && stateValue.getValue(fifo).get()) {
 				if (stateValue.getValue(fifo).get()) {
 					builder.append(AND);
