@@ -1,6 +1,11 @@
 package priority.common;
 
 public interface Constants {//TODO
+	/** 
+	 * Reduce the number of variables by omitting equal ones
+	 */
+	static final boolean USE_EQUAL_SET_ON = true;
+
 	static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
 	static final String PREAMBLE = "set_bndstk_size 100000;load_package \"redlog\";rlset ibalp;";
 	static final String WORD_BOUNDARY = "\\b";

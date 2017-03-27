@@ -37,10 +37,6 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	private String[] states;
 	private String[] nextStates;
 	private final Connection connection;
-	/** 
-	 * Reduce the number of variables by omitting equal ones
-	 */
-	private static final boolean USE_EQUAL_SET_ON = true;
 
 	/**
 	 * The constraint representing the connector and lists of its port ends

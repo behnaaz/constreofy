@@ -80,16 +80,7 @@ public class DNF extends FileUser implements Constants {
 
 		for (String and : ands) {
 			if (!and.trim().isEmpty()) {
-				
-			//sb = new StringBuilder();
 			String[] terms = and.trim().substring(1, and.trim().length()-1).split(AND.trim());
-			
-			//for (String term : terms) {
-			//	String[] atoms = term.trim().split(" = ");
-			//	if (variables.indexOf(atoms[0].toUpperCase()) <= -1) 
-				//	throw new Exception(atoms[0]+" not found");
-			//	sb.append((atoms[1].trim().equals("0")?"!":" ")+(atoms[0].trim())+" ");
-			//}
 			Solution newSol = new Solution(terms);//TODO
 			System.out.println(newSol.toString() + " \r\n");
 
@@ -105,11 +96,5 @@ public class DNF extends FileUser implements Constants {
 			if (t.getFlowVariables().equals(s.getFlowVariables()) && t.getFromVariables().equals(s.getFromVariables()) && t.getToVariables().equals(s.getToVariables()))
 				return true;
 		return false;
-	}
-
-	public void printFlowsNPriority() {
-		for (Solution sol : solutions) {
-			System.out.println(sol.toString(true));
-		}
 	}
 }
