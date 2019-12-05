@@ -1,10 +1,8 @@
 package priority.src.priority.solving;
 
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 
-import priority.common.Constants;
-
-public class IOComponent implements Comparable<Object>, Constants {
+public class IOComponent implements Comparable<Object> {
 	private String node;
 	private int requests;
 
@@ -38,7 +36,7 @@ public class IOComponent implements Comparable<Object>, Constants {
 	
 	@Override
 	public int compareTo(Object o) {
-		if (o instanceof IOComponent && !Strings.isNullOrEmpty(node)) {
+		if (o instanceof IOComponent && StringUtils.isNotBlank(node)) {
 				IOComponent t = (IOComponent)o;
 				if (node.equals(t.getNodeName())) {
 					return Integer.compare(requests, t.getRequests());

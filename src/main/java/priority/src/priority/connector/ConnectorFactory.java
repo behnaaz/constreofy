@@ -1,10 +1,15 @@
 package priority.src.priority.connector;
 
-import priority.common.Constants;
-import priority.primitives.FIFO;
-import priority.primitives.Primitive;
+import priority.src.priority.primitives.FIFO;
+import priority.src.priority.primitives.Primitive;
 
-public class ConnectorFactory extends Primitive implements Constants {
+import static priority.src.priority.connector.AbstractConnector.RIGHTLEFTARROW;
+import static priority.src.priority.connector.AbstractConnector.OR;
+import static priority.src.priority.connector.AbstractConnector.AND;
+import static priority.src.priority.connector.AbstractConnector.NOT;
+import static priority.src.priority.connector.AbstractConnector.IMPLIES;
+
+public class ConnectorFactory extends Primitive {
 	public ConstraintConnector merger(String p1, String p2, String p3) {
 		String merger = String.format(
 				"(%s" + RIGHTLEFTARROW + "(%s" + OR + "%s))" + AND + "(" + NOT + "(%s" + AND + "%s))" + AND + "((" + NOT
@@ -25,7 +30,6 @@ public class ConnectorFactory extends Primitive implements Constants {
 	 * Returns the constraints of a new instance of FIFO initialized or uninitialized depending on the third parameter
 	 * @param source
 	 * @param sink
-	 * @param full
 	 * @return
 	 */
 	public ConstraintConnector getFIFOConstraint(final String source, final String sink) {

@@ -1,9 +1,10 @@
 package priority.src.priority.primitives;
 
-import priority.common.Constants;
-import priority.connector.ConstraintConnector;
+import priority.src.priority.connector.ConstraintConnector;
 
-public class FIFO extends Primitive implements Constants {
+import static priority.src.priority.connector.AbstractConnector.*;
+
+public class FIFO extends Primitive {
 
 	private String port1;
 	private String port2;

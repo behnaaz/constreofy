@@ -13,30 +13,34 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import priority.src.priority.primitives.Primitive;
+import priority.src.priority.states.StateValue;
 
-import com.google.common.base.Strings;
+import static priority.src.Variable.CURRENT_MEMORY;
+import static priority.src.Variable.NEXT_MEMORY;
+import static priority.src.priority.solving.Solver.*;
 
-import javassist.bytecode.stackmap.TypeData.ClassName;
-import priority.common.Constants;
-import priority.primitives.Primitive;
-import priority.states.StateValue;
 /**
  * The building block of a network 
  * (representing connectors using constraint semantics)
  * @author behnaz.changizi
  *
  */
-public class ConstraintConnector extends AbstractConnector implements Constants {
+public class ConstraintConnector extends AbstractConnector {
 	private static final String BAR = "|";
 	private static final String KEY_WORDS_REGEX = String.format("%s%s%s%s%s%s%s%s%s%s%s%s%s", 
 			AND.trim(), BAR, IMPLIES.trim(), BAR, NOT.trim(), "|\\(|\\)|,|", RIGHTLEFTARROW.trim(), BAR,
 			OR.trim(), BAR, TRUE.trim(), BAR, FALSE.trim());
-	private static final Logger LOGGER = Logger.getLogger( ClassName.class.getName() );
+	private static final Logger LOGGER = Logger.getLogger( ConstraintConnector.class.getName() );
 	private String constraint;
 	private final ConnectorFactory factory = new ConnectorFactory();
 	private String[] states;
 	private String[] nextStates;
 	private final Connection connection;
+	static final String WORD_BOUNDARY = "\\b";
+	static final String PREAMBLE = "set_bndstk_size 100000;load_package \"redlog\";rlset ibalp;";
+
 
 	/**
 	 * The constraint representing the connector and lists of its port ends
@@ -89,7 +93,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	private Set<String> extractVariablesAndUpdtateConstraint(final String newConstraint, boolean updateConstraint) {
 		final Set<String> result = new HashSet<>();
 
-		if (!Strings.isNullOrEmpty(newConstraint)) {
+		if (StringUtils.isNotBlank(newConstraint)) {
 			// Replace all keywords with empty string
 			final String onlyVariables = newConstraint.replaceAll(KEY_WORDS_REGEX, "");
 			// Constraint
@@ -122,7 +126,7 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	
 	/**
 	* Wrap the constraints with required by REDUCE 
-	* @param constraint
+	* @param stateValue
 	* @return
 	*/ 
 	public String buildConstraint(final StateValue stateValue) {
@@ -198,10 +202,10 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 				constraint = String.format("%s %s %s", constraint, AND, newConstraint);
 		}
 		if (!USE_EQUAL_SET_ON) {
-			if (!Strings.isNullOrEmpty(port1)) {
+			if (StringUtils.isNotBlank(port1)) {
 				variableNames.add(port1);
 			}
-			if (!Strings.isNullOrEmpty(port1) && !Strings.isNullOrEmpty(port2))
+			if (StringUtils.isNotBlank(port1) && StringUtils.isNotBlank(port2))
 				constraint = String.format("%s %s ( %s %s  %s)",
 					constraint, AND, factory.flow(port1), RIGHTLEFTARROW, factory.flow(port2));
 		}
@@ -211,7 +215,8 @@ public class ConstraintConnector extends AbstractConnector implements Constants 
 	/**
 	 * Adds p1 IMPLIES p2
 	 * 
-	 * @param nexts
+	 * @param port1
+	 * @param port2
 	 */
 	public ConstraintConnector connect(final String port1, final String port2) {
 		return new ConstraintConnector(String.format(" (%s %s %s) ", port1, IMPLIES, port2));

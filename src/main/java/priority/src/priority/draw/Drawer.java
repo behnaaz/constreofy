@@ -1,8 +1,5 @@
 package priority.src.priority.draw;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,57 +8,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.miv.graphstream.distributed.json.JSONArray;
-import org.miv.graphstream.distributed.json.JSONException;
-import org.miv.graphstream.distributed.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import grph.Grph;
 import grph.in_memory.InMemoryGrph;
-import grph.properties.Property;
-import priority.common.Constants;
-import priority.solving.IOAwareSolution;
 import priority.src.priority.solving.IOAwareSolution;
 
-public class Drawer {
-	static final boolean USE_EQUAL_SET_ON = true;
+import static priority.src.Variable.CURRENT_MEMORY;
+import static priority.src.Variable.NEXT_MEMORY;
+import static priority.src.priority.connector.AbstractConnector.SPACE;
+import static priority.src.priority.init.FileUser.STRING_EMPTY;
 
-	static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
-	static final String PREAMBLE = "set_bndstk_size 100000;load_package \"redlog\";rlset ibalp;";
-	static final String WORD_BOUNDARY = "\\b";
-	static final String FORMULA_NAME = "qaz";
-	static final String FORMULA_NAME_EQUAL = "qaz :=";
-	static final String SHUT = "shut";
-	static final String TILDE = "tilde";
-	static final String CIRC = "circ";
-	static final String BULLET = "bullet";
-	static final String CURRENT_MEMORY = "ring";
-	static final String NEXT_MEMORY = "xring";
-	static final String IMPLIES = " impl ";
-	static final String RIGHTLEFTARROW = " equiv ";
-	static final String NOT = " not ";
-	static final String OR = " or ";
-	static final String AND = " and ";
-	static final String TRUE = " true ";
-	static final String FALSE = " false ";
-	static final char SEPARATOR = ';';
-	static final String SPACE =  " ";
-	static final String AMPER =  "&";//???TODO
-	static final String STATE_DELIMINATOR = ":";
-	static final String CLOSE_TAG_BRACKET = "]";
-	static final String OPEN_TAG_BRACKET = "[";
-	static final String CLOSE_TAG_PARANTHESIS = ")";
-	static final String OPEN_TAG_PARANTHESIS = "(";
-	static final String STRING_COMMA = ",";
-	static final String PREFIX_NOT = "!";
-	static final String STRING_EMPTY = "";
-	static final String SOURCE_END_SIGN = "------";
-	static final String TARGET_START_SIGN = "------->";
-	static final String TXT =".txt";
+public class Drawer {
+	public static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
+	public static final char SEPARATOR = ';';
+	public static final String STATE_DELIMINATOR = ":";
+	public static final String CLOSE_TAG_BRACKET = "]";
+	public static final String OPEN_TAG_BRACKET = "[";
+	public static final String CLOSE_TAG_PARANTHESIS = ")";
+	public static final String OPEN_TAG_PARANTHESIS = "(";
+	public static final String STRING_COMMA = ",";
+	public static final String PREFIX_NOT = "!";
+	public static final String SOURCE_END_SIGN = "------";
+	public static final String TARGET_START_SIGN = "------->";
 	/**
 	 * 
 	 */
 	List<String> content;
-    Map<Long, Integer> vertexState = new HashMap<>();
+    Map<Integer, Integer> vertexState = new HashMap<>();
     List<Set<String>> states;
     Map<Integer, ArrayList<Integer>> links = new HashMap<>();
     Map<String, String> linkLabels = new HashMap<>();
@@ -106,156 +82,19 @@ public class Drawer {
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
        // Creating a 4x4 grid and display it in a graphical view:
         Grph gb = new InMemoryGrph();
-        Map<Integer, Long> stateVertex = new HashMap<>();
-        for (int i = 0; i < states.size(); i++) {
-        	Long v = gb.addVertex();
+        Map<Integer, Integer> stateVertex = new HashMap<>();
+        for (Integer i = 0; i < states.size(); i++) {
+        	Integer v = gb.addVertex();
         	stateVertex.put(i, v);
         	vertexState.put(v, i);
-        	gb.setVerticesLabel(new Property("verticesLabel"){
-
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public long getMemoryFootprintInBytes() {
-					// TODO Auto-generated method stub
-					return 0;
-				}
-
-				@Override
-				public void toGrphBinary(ObjectOutput os) throws IOException {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void fromGrphBinary(ObjectInput is) throws IOException {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public boolean isSetted(long id) {
-					// TODO Auto-generated method stub
-					return false;
-				}
-
-				@Override
-				public void setValueAsText(long e, String value) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void unset(long id) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void unsetItAll() {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public String getValueAsString(long e) {
-					Integer state = vertexState.get(e);//TODO ???
-					if (state != null && state > -1)
-						return states.get(state).toString();
-					return "???";
-				}
-
-				@Override
-				public boolean haveSameValues(long a, long b) {
-					// TODO Auto-generated method stub
-					return false;
-				}
-
-				@Override
-				public void cloneValuesTo(Property p) {
-					// TODO Auto-generated method stub
-					
-				}});
+//        	gb.setVerticesLabel(new Property("verticesLabel"){ TODO
         }
         for (int i = 0; i < states.size(); i++) {
         	List<Integer> targets = links.get(i);
         	if (targets != null) {
         		for (Integer j : targets) {
         			gb.addDirectedSimpleEdge(stateVertex.get(i), stateVertex.get(j));
-        			gb.setEdgesLabel(new Property("edgesLabel") {
-        				
-        				/**
-        				 * 
-        				 */
-        				private static final long serialVersionUID = 1L;
-
-        				@Override
-        				public long getMemoryFootprintInBytes() {
-        					// TODO Auto-generated method stub
-        					return 0;
-        				}
-        				
-        				@Override
-        				public void unsetItAll() {
-        					// TODO Auto-generated method stub
-        					
-        				}
-        				
-        				@Override
-        				public void unset(long id) {
-        					// TODO Auto-generated method stub
-        					
-        				}
-        				
-        				@Override
-        				public void toGrphBinary(ObjectOutput os) throws IOException {
-        					// TODO Auto-generated method stub
-        					
-        				}
-        				
-        				@Override
-        				public void setValueAsText(long e, String value) {
-        					// TODO Auto-generated method stub
-        					String g = value;
-        					g = g + "";
-        					
-        				}
-        				
-        				@Override
-        				public boolean isSetted(long id) {
-        					// TODO Auto-generated method stub
-        					return true;
-        				}
-        				
-        				@Override
-        				public boolean haveSameValues(long a, long b) {
-        					// TODO Auto-generated method stub
-        					return false;
-        				}
-        				
-        				@Override
-        				public String getValueAsString(long e) {
-        					////Integer i = linkLabels.get(e);
-        					//if (i != null && i > -1)
-        						//return states.get(i);
-        					return null;//e + "xx";
-        				}
-        				
-        				@Override
-        				public void fromGrphBinary(ObjectInput is) throws IOException {
-        					// TODO Auto-generated method stub
-        					
-        				}
-        				
-        				@Override
-        				public void cloneValuesTo(Property p) {
-        					// TODO Auto-generated method stub
-        					
-        				}
-        			});
+        		//	gb.setEdgesLabel(new Property("edgesLabel") {
         		}
         	}
         }
@@ -317,15 +156,15 @@ public class Drawer {
 
 	private String toString(String k, String v, boolean csv) {
 		StringBuilder sb = new StringBuilder();
-		int indexOfStateDelim = k.indexOf(STATE_DELIMINATOR);
-		String source = k.substring(0, indexOfStateDelim);
+		int indexOfStateDelimiter = k.indexOf(STATE_DELIMINATOR);
+		String source = k.substring(0, indexOfStateDelimiter);
 		sb.append(source);
 		sb.append(SEPARATOR);
 		sb.append(states.get(Integer.parseInt(source)));
 		sb.append(SEPARATOR);
 		sb.append(v);
 		sb.append(SEPARATOR);
-		String target = k.substring(indexOfStateDelim + 1);
+		String target = k.substring(indexOfStateDelimiter + 1);
 		sb.append(target);
 		sb.append(SEPARATOR);
 		sb.append(states.get(Integer.parseInt(target)));
@@ -407,7 +246,6 @@ public class Drawer {
 			for (String v : vars)
 				res.add(v);
 		}
-
 		return res;
 	}
 }

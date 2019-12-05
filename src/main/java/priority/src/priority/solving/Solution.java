@@ -5,11 +5,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import priority.common.Constants;
-import priority.states.StateValue;
-import priority.states.StateVariableValue;
+import priority.src.priority.states.StateValue;
+import priority.src.priority.states.StateVariableValue;
 
-public class Solution implements Constants, Comparable<Object> {
+import static priority.src.Variable.*;
+import static priority.src.priority.connector.AbstractConnector.CIRC;
+
+public class Solution implements Comparable<Object> {
 	private static final String ONE = "1";
 	private static final String SPACE = " ";
 	private static final String REGEX_EQUAL = " = ";

@@ -2,9 +2,10 @@ package priority.src.priority.states;
 
 import java.util.Optional;
 
-import priority.common.Constants;
+import static priority.src.Variable.CURRENT_MEMORY;
+import static priority.src.Variable.NEXT_MEMORY;
 
-public class StateVariableValue implements Comparable<Object>, Constants {
+public class StateVariableValue implements Comparable<Object> {
 	private String stateName;
 	private Optional<Boolean> value;
 	public StateVariableValue(String name, Optional<Boolean> value) {

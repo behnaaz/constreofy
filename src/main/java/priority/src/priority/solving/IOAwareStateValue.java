@@ -2,10 +2,9 @@ package priority.src.priority.solving;
 
 import java.util.Arrays;
 
-import priority.common.Constants;
-import priority.states.StateValue;
+import priority.src.priority.states.StateValue;
 
-public class IOAwareStateValue implements Comparable<Object>, Constants {
+public class IOAwareStateValue implements Comparable<Object> {
 	private IOComponent[] ios;
 	private StateValue stateValue;
 

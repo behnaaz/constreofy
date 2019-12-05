@@ -1,6 +1,5 @@
-plugins {
-    id 'java'
-}
+apply plugin: 'java'
+apply plugin: 'maven'
 
 group 'org.behnaz'
 version '1.0-SNAPSHOT'
@@ -12,5 +11,13 @@ repositories {
 }
 
 dependencies {
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.json:json:20160212'
+    compile files('../lib/grph-2.1.2.jar')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+repositories {
+    jcenter()
 }

@@ -3,7 +3,7 @@ package priority.src.priority.semantics;
 import java.util.ArrayList;
 import java.util.List;
 
-import priority.connector.ColoringConnector;
+import priority.src.priority.connector.ColoringConnector;
 
 public class Coloring extends AbstractSemantics {
 	public Coloring() {

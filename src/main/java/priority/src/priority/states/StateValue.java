@@ -5,9 +5,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import priority.common.Constants;
+import static priority.src.priority.draw.Drawer.STRING_COMMA;
 
-public class StateValue implements Comparable<Object>, Cloneable, Constants {
+public class StateValue implements Comparable<Object>, Cloneable {
 	private Set<StateVariableValue> variableValues = new TreeSet<>();
 
 	public Set<StateVariableValue> getVariableValues() {

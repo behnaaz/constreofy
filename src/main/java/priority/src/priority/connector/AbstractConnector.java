@@ -7,11 +7,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import priority.init.FileUser;
+import priority.src.priority.init.FileUser;
 
 public abstract class AbstractConnector extends FileUser {
 	boolean isTex = true;
 	String newLine = isTex ? "\\\\ \r\n \\hline" : STRING_EMPTY;
+	public static final String AMPER =  "&";//???TODO
+	public static final String SPACE =  " ";
+	public static final String CIRC = "circ";
+	public static final String IMPLIES = " impl ";
+	public static final String RIGHTLEFTARROW = " equiv ";
+	public static final String NOT = " not ";
+	public static final String OR = " or ";
+	public static final String AND = " and ";
+	public static final String TRUE = " true ";
+	public static final String FALSE = " false ";
 
 	protected List<String> variableNames;
 

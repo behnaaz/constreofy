@@ -1,8 +1,8 @@
 package priority.src.priority.primitives;
 
-import priority.common.Constants;
+import static priority.src.Variable.*;
 
-public class Primitive implements Constants {
+public class Primitive {
 	public String flow(String node) {
 		return new StringBuilder().append(node).append(TILDE).toString();
 	}

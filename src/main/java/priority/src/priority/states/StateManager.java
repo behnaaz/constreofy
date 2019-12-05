@@ -3,16 +3,15 @@ package priority.src.priority.states;
 import java.util.ArrayList;
 import java.util.List;
 
-import priority.solving.Containable;
-import priority.solving.IOAwareSolution;
-import priority.solving.IOAwareStateValue;
+import priority.src.priority.solving.IOAwareSolution;
+import priority.src.priority.solving.IOAwareStateValue;
 
 /**
  * 
  * @author behnaz.changizi
  *
  */
-public class StateManager implements Containable {
+public class StateManager {
 	/***
 	 * Return next states reachable from the current state
 	 * @param solutions
@@ -21,15 +20,15 @@ public class StateManager implements Containable {
 	 * @return
 	 */
 	public List<IOAwareStateValue> findNextStates(final List<IOAwareSolution> solutions,
-			final List<IOAwareStateValue> visitedStates,
-			final List<IOAwareStateValue> explorableStates) {
+												  final List<IOAwareStateValue> visitedStates,
+												  final List<IOAwareStateValue> explorableStates) {
 		final List<IOAwareStateValue> nexts = new ArrayList<>();
 		solutions.forEach(sol -> {
 			System.out.println("find next states for solution " + sol);
 			final StateValue aNextState = sol.getSolution().getNextStateValue();//TODO??
 			System.out.println("a next state is " + aNextState.toString());
 			final IOAwareStateValue temp = new IOAwareStateValue(aNextState, sol.getPostIOs());//Pre or post rename properly TODO
-			if (!contains(nexts, temp) && !contains(visitedStates, temp) && !contains(explorableStates, temp)) {
+			if (!nexts.contains(temp) && !visitedStates.contains(temp) && !explorableStates.contains(temp)) {
 				nexts.add(temp);
 			}
 		});

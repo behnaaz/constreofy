@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import priority.common.Constants;
-import priority.primitives.Primitive;
+import priority.src.priority.primitives.Primitive;
 
-public class IOAwareSolution implements Comparable<Object>, Constants {
+public class IOAwareSolution implements Comparable<Object> {
 	private IOComponent[] postIOs;
 	private Solution solution;
 	private IOComponent[] preIOs;

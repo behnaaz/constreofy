@@ -3,14 +3,13 @@ package priority.src.priority.init;
 import java.util.List;
 import java.util.Optional;
 
-import priority.common.Constants;
-import priority.connector.ConstraintConnector;
-import priority.draw.Drawer;
-import priority.solving.IOAwareSolution;
-import priority.solving.IOAwareStateValue;
-import priority.solving.Solver;
-import priority.states.StateValue;
-import priority.states.StateVariableValue;
+import priority.src.priority.connector.ConstraintConnector;
+import priority.src.priority.draw.Drawer;
+import priority.src.priority.solving.IOAwareSolution;
+import priority.src.priority.solving.IOAwareStateValue;
+import priority.src.priority.solving.Solver;
+import priority.src.priority.states.StateValue;
+import priority.src.priority.states.StateVariableValue;
 
 public class Starter {
 	private Starter() {
@@ -22,7 +21,7 @@ public class Starter {
 		ExampleMaker exampleMaker = new ExampleMaker(-80);
 		ConstraintConnector cc = exampleMaker.getExample(initState);
 		List<IOAwareSolution> solutions = new Solver(cc, initState).solve(-1);
-		System.out.println("Use new method?" + Constants.USE_EQUAL_SET_ON);
+		System.out.println("Use new method?" + Solver.USE_EQUAL_SET_ON);
         Drawer d = new Drawer(solutions);
         d.draw();
         d.toGoJS();

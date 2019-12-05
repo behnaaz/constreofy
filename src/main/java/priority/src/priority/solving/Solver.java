@@ -4,17 +4,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import com.google.common.collect.Lists;
 
-import priority.common.Constants;
-import priority.connector.ConstraintConnector;
-import priority.semantics.DNF;
-import priority.states.StateManager;
-import priority.states.StateValue;
+import priority.src.priority.connector.ConstraintConnector;
+import priority.src.priority.semantics.DNF;
+import priority.src.priority.states.StateManager;
+import priority.src.priority.states.StateValue;
 
-public class Solver implements Constants, Containable {
+
+public class Solver implements Containable {
 	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
+	public 	static final boolean USE_EQUAL_SET_ON = true;
+	public static final String FORMULA_NAME = "qaz";
+	public static final String FORMULA_NAME_EQUAL = "qaz :=";
+	public static final String SHUT = "shut";
+
 	private ConstraintConnector connectorConstraint;
 	private IOAwareStateValue initState;
 
@@ -114,7 +119,7 @@ public class Solver implements Constants, Containable {
 	public List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws Exception {
 		List<String> reduceOutput = executeReduce(cc, currentStatesValue.getStateValue());
 		String strReduceOutput = getOnlyAnswer(reduceOutput);
-		DNF dnf = new DNF(Lists.newArrayList(cc.getVariables()));
+		DNF dnf = new DNF(new ArrayList<>(cc.getVariables()));
 		List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
 		return ioAwarify(solutions, currentStatesValue.getIOs());
 	}

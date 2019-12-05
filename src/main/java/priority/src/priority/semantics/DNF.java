@@ -1,16 +1,18 @@
 package priority.src.priority.semantics;
 
+import priority.src.priority.init.FileUser;
+import priority.src.priority.solving.Solution;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import priority.common.Constants;
-import priority.init.FileUser;
-import priority.solving.Solution;
+import static priority.src.priority.connector.AbstractConnector.AND;
+import static priority.src.priority.connector.AbstractConnector.OR;
 
-public class DNF extends FileUser implements Constants {
+public class DNF extends FileUser {
 	private List<String> variables;
 	private List<Solution> solutions = new ArrayList<>();
 	static final String CNFFILE = "/Users/behnaz.changizi/reoworkspace/priority/src/Users/behnaz.changizi/Desktop/Dropbox/sol.txt";

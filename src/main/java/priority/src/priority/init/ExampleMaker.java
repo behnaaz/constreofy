@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import priority.connector.ConnectorFactory;
-import priority.connector.ConstraintConnector;
-import priority.primitives.FIFO;
-import priority.solving.IOAwareStateValue;
+import priority.src.priority.connector.ConnectorFactory;
+import priority.src.priority.connector.ConstraintConnector;
+import priority.src.priority.primitives.FIFO;
+import priority.src.priority.solving.IOAwareStateValue;
+
+import static priority.src.priority.connector.AbstractConnector.TRUE;
 
 public class ExampleMaker extends FileUser {
 	private ConstraintConnector connector;
