@@ -18,10 +18,10 @@ public class Convert {
 		//cat("syncprio.txt");
 		//cat("prioritysync.txt");
 		//cat("priorityfifo.txt");
-		cattt("b.txt", 8);
+		cat("b.txt", 8);
 	}
 
-	private static void cattt(String file, int no) throws IOException {
+	private static void cat(String file, int no) throws IOException {
 		try (Stream<String> stream = Files.lines(Paths.get(PATH + file))) {
 		    String joined = stream
 		        .map(String::valueOf)
