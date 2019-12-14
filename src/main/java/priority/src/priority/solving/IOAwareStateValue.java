@@ -2,8 +2,10 @@ package priority.src.priority.solving;
 
 import java.util.Arrays;
 
+import lombok.ToString;
 import priority.src.priority.states.StateValue;
 
+@ToString
 public class IOAwareStateValue implements Comparable<Object> {
 	private IOComponent[] ios;
 	private StateValue stateValue;
@@ -21,17 +23,8 @@ public class IOAwareStateValue implements Comparable<Object> {
 	
 	public StateValue getStateValue() {
 		if (stateValue == null)
-			return new StateValue();
+			stateValue = StateValue.builder().build();
 		return stateValue;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(stateValue.toString());
-		for (IOComponent io : ios) 
-			sb.append(io.toString());
-		return sb.toString();
 	}
 
 	@Override

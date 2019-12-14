@@ -1,17 +1,21 @@
 package priority.src.priority.states;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.util.Optional;
 
 import static priority.src.Variable.CURRENT_MEMORY;
 import static priority.src.Variable.NEXT_MEMORY;
 
+@Builder
+@EqualsAndHashCode
+@ToString
 public class StateVariableValue implements Comparable<Object> {
 	private String stateName;
 	private Optional<Boolean> value;
-	public StateVariableValue(String name, Optional<Boolean> value) {
-		this.setStateName(name);
-		this.setValue(value);
-	}
+
 	public String getStateName() {
 		return stateName;
 	}
@@ -28,34 +32,11 @@ public class StateVariableValue implements Comparable<Object> {
 	public String makeNextStateCurrent() {
 		return getStateName().toLowerCase().replace(NEXT_MEMORY, CURRENT_MEMORY);
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof StateVariableValue) {
-			StateVariableValue toCompare = (StateVariableValue)obj;
-			return stateName.trim().equals(toCompare.getStateName().trim()) && value.equals(toCompare.getValue());
-		}
 
-		return false;	
-	}
-
-	@Override
-	public int hashCode() {
-		return 17 * stateName.hashCode() + 13 * value.hashCode();
-	}
 	@Override
 	public int compareTo(Object o) {
 		if (this.equals(o))
 			return 0;
 		return 1;
-	}
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		if (value.isPresent()) {
-			sb.append(stateName);
-			sb.append(value.get());
-		}
-		return sb.toString();
 	}
 }

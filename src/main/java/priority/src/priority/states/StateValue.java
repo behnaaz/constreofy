@@ -4,9 +4,14 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import static priority.src.priority.draw.Drawer.STRING_COMMA;
 
+@Builder
+@EqualsAndHashCode
+@ToString
 public class StateValue implements Comparable<Object>, Cloneable {
 	private Set<StateVariableValue> variableValues = new TreeSet<>();
 
@@ -40,15 +45,6 @@ public class StateValue implements Comparable<Object>, Cloneable {
 	}
 
 	@Override
-	public String toString() {//TODO ???
-		StringBuilder sb = new StringBuilder();
-		variableValues.forEach(e -> { 
-			sb.append(e.getStateName()).append(e.getValue().get()).append(STRING_COMMA); 
-			});
-		return sb.toString().replaceAll(",$", "");
-	}
-
-	@Override
 	public int compareTo(Object o) {
 		int result = 0;
 		if (o instanceof StateValue) {
@@ -67,15 +63,5 @@ public class StateValue implements Comparable<Object>, Cloneable {
 			return result;
 		}
 		return -1;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		return this.compareTo(o) == 0;
-	}
-
-	@Override
-	public int hashCode() {
-		return variableValues.hashCode();//??
 	}
 }

@@ -33,7 +33,7 @@ public class Solution implements Comparable<Object> {
 	}
 
 	public StateValue buildNextStateValues() {//TODO eftezah
-		StateValue res = new StateValue();
+		StateValue res = StateValue.builder().build();
 		for (String t : toVariables)
 			res.add(makeStateVariable(t, true));
 		return res;
@@ -108,7 +108,7 @@ public class Solution implements Comparable<Object> {
 		if (convertNextToCurrent)
 			name = name.replace(NEXT_MEMORY, CURRENT_MEMORY);
 		Optional<Boolean> optTemp = neg ? Optional.of(Boolean.FALSE) : Optional.of(Boolean.TRUE);
-		return new StateVariableValue(name.trim(), optTemp);
+		return StateVariableValue.builder().stateName(name.trim()).value(optTemp).build();
 	}
 
 	public StateValue getNextStateValue() {
