@@ -1,18 +1,16 @@
 package priority.src.priority.connector;
 
+import org.apache.commons.lang3.StringUtils;
+
 import static java.util.stream.Collectors.joining;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import priority.src.priority.init.FileUser;
-
-public abstract class AbstractConnector extends FileUser {
+public abstract class AbstractConnector {
 	boolean isTex = true;
-	String newLine = isTex ? "\\\\ \r\n \\hline" : STRING_EMPTY;
-	public static final String AMPER =  "&";//???TODO
+	private static final String AMPER =  "&";//???TODO
 	public static final String SPACE =  " ";
 	public static final String CIRC = "circ";
 	public static final String IMPLIES = " impl ";
@@ -21,15 +19,15 @@ public abstract class AbstractConnector extends FileUser {
 	public static final String OR = " or ";
 	public static final String AND = " and ";
 	public static final String TRUE = " true ";
-	public static final String FALSE = " false ";
+	static final String FALSE = " false ";
 
-	protected List<String> variableNames;
+	List<String> variableNames;
 
-	public AbstractConnector(List<String> variableNames) {
+	AbstractConnector(List<String> variableNames) {
 		this.variableNames = variableNames;
 	}
 
-	public AbstractConnector(String... variableNames) {
+	AbstractConnector(String... variableNames) {
 		this.variableNames = convert(variableNames);
 	}
 
@@ -44,11 +42,11 @@ public abstract class AbstractConnector extends FileUser {
 		return variableNames.get(n);
 	}
 
-	List<String> convert(String... c) {
-		List<String> result = new ArrayList<>();
-		for (int i = 0; i < c.length; i++) {
-			if (!result.contains(c[i]))
-				result.add(c[i]);
+	private List<String> convert(final String... c) {
+		final List<String> result = new ArrayList<>();
+		for (String s : c) {
+			if (!result.contains(s))
+				result.add(s);
 		}
 		return result;
 	}
@@ -60,20 +58,20 @@ public abstract class AbstractConnector extends FileUser {
 		return result;
 	}
 
-	String spaced(Optional<String> content) {
+	private String spaced(final String content) {
 		String temp = Stream.generate(() -> AMPER).limit(1).collect(joining());
-		if (content.isPresent())
-			temp = temp.concat(content.get());
+		if (StringUtils.isNotBlank(content))
+			return temp.concat(content);
 		return temp;
 	}
 
-	String spaced(int n, Optional<String> content) {
+	String spaced(final int n, final String content) {
 		if (isTex)
 			return spaced(content);
 
 		String temp = Stream.generate(() -> SPACE).limit(n).collect(joining());
-		if (content.isPresent())
-			temp = temp.concat(content.get());
+		if (StringUtils.isNotBlank(content))
+			return temp.concat(content);
 		return temp;
 	}
 }
