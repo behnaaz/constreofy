@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import priority.src.priority.connector.ConstraintConnector;
@@ -14,7 +13,6 @@ import priority.src.priority.states.StateValue;
 
 
 public class Solver implements Containable {
-	private static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
 	public 	static final boolean USE_EQUAL_SET_ON = true;
 	public static final String FORMULA_NAME = "qaz";
 	public static final String FORMULA_NAME_EQUAL = "qaz :=";
@@ -22,10 +20,12 @@ public class Solver implements Containable {
 
 	private ConstraintConnector connectorConstraint;
 	private IOAwareStateValue initState;
+	private final String reduceProgram;
 
-	public Solver(ConstraintConnector cc, IOAwareStateValue initState) throws IOException {
+	public Solver(ConstraintConnector cc, IOAwareStateValue initState, String reduceProgram) throws IOException {
 		this.connectorConstraint = cc;
 		this.initState = initState;
+		this.reduceProgram = reduceProgram;
 	}
 
 	public List<IOAwareSolution> solve(int maxLimit) throws Exception {
@@ -168,7 +168,7 @@ public class Solver implements Containable {
 	}
 
 	private List<String> executeReduce(ConstraintConnector cc, StateValue stateValue) throws IOException {
-		Process process = Runtime.getRuntime().exec(REDUCE_PROGRAM);
+		Process process = Runtime.getRuntime().exec(reduceProgram);
 		OutputStream stdin = process.getOutputStream();
 		stdin.write(cc.buildConstraint(stateValue).getBytes());
 		stdin.flush();

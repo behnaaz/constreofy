@@ -17,11 +17,16 @@ public class Starter {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		if (args.length == 0) {
+			System.out.println("Please provide the path to reduce program i.e. /mydrive/reduce/trunk/bin/redpsl");
+			System.exit(1);
+		}
+		final String reduceProgram = args[0];
 		final StateValue initStateValue = makeInitState("a1b1ring");
 		final IOAwareStateValue initState = new IOAwareStateValue(initStateValue, null/*new IOComponent("w1", 10000000)*/);
 		final ExampleMaker exampleMaker = new ExampleMaker(-80);
 		final ConstraintConnector cc = exampleMaker.getExample(initState);
-		final List<IOAwareSolution> solutions = new Solver(cc, initState).solve(-1);
+		final List<IOAwareSolution> solutions = new Solver(cc, initState, reduceProgram).solve(-1);
 		System.out.println("Use new method?" + Solver.USE_EQUAL_SET_ON);
         final Drawer d = new Drawer(solutions);
         d.draw();
