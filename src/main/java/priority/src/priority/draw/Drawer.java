@@ -34,14 +34,14 @@ public class Drawer {
 	public static final String SOURCE_END_SIGN = "------";
 	public static final String TARGET_START_SIGN = "------->";
 	/**
-	 * 
+	 *
 	 */
 	List<String> content;
     Map<Integer, Integer> vertexState = new HashMap<>();
     List<Set<String>> states;
     Map<Integer, ArrayList<Integer>> links = new HashMap<>();
     Map<String, String> linkLabels = new HashMap<>();
-    
+
 	public Drawer(Set<IOAwareSolution> solutions) {
 		this.content = solutionsToList(solutions, false);
 		init();
@@ -56,7 +56,7 @@ public class Drawer {
 		states = extractStates(content);
 		links = extractLinks(content, states);
 	}
-	
+
 	List<String> solutionsToList(Set<IOAwareSolution> solutions, boolean withPriority) {
 		List<String> list = new ArrayList<>();
 		for (IOAwareSolution s : solutions) {
@@ -78,7 +78,7 @@ public class Drawer {
 	}
 
 
-	public void draw(){	
+	public void draw(){
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
        // Creating a 4x4 grid and display it in a graphical view:
         Grph gb = new InMemoryGrph();
@@ -100,7 +100,7 @@ public class Drawer {
         }
         gb.display();
     }
-	
+
 	 public String toGoJS() {
     	String result = toJSON().toString();
     	System.out.println("....................");
@@ -121,7 +121,7 @@ public class Drawer {
 		}
     	return res;
     }
-   
+
 	private JSONArray linksToJSONArray() {
 		JSONArray jar = new JSONArray();
 		linkLabels.forEach((k, v) -> {
@@ -132,7 +132,7 @@ public class Drawer {
 			try {
 				String[] labels = ((v.endsWith(",")) ? v.concat(" "):v).split(",");
 				for (String label : labels)
-					jar.put(new JSONObject().put("from", source).put("to", target).put("text", label.replaceAll("tilde", "")));				
+					jar.put(new JSONObject().put("from", source).put("to", target).put("text", label.replaceAll("tilde", "")));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -199,7 +199,7 @@ public class Drawer {
 			Set<String> state = getSourceStateName(s);
     		if (!states.contains(state))
     			states.add(state);
-    		
+
     		state = getTargetStateName(s);
     		if (!states.contains(state))
     			states.add(state);
@@ -211,7 +211,7 @@ public class Drawer {
 		int begin = s.indexOf(TARGET_START_SIGN);
 		String io = s.substring(s.lastIndexOf(OPEN_TAG_BRACKET)).replace(OPEN_TAG_BRACKET, "").replace(CLOSE_TAG_BRACKET, "");
 		String res = s.substring(begin + TARGET_START_SIGN.length());
-		res = res.substring(0, res.indexOf(CLOSE_TAG_PARANTHESIS));		
+		res = res.substring(0, res.indexOf(CLOSE_TAG_PARANTHESIS));
 		res = res.concat(io);
 		return cleanUp(res, OPEN_TAG_PARANTHESIS, CLOSE_TAG_PARANTHESIS);
 	}
@@ -230,7 +230,7 @@ public class Drawer {
 		int end = s.indexOf("}");
 		return s.substring(begin, end).trim();
 	}
-	
+
 	private Set<String> cleanUp(String state, String openTag, String closeTag) {
 		Set<String> res = new TreeSet<>();
 		String temp = state.replace(openTag, STRING_EMPTY).replace(closeTag, STRING_EMPTY).trim();
