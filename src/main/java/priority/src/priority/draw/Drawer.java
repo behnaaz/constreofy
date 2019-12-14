@@ -19,10 +19,9 @@ import priority.src.priority.solving.IOAwareSolution;
 import static priority.src.Variable.CURRENT_MEMORY;
 import static priority.src.Variable.NEXT_MEMORY;
 import static priority.src.priority.connector.AbstractConnector.SPACE;
-import static priority.src.priority.init.FileUser.STRING_EMPTY;
 
 public class Drawer {
-	public static final String REDUCE_PROGRAM = "/Users/behnaz.changizi/Desktop/reduce/trunk/bin/redpsl";
+	public static final String STRING_EMPTY = "";
 	public static final char SEPARATOR = ';';
 	public static final String STATE_DELIMINATOR = ":";
 	public static final String CLOSE_TAG_BRACKET = "]";

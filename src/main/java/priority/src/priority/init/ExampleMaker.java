@@ -1,27 +1,19 @@
 package priority.src.priority.init;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import priority.src.priority.connector.ConnectorFactory;
 import priority.src.priority.connector.ConstraintConnector;
-import priority.src.priority.primitives.FIFO;
 import priority.src.priority.solving.IOAwareStateValue;
 
 import static priority.src.priority.connector.AbstractConnector.TRUE;
 
-public class ExampleMaker extends FileUser {
+class ExampleMaker extends FileUser {
 	private ConstraintConnector connector;
-	private int n;
-	private List<FIFO> fifos = new ArrayList<>();
-
-	public ExampleMaker(int n) throws FileNotFoundException {
-		this.n = n;
+	private int exampleChoice;
+	 ExampleMaker(int exampleChoice) {
+		this.exampleChoice = exampleChoice;
 	}
 
-	private ConstraintConnector exampleTwo() throws IOException {
+	private ConstraintConnector exampleTwo() {
 		ConnectorFactory factory = new ConnectorFactory();
 		connector = factory.router("a1", "a2", "a3");
 		connector.add(factory.getFIFOConstraint("b1", "b2"), "b1", "a2");//empty TODO
@@ -36,7 +28,7 @@ public class ExampleMaker extends FileUser {
 		return connector;
 	}
 
-	private ConstraintConnector exampleOne() throws IOException {
+	private ConstraintConnector exampleOne() {
 		ConnectorFactory factory = new ConnectorFactory();
 		connector = factory.prioritySync("a", "b");
 		connector.add(factory.merger("c", "d", "e"), "c", "b");
@@ -45,15 +37,15 @@ public class ExampleMaker extends FileUser {
 		return connector;
 	}
 
-	public ConstraintConnector getExample(IOAwareStateValue... currentStatesValues) throws IOException {
-		if (n == 1)
+	ConstraintConnector getExample(IOAwareStateValue... currentStatesValues) {
+		if (exampleChoice == 1)
 			return exampleOne();
-		if (n == 2)
+		if (exampleChoice == 2)
 			return exampleTwo();
-		if (n == 3)
+		if (exampleChoice == 3)
 			return null;//wrongXaction(currentStatesValues[0].getStateValue(), currentStatesValues[0].getIOs());
-		if (n < 0)
-			return sequencer(Math.abs(n));
+		if (exampleChoice < 0)
+			return sequencer(Math.abs(exampleChoice));
 		
 		return xaction(currentStatesValues);
 	}
@@ -107,7 +99,4 @@ public class ExampleMaker extends FileUser {
 		return connector;
 	}
 
-	public List<FIFO> fifos() {
-		return fifos;
-	}
 }
