@@ -6,7 +6,7 @@ import priority.src.priority.solving.IOAwareStateValue;
 
 import static priority.src.priority.connector.AbstractConnector.TRUE;
 
-class ExampleMaker extends FileUser {
+class ExampleMaker {
 	private ConstraintConnector connector;
 	private int exampleChoice;
 	 ExampleMaker(int exampleChoice) {
