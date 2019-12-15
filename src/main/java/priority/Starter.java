@@ -1,11 +1,10 @@
-package priority.init;
+package priority;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.extern.slf4j.Slf4j;
 import priority.connector.ConstraintConnector;
 import priority.draw.Drawer;
 import priority.solving.IOAwareSolution;
@@ -14,10 +13,7 @@ import priority.solving.Solver;
 import priority.states.StateValue;
 import priority.states.StateVariableValue;
 
-@Slf4j
 public class Starter {
-	private Starter() {
-	}
 	
 	public static void main(String[] args) {
 	//	if (args.length == 0) {
@@ -32,17 +28,21 @@ public class Starter {
 			solutions = Solver.builder()
 					.connectorConstraint(cc)
 					.initState(initState)
-					.reduceProgram("/media/c/projects/reotool/reduce-algebra-code-r5207-trunk/bin")
+					.reduceProgram("/media/c/projects/reotool/reduce-algebra-code-r5207-trunk/bin/redpslw")
 					.build()
 					.solve(-1);
 		} catch (IOException e) {
-			log.error("Failed to load Reduce {0} \r\n {1}", "/media/c/projects/reotool/reduce-algebra-code-r5207-trunk/bin", e.getMessage());
+			log("Failed to load Reduce  /media/c/projects/reotool/reduce-algebra-code-r5207-trunk/bin/redpslw " +e.getMessage());
 			return;
 		}
 		System.out.println("Use new method?" + Solver.USE_EQUAL_SET_ON);
         final Drawer d = new Drawer(solutions);
         d.draw();
         d.toGoJS();
+	}
+
+	public static void log(String s) {
+		System.out.println(s);
 	}
 
 	private static StateValue makeInitState(final String stateName) {

@@ -1,4 +1,4 @@
-package priority.init;
+package priority;
 
 import priority.connector.ConnectorFactory;
 import priority.connector.ConstraintConnector;
@@ -37,7 +37,7 @@ public class ExampleMaker {
 		return connector;
 	}
 
-	ConstraintConnector getExample(IOAwareStateValue... currentStatesValues) {
+	public ConstraintConnector getExample(IOAwareStateValue... currentStatesValues) {
 		if (exampleChoice == 1)
 			return exampleOne();
 		if (exampleChoice == 2)

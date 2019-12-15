@@ -7,14 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Builder;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import priority.Starter;
 import priority.connector.ConstraintConnector;
 import priority.semantics.DNF;
 import priority.states.StateManager;
 import priority.states.StateValue;
 
-@Slf4j
 @Builder
 public class Solver implements Containable {
 	public 	static final boolean USE_EQUAL_SET_ON = true;
@@ -114,7 +113,7 @@ public class Solver implements Containable {
 
 	private List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws IOException {
 		assert (StringUtils.isNotBlank(reduceProgram));
-		log.info("Solving the constraint using {0}", reduceProgram);
+		Starter.log("Solving the constraint using " + reduceProgram);
 		final List<String> reduceOutput = executeReduce(cc, currentStatesValue.getStateValue());
 		String strReduceOutput = getOnlyAnswer(reduceOutput);
 		DNF dnf = new DNF(new ArrayList<>(cc.getVariables()));
@@ -166,8 +165,8 @@ public class Solver implements Containable {
 	}
 
 	private List<String> executeReduce(ConstraintConnector cc, StateValue stateValue) throws IOException {
-		log.info("Loading Reduce from {0}", reduceProgram);
-		final Process process = null;//= Runtime.getRuntime().exec(reduceProgram);
+		Starter.log("Loading Reduce from " + reduceProgram);
+		final Process process = Runtime.getRuntime().exec(reduceProgram);
 		OutputStream stdin = process.getOutputStream();
 		stdin.write(cc.buildConstraint(stateValue).getBytes());
 		stdin.flush();
@@ -178,8 +177,7 @@ public class Solver implements Containable {
 		try (BufferedReader out = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 			String line;
 			while ((line = out.readLine()) != null) {
-				//if (debug)
-				//System.out.println("....solution line " + line);
+				Starter.log("....solution line " + line);
 				output.add(line);
 			}
 		}
