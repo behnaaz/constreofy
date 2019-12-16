@@ -1,4 +1,3 @@
-package priority.src.test;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;

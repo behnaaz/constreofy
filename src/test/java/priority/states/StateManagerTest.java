@@ -1,4 +1,4 @@
-package test;
+package priority.states;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import priority.ExampleMaker;
 import priority.connector.ConstraintConnector;
 import priority.init.ExampleMaker;
 import priority.solving.IOAwareSolution;

@@ -1,12 +1,10 @@
-package test;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DebugAssist {
+public class yesDebugAssist {
 	public static void main(String[] args) throws IOException {
 		Files.lines(Paths.get("/Users/behnaz.changizi/reoworkspace/priority/src/log.txt")).filter(s -> 
 			//s.startsWith("Step")
