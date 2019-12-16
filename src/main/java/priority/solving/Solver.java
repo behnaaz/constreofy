@@ -167,6 +167,7 @@ public class Solver implements Containable {
 	private List<String> executeReduce(ConstraintConnector cc, StateValue stateValue) throws IOException {
 		Starter.log("Loading Reduce from " + reduceProgram);
 		final Process process = Runtime.getRuntime().exec(reduceProgram);
+		Starter.log("Reduce loaded ? " + process.isAlive());
 		OutputStream stdin = process.getOutputStream();
 		stdin.write(cc.buildConstraint(stateValue).getBytes());
 		stdin.flush();

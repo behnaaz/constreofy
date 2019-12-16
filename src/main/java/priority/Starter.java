@@ -21,18 +21,18 @@ public class Starter {
 	//	}
 		final StateValue initStateValue = makeInitState("a1b1ring");
 		final IOAwareStateValue initState = new IOAwareStateValue(initStateValue, null/*new IOComponent("w1", 10000000)*/);
-		final ExampleMaker exampleMaker = new ExampleMaker(-80);
+		final ExampleMaker exampleMaker = new ExampleMaker(1);
 		final ConstraintConnector cc = exampleMaker.getExample(initState);
 		List<IOAwareSolution> solutions = null;
 		try {
 			solutions = Solver.builder()
 					.connectorConstraint(cc)
 					.initState(initState)
-					.reduceProgram("/media/c/projects/reotool/reduce-algebra-code-r5207-trunk/bin/redpslw")
+					.reduceProgram("/usr/bin/redpsl")
 					.build()
 					.solve(-1);
 		} catch (IOException e) {
-			log("Failed to load Reduce  /media/c/projects/reotool/reduce-algebra-code-r5207-trunk/bin/redpslw " +e.getMessage());
+			log("Solving constraints with reduce failed " +e.getMessage());
 			return;
 		}
 		System.out.println("Use new method?" + Solver.USE_EQUAL_SET_ON);

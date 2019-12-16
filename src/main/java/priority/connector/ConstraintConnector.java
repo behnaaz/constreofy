@@ -14,7 +14,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import priority.Starter;
 import priority.primitives.Primitive;
+import priority.solving.Solver;
 import priority.states.StateValue;
 
 import static priority.Variable.CURRENT_MEMORY;
@@ -93,7 +95,7 @@ public class ConstraintConnector extends AbstractConnector {
 	private Set<String> extractVariablesAndUpdtateConstraint(final String newConstraint, boolean updateConstraint) {
 		final Set<String> result = new HashSet<>();
 
-		if (StringUtils.isNotBlank(newConstraint)) {
+		if (newConstraint != null && newConstraint.trim().length() > 0) {
 			// Replace all keywords with empty string
 			final String onlyVariables = newConstraint.replaceAll(KEY_WORDS_REGEX, "");
 			// Constraint
@@ -142,7 +144,9 @@ public class ConstraintConnector extends AbstractConnector {
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, e.toString());
 		}
-		return builder.toString();
+		String temp = builder.toString();
+		Starter.log("Built constraints " + temp);
+		return temp;
 	}
 
 	private String applyFIFOStates(final String mainConstraint, final StateValue stateValue) {
