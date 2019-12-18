@@ -34,19 +34,19 @@ public class Solver implements Containable {
 		//TODO convert to treemap and fix contains ad delete issues
 		int n = 0;
 		IOAwareStateValue currentStatesValue = initState;
-		StateManager stateManager = new StateManager();
+		final StateManager stateManager = new StateManager();
 		List<IOAwareSolution> solutions = new ArrayList<>();
 		long startTime0 = System.nanoTime();
 
 		do {
 			long startTime1 = System.nanoTime();
 
-			visitedStates = visit(visitedStates, currentStatesValue);
+			visit(visitedStates, currentStatesValue);
 			// Get solutions from current state
 			List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, connectorConstraint);
-			solutions = addToSolutions(solutions, foundSolutions);
+			addToSolutions(solutions, foundSolutions);
 
-			explorableStates = addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
+			addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
 			currentStatesValue = getNextUnexploredState(visitedStates, explorableStates);
 			if (currentStatesValue != null)
 				Starter.log("Step " + ++n + " from " + currentStatesValue.toString());
@@ -67,7 +67,7 @@ public class Solver implements Containable {
 		return solutions;
 	}
 
-	public List<IOAwareStateValue> addToExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
+	public void addToExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
 			StateManager stateManager, List<IOAwareSolution> solutions) {
 		//if (debug)
 	//Starter.log("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
@@ -77,25 +77,22 @@ public class Solver implements Containable {
 			explorableStates.add(state);
 		}
 		//Starter.log("Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
-		return explorableStates;
 	}
 
-	private List<IOAwareStateValue> visit(final List<IOAwareStateValue> visitedStates, final IOAwareStateValue currentStatesValues) {
+	private void visit(final List<IOAwareStateValue> visitedStates, final IOAwareStateValue currentStatesValues) {
 		//Starter.log("B4 visit states: " + visitedStates.size() + " " + visitedStates.toString());
 		if (!contains(visitedStates, currentStatesValues))
 			visitedStates.add(new IOAwareStateValue(currentStatesValues.getStateValue(), currentStatesValues.getIOs()));
 		//Starter.log("After visit states: " + visitedStates.size() + " " + visitedStates.toString());
-		return visitedStates;
 	}
 
-	private List<IOAwareSolution> addToSolutions(final List<IOAwareSolution> solutions, final List<IOAwareSolution> stepSolutions) {
+	private void addToSolutions(final List<IOAwareSolution> solutions, final List<IOAwareSolution> stepSolutions) {
 		//	IOAwareSolution temp = new IOAwareSolution(s.getSolution(), /*updateRequests(s.getSolution(),*/ s.getPreIOs());
 		//if (!contains(solutions, temp)) {
 		//Starter.log("Solution added "+temp.toString());
 		//temp);
 		//}
 		solutions.addAll(stepSolutions);
-		return solutions;
 	}
 
 	private IOAwareStateValue getNextUnexploredState(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates) {

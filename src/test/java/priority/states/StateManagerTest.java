@@ -26,7 +26,7 @@ public class StateManagerTest {
 		final IOComponent ioComponent = new IOComponent("a", 1);
 		StateValue stateValue = StateValue.builder().build();
 		IOAwareStateValue currentStatesValue = new IOAwareStateValue(stateValue, ioComponent);
-		ConstraintConnector cc = new ExampleMaker(2).getExample(currentStatesValue);
+		ConstraintConnector cc = new ExampleMaker(1).getExample(currentStatesValue);
 		solver = Solver.builder().connectorConstraint(cc).initState(currentStatesValue).build();
 		solutions = solver.doSolve(currentStatesValue, cc);
 	}
@@ -34,6 +34,6 @@ public class StateManagerTest {
 	@Test
 	public void testNextStates() {
 		List<IOAwareStateValue> next = mgr.findNextStates(solutions, new ArrayList<>(), new ArrayList<>());
-		assertEquals(4, next.size());
+		assertEquals(36, next.size());
 	}
 }

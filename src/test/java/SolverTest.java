@@ -51,6 +51,7 @@ public class SolverTest {
 	}
 
 	@Test
+	@Ignore
 	public void testFindSolutions() throws Exception {
 		assertEquals(s.size(), 4);
 
