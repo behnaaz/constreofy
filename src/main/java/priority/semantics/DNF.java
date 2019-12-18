@@ -1,5 +1,6 @@
 package priority.semantics;
 
+import priority.Starter;
 import priority.solving.Solution;
 
 import java.io.FileWriter;
@@ -21,14 +22,14 @@ public class DNF {
 	}
 
 	public void printFlows() {
-		System.out.println("Flows~~~~~~~~~~~");
+		Starter.log("Flows~~~~~~~~~~~");
 		for (Solution sol : solutions) {
-			System.out.println(sol.toString());
+			Starter.log(sol.toString());
 		}
 	}
 
 	public void reportVars() {
-		variables.forEach(v -> System.out.println(variables.indexOf(v.trim().toUpperCase()) + " " + v));
+		variables.forEach(v -> Starter.log(variables.indexOf(v.trim().toUpperCase()) + " " + v));
 	}
 	
 	public void solveByReduce(final String constraint, final String outputFile) throws NotFeasibleException, IOException, VaiableNotFoundException {
@@ -79,7 +80,7 @@ public class DNF {
 			if (!and.trim().isEmpty()) {
 			String[] terms = and.trim().substring(1, and.trim().length()-1).split(AND.trim());
 			Solution newSol = new Solution(terms);//TODO
-			System.out.println(newSol.toString() + " \r\n");
+			Starter.log(newSol.toString() + " \r\n");
 
 			if (!contains(solutions, newSol))
 				solutions.add(newSol); //???TODO

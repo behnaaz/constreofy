@@ -29,7 +29,7 @@ public class Convert {
 		      //  .map(e -> e.replaceAll(" \\| ", ","))
 		     //   .sorted()
 		        .collect(Collectors.joining("\n "));
-		    System.out.println("List: " + joined);
+		    Starter.log("List: " + joined);
 		}		
 	}
 /*
@@ -40,7 +40,7 @@ public class Convert {
 		        .filter(path -> !path.startsWith("."))
 		        .sorted()
 		        .collect(Collectors.joining("; "));
-		    System.out.println("List: " + joined);
+		    Starter.log("List: " + joined);
 		}
 	}
 
@@ -52,7 +52,7 @@ public class Convert {
 		      //  .map(e -> e.replaceAll(" \\| ", ","))
 		     //   .sorted()
 		        .collect(Collectors.joining("\n "));
-		    System.out.println("List: " + joined);
+		    Starter.log("List: " + joined);
 		}
 	}*/
 }

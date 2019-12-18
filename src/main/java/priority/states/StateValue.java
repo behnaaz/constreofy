@@ -1,23 +1,23 @@
 package priority.states;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 
 @Builder
 @EqualsAndHashCode
 @ToString
 public class StateValue implements Comparable<Object>, Cloneable {
-	private Set<StateVariableValue> variableValues = new TreeSet<>();
-
-	public Set<StateVariableValue> getVariableValues() {
-		return variableValues;
-	}
+	@Builder.Default
+	@Getter
+	private Set<StateVariableValue> variableValues = new HashSet<>();
 
 	public boolean containsKey(String m) {
 		for (StateVariableValue v : variableValues) { 

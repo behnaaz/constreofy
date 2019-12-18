@@ -8,6 +8,7 @@ import java.util.List;
 
 import lombok.Builder;
 import org.apache.commons.lang3.StringUtils;
+import priority.PropertyReader;
 import priority.Starter;
 import priority.connector.ConstraintConnector;
 import priority.semantics.DNF;
@@ -23,7 +24,9 @@ public class Solver implements Containable {
 
 	private ConstraintConnector connectorConstraint;
 	private IOAwareStateValue initState;
-	private String reduceProgram;
+	@Builder.Default
+	private String reduceProgram = PropertyReader.reduceProgram();
+	;
 
 	public List<IOAwareSolution> solve(int maxLimit) throws IOException {
 		List<IOAwareStateValue> visitedStates = new ArrayList<>();
@@ -46,49 +49,49 @@ public class Solver implements Containable {
 			explorableStates = addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
 			currentStatesValue = getNextUnexploredState(visitedStates, explorableStates);
 			if (currentStatesValue != null)
-				System.out.println("Step " + ++n + " from " + currentStatesValue.toString());
+				Starter.log("Step " + ++n + " from " + currentStatesValue.toString());
 			
 			
 			long endTime1 = System.nanoTime();
 
 			long duration = endTime1 - startTime1;
-			System.out.println("One solution took in miliseconds: " + duration/1000000);
+			Starter.log("One solution took in miliseconds: " + duration/1000000);
 			
 		} while (currentStatesValue != null && (maxLimit < 0 || n < maxLimit));
 		long endTime0 = System.nanoTime();
 
 		long duration = endTime0 - startTime0;
-		System.out.println("whole solutions took in miliseconds: " + duration/1000000 + " #solutions: " 
+		Starter.log("whole solutions took in miliseconds: " + duration/1000000 + " #solutions: " 
 		+ solutions.size() + " #cons len:" + connectorConstraint.getConstraint().length());
-		System.out.println(".....done in step " + n);
+		Starter.log(".....done in step " + n);
 		return solutions;
 	}
 
 	public List<IOAwareStateValue> addToExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
 			StateManager stateManager, List<IOAwareSolution> solutions) {
 		//if (debug)
-	//System.out.println("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
+	//Starter.log("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
 		List<IOAwareStateValue> nexts = stateManager.findNextStates(solutions, visitedStates, explorableStates);
 		for (IOAwareStateValue state : nexts) {
-		//	System.out.println("  " + state.toString() + " exporable  ");
+		//	Starter.log("  " + state.toString() + " exporable  ");
 			explorableStates.add(state);
 		}
-		//System.out.println("Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
+		//Starter.log("Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
 		return explorableStates;
 	}
 
 	private List<IOAwareStateValue> visit(final List<IOAwareStateValue> visitedStates, final IOAwareStateValue currentStatesValues) {
-		//System.out.println("B4 visit states: " + visitedStates.size() + " " + visitedStates.toString());
+		//Starter.log("B4 visit states: " + visitedStates.size() + " " + visitedStates.toString());
 		if (!contains(visitedStates, currentStatesValues))
 			visitedStates.add(new IOAwareStateValue(currentStatesValues.getStateValue(), currentStatesValues.getIOs()));
-		//System.out.println("After visit states: " + visitedStates.size() + " " + visitedStates.toString());
+		//Starter.log("After visit states: " + visitedStates.size() + " " + visitedStates.toString());
 		return visitedStates;
 	}
 
 	private List<IOAwareSolution> addToSolutions(final List<IOAwareSolution> solutions, final List<IOAwareSolution> stepSolutions) {
 		//	IOAwareSolution temp = new IOAwareSolution(s.getSolution(), /*updateRequests(s.getSolution(),*/ s.getPreIOs());
 		//if (!contains(solutions, temp)) {
-		//System.out.println("Solution added "+temp.toString());
+		//Starter.log("Solution added "+temp.toString());
 		//temp);
 		//}
 		solutions.addAll(stepSolutions);
@@ -111,13 +114,15 @@ public class Solver implements Containable {
 		return currentStatesValues;
 	}
 
-	private List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws IOException {
-		assert (StringUtils.isNotBlank(reduceProgram));
+	public List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws IOException {
+		if (StringUtils.isBlank(reduceProgram)) {
+			throw new RuntimeException("Reduce path not provided");
+		}
 		Starter.log("Solving the constraint using " + reduceProgram);
 		final List<String> reduceOutput = executeReduce(cc, currentStatesValue.getStateValue());
-		String strReduceOutput = getOnlyAnswer(reduceOutput);
+		final String strReduceOutput = getOnlyAnswer(reduceOutput);
 		DNF dnf = new DNF(new ArrayList<>(cc.getVariables()));
-		List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
+		final List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
 		return ioAwarify(solutions, currentStatesValue.getIOs());
 	}
 
@@ -164,16 +169,19 @@ public class Solver implements Containable {
 		return temp;
 	}
 
-	private List<String> executeReduce(ConstraintConnector cc, StateValue stateValue) throws IOException {
+	private List<String> executeReduce(final ConstraintConnector cc, final StateValue stateValue) throws IOException {
 		Starter.log("Loading Reduce from " + reduceProgram);
 		final Process process = Runtime.getRuntime().exec(reduceProgram);
 		Starter.log("Reduce loaded ? " + process.isAlive());
-		OutputStream stdin = process.getOutputStream();
-		stdin.write(cc.buildConstraint(stateValue).getBytes());
+		final OutputStream stdin = process.getOutputStream();
+		final String constraints = cc.buildConstraint(stateValue);
+		Starter.log("Constraints to be solved: " + constraints);
+
+		stdin.write(constraints.getBytes());
 		stdin.flush();
 		stdin.close();
 
-		List<String> output = new ArrayList<>();
+		final List<String> output = new ArrayList<>();
 
 		try (BufferedReader out = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 			String line;

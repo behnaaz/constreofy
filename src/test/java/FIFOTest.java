@@ -28,9 +28,9 @@ public class FIFOTest {
 		//TODO [cd1, cd2, cd1cd2ring, cd1cd2xring] names to check
 		connector.add(fifoCD, "w1", fifoCD.getName(0));
 
-		IOAwareStateValue initState = new IOAwareStateValue(new StateValue(), new IOComponent("w1", 1));
+		IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("w1", 1));
 		try {
-			return new Solver(connector, initState).solve(-1);
+			return Solver.builder().connectorConstraint(connector).initState(initState).build().solve(-1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

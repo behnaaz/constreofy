@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import grph.Grph;
 import grph.in_memory.InMemoryGrph;
+import priority.Starter;
 import priority.solving.IOAwareSolution;
 
 import static priority.Variable.CURRENT_MEMORY;
@@ -102,9 +103,9 @@ public class Drawer {
 
 	 public String toGoJS() {
     	String result = toJSON().toString();
-    	System.out.println("....................");
-    	System.out.println(result);
-     	//linkLabels.forEach((k,v) -> System.out.println(toJSON(k,v) /*toString(k ,v, true)*/));
+    	Starter.log("....................");
+    	Starter.log(result);
+     	//linkLabels.forEach((k,v) -> Starter.log(toJSON(k,v) /*toString(k ,v, true)*/));
     	return result;
 	}
 

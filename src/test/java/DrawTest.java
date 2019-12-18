@@ -16,7 +16,6 @@ import priority.solving.Solver;
 import priority.states.StateValue;
 
 public class DrawTest {
-	private ConstraintConnector cc;
 	private List<IOAwareSolution> solutions;
 
 	@Before
@@ -30,10 +29,13 @@ public class DrawTest {
 		ConstraintConnector syncAB = factory.sync("AB1", "AB2");
 		connector.add(syncAB, repA1A2.getVariableNames().get(1), syncAB.getName(1));
 
-		cc = connector;
-		IOAwareStateValue initState = new IOAwareStateValue(new StateValue(), new IOComponent("a1", 1));
+		IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("a1", 1));
 		try {
-			solutions = new Solver(cc, initState).solve(-1);
+			solutions = Solver.builder()
+					.connectorConstraint(connector)
+					.initState(initState)
+					.build()
+					.solve(-1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -4,7 +4,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-public class yesDebugAssist {
+public class DebugAssist {
 	public static void main(String[] args) throws IOException {
 		Files.lines(Paths.get("/Users/behnaz.changizi/reoworkspace/priority/src/log.txt")).filter(s -> 
 			//s.startsWith("Step")

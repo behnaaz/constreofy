@@ -1,5 +1,7 @@
 package priority.connector;
 
+import priority.Starter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,25 +59,25 @@ public class ColoringConnector extends AbstractConnector {
 		public void output() {
 			for (int i = 0; i < model.size(); i++) {
 				if (i == 0) {
-					System.out.println("Nodes : "+ model.get(i).size() + " Lines : " + model.size());
+					Starter.log("Nodes : "+ model.get(i).size() + " Lines : " + model.size());
 					for (int j = 0; j < model.get(i).size(); j++) {
 						String out = texify(variableNames.get(j));
 						if (j != 0)
 							out = spaced(variableNames.get(j).length(), out);
-						System.out.print(out);
+						Starter.log(out);
 
 					}
-					System.out.println(newLine);
+					Starter.log(newLine);
 				}
 				for (int j = 0; j < model.get(i).size(); j++) {
 					String out = texify(model.get(i).get(j));
 					if (j != 0)
 						out = spaced(variableNames.get(j).length()+1, out);
 
-					System.out.print(out);
+					Starter.log(out);
 
 				}
-				System.out.println(newLine);
+				Starter.log(newLine);
 			}
 		}
 
@@ -114,7 +116,7 @@ public class ColoringConnector extends AbstractConnector {
 			}
 			
 			if (!model.isEmpty())
-				System.out.println("Connecting " +  newPortName + " to " + existingPortName);
+				Starter.log("Connecting " +  newPortName + " to " + existingPortName);
 			
 			List<ArrayList<Character>> newModel = new ArrayList<>();
 			for (int i = 0; i < model.size(); i++) {

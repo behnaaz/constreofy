@@ -8,10 +8,9 @@ package solving;
 //import org.sosy_lab.solver.SolverContextFactory.Solvers;
 //import org.sosy_lab.solver.api.SolverContext;
 
-import org.sosy_lab.common.configuration.InvalidConfigurationException;
 
-public class estSolver {
-	public static void main(String[] args) throws InvalidConfigurationException {
+public class TestSolver {
+	public static void main(String[] args) {
 	//    Configuration config = Configuration.fromCmdLineArguments(args);
 	//    LogManager logger = BasicLogManager.create(config);
 	  //  ShutdownManager shutdown = ShutdownManager.create();

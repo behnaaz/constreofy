@@ -42,8 +42,8 @@ public class ExampleMaker {
 			return exampleOne();
 		if (exampleChoice == 2)
 			return exampleTwo();
-		if (exampleChoice == 3)
-			return null;//wrongXaction(currentStatesValues[0].getStateValue(), currentStatesValues[0].getIOs());
+	//	if (exampleChoice == 3)
+	//		return null;//wrongXaction(currentStatesValues[0].getStateValue(), currentStatesValues[0].getIOs());
 		if (exampleChoice < 0)
 			return sequencer(Math.abs(exampleChoice));
 		

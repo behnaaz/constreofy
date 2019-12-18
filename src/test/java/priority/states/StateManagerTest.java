@@ -9,26 +9,24 @@ import org.junit.Test;
 
 import priority.ExampleMaker;
 import priority.connector.ConstraintConnector;
-import priority.init.ExampleMaker;
 import priority.solving.IOAwareSolution;
 import priority.solving.IOAwareStateValue;
 import priority.solving.IOComponent;
 import priority.solving.Solver;
-import priority.states.StateManager;
-import priority.states.StateValue;
+
 
 public class StateManagerTest {
-	StateManager mgr = new StateManager();
-	List<IOAwareSolution> solutions;
-	Solver solver;
+	private final StateManager mgr = new StateManager();
+	private List<IOAwareSolution> solutions;
+	private Solver solver;
 	
 	@Before
 	public void setUp() throws Exception {
-		IOComponent ioComponent = new IOComponent("a", 1);
-		StateValue stateValue = new StateValue();
+		final IOComponent ioComponent = new IOComponent("a", 1);
+		StateValue stateValue = StateValue.builder().build();
 		IOAwareStateValue currentStatesValue = new IOAwareStateValue(stateValue, ioComponent);
-		ConstraintConnector cc = new ExampleMaker(3).getExample(currentStatesValue);
-		solver = new Solver(cc, currentStatesValue);
+		ConstraintConnector cc = new ExampleMaker(2).getExample(currentStatesValue);
+		solver = Solver.builder().connectorConstraint(cc).initState(currentStatesValue).build();
 		solutions = solver.doSolve(currentStatesValue, cc);
 	}
 

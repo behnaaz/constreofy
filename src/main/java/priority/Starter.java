@@ -28,7 +28,6 @@ public class Starter {
 			solutions = Solver.builder()
 					.connectorConstraint(cc)
 					.initState(initState)
-					.reduceProgram("/usr/bin/redpsl")
 					.build()
 					.solve(-1);
 		} catch (IOException e) {
@@ -42,7 +41,9 @@ public class Starter {
 	}
 
 	public static void log(String s) {
-		System.out.println(s);
+		if (PropertyReader.debug()) {
+			System.out.println(s);
+		}
 	}
 
 	private static StateValue makeInitState(final String stateName) {

@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import priority.Starter;
 import priority.primitives.Primitive;
-import priority.solving.Solver;
 import priority.states.StateValue;
 
 import static priority.Variable.CURRENT_MEMORY;
@@ -155,7 +154,7 @@ public class ConstraintConnector extends AbstractConnector {
 		
 		for (final String capitalFIFO : getAllFIFOs(mainConstraint)) {
 			final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll(NEXT_MEMORY, CURRENT_MEMORY); 
-			if (stateValue.getValue(fifo).isPresent() && stateValue.getValue(fifo).get()) {
+			if (stateValue != null && stateValue.getValue(fifo).isPresent() && stateValue.getValue(fifo).get()) {//TODO what to do with optional???
 				if (stateValue.getValue(fifo).get()) {
 					builder.append(AND);
 					builder.append(fifo.toUpperCase(Locale.ENGLISH));
@@ -277,7 +276,7 @@ public class ConstraintConnector extends AbstractConnector {
 		long endTime = System.nanoTime();
 
 		long duration = endTime - startTime;
-		System.out.println("replaceEquals took in miliseconds: " + duration/1000000);
+		Starter.log("replaceEquals took in miliseconds: " + duration/1000000);
 		return wipConstraint;
 	}
 
