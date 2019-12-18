@@ -2,6 +2,7 @@ package priority.states;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -32,7 +33,7 @@ public class StateManagerTest {
 
 	@Test
 	public void testNextStates() {
-		List<IOAwareStateValue> next = mgr.findNextStates(solutions, null, null);//???
+		List<IOAwareStateValue> next = mgr.findNextStates(solutions, new ArrayList<>(), new ArrayList<>());
 		assertEquals(4, next.size());
 	}
 }
