@@ -1,4 +1,4 @@
-package priority.states;
+package legacy.states;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

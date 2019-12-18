@@ -1,4 +1,4 @@
-package priority.states;
+package legacy.states;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import static priority.Variable.NEXT_MEMORY;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class StateVariableValue implements Comparable<Object> {
+public class StateVariableValue {
 	private String stateName;
 	private Optional<Boolean> value;
 
@@ -31,12 +31,5 @@ public class StateVariableValue implements Comparable<Object> {
 	}
 	public String makeNextStateCurrent() {
 		return getStateName().toLowerCase().replace(NEXT_MEMORY, CURRENT_MEMORY);
-	}
-
-	@Override
-	public int compareTo(Object o) {
-		if (this.equals(o))
-			return 0;
-		return 1;
 	}
 }

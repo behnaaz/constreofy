@@ -1,4 +1,5 @@
-import static org.junit.Assert.assertEquals;
+package legacy;
+
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class DrawTest {
 		ConstraintConnector syncAB = factory.sync("AB1", "AB2");
 		connector.add(syncAB, repA1A2.getVariableNames().get(1), syncAB.getName(1));
 
-		IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("a1", 1));
+		final IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("a1", 1));
 		try {
 			solutions = Solver.builder()
 					.connectorConstraint(connector)

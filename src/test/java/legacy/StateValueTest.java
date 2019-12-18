@@ -1,3 +1,5 @@
+package legacy;
+
 import static org.junit.Assert.assertEquals;//TODO
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
@@ -112,7 +114,7 @@ public class StateValueTest {
 		assertTrue(t1.contains(s1));
 		
 		s2.add(stateVariableValue("b", optFalse));
-		
+
 		assertTrue(t1.contains(s2));
 		boolean deleted = t1.remove(s2);
 		assertTrue(deleted);

@@ -1,4 +1,4 @@
-package priority.states;
+package priority.solving;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,10 +10,8 @@ import org.junit.Test;
 
 import priority.ExampleMaker;
 import priority.connector.ConstraintConnector;
-import priority.solving.IOAwareSolution;
-import priority.solving.IOAwareStateValue;
-import priority.solving.IOComponent;
-import priority.solving.Solver;
+import priority.states.StateManager;
+import priority.states.StateValue;
 
 
 public class StateManagerTest {
