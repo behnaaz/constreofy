@@ -1,27 +1,34 @@
 package priority.solving;
 
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import priority.states.StateValue;
 import priority.states.StateVariableValue;
 
 import static priority.Variable.*;
 import static priority.connector.AbstractConnector.CIRC;
 
-public class Solution implements Comparable<Object> {
+@EqualsAndHashCode
+public class Solution {
 	private static final String ONE = "1";
 	private static final String SPACE = " ";
 	private static final String REGEX_EQUAL = " = ";
 	private static final String ZERO = "0";
 	private static final String NEG = "!";
 	private static final String EMPTY = "";
-	private Set<String> flowVariables = new TreeSet<>();
-	private Set<String> priority = new TreeSet<>();
-	private Set<String> fromVariables = new TreeSet<>();
-	private Set<String> toVariables = new TreeSet<>();
+	@Getter
+	private Set<String> flowVariables = new HashSet<>();
+	@Getter
+	private Set<String> priority = new HashSet<>();
+	@Getter
+	private Set<String> fromVariables = new HashSet<>();
+	@Getter
+	private Set<String> toVariables = new HashSet<>();
+	@Getter
 	private StateValue nextStateValue;
 
 	public Solution(String[] terms) {
@@ -109,50 +116,5 @@ public class Solution implements Comparable<Object> {
 			name = name.replace(NEXT_MEMORY, CURRENT_MEMORY);
 		Optional<Boolean> optTemp = neg ? Optional.of(Boolean.FALSE) : Optional.of(Boolean.TRUE);
 		return StateVariableValue.builder().stateName(name.trim()).value(optTemp).build();
-	}
-
-	public StateValue getNextStateValue() {
-		return nextStateValue;
-	}
-
-	@Override
-	public int hashCode() {
-		int hashCode = 0;
-		hashCode += getFromVariables().stream().mapToInt(Objects::hashCode).sum();
-		hashCode += getFlowVariables().stream().mapToInt(Objects::hashCode).sum();
-		hashCode += getToVariables().stream().mapToInt(Objects::hashCode).sum();
-		return hashCode;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof Solution) {
-			Solution s = (Solution)o;
-			return fromVariables.equals(s.getFromVariables()) && toVariables.equals(s.getToVariables()) 
-					&& flowVariables.equals(s.getFlowVariables());
-			}
-		return false;
-	}
-
-	@Override
-	public int compareTo(Object o) {
-		if (o instanceof Solution) {
-			Solution s = (Solution)o;
-			if (s.equals(this))
-				return 0;
-		}
-		return -1;
-	}
-
-	public Set<String> getFromVariables() {
-		return fromVariables;
-	}
-
-	public Set<String> getToVariables() {
-		return toVariables;
-	}
-
-	public Set<String> getFlowVariables() {
-		return flowVariables;
 	}
 }

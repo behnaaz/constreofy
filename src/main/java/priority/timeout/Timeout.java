@@ -13,8 +13,5 @@ public class Timeout implements Runnable{
         if(taskComplete ==false) {
         	timeout = true; 
         }
-        else {
-            return;
-        }
     }
 }

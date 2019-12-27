@@ -7,10 +7,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import priority.connector.ConnectorFactory;
 import priority.connector.ConstraintConnector;
+import priority.primitives.FIFO;
 import priority.solving.IOAwareSolution;
 import priority.solving.IOAwareStateValue;
 import priority.solving.IOComponent;
@@ -22,6 +24,11 @@ import priority.states.StateValue;
  */
 public class FIFOTest {
 	ConstraintConnector connector;
+
+	@Test(expected = RuntimeException.class)
+	public void testValidator() {
+		FIFO fifo = new FIFO("", null);
+	}
 
 	private List<IOAwareSolution> initializeData(Optional<Boolean> full) {
 		ConnectorFactory factory = new ConnectorFactory();

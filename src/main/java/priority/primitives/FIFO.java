@@ -2,17 +2,32 @@ package priority.primitives;
 
 import priority.connector.ConstraintConnector;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotBlank;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static priority.connector.AbstractConnector.*;
 
 public class FIFO extends Primitive {
-
+	@NotBlank
 	private String port1;
+	@NotBlank
 	private String port2;
 	private String stateless;
 
 	public FIFO(final String port1, final String port2) {
 		this.port1 = port1;
 		this.port2 = port2;
+		Set<ConstraintViolation<FIFO>> violations = Validation.buildDefaultValidatorFactory().getValidator().validate(this);
+		if (! violations.isEmpty()) {
+			throw new RuntimeException( violations.stream().map(e -> e.getMessage()).collect(Collectors.joining(",")));
+		}
 		this.stateless = getStatelessConstraint();
 	}
 

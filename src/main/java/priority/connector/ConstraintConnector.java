@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -13,6 +14,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import priority.Starter;
 import priority.primitives.Primitive;
@@ -34,6 +37,7 @@ public class ConstraintConnector extends AbstractConnector {
 			AND.trim(), BAR, IMPLIES.trim(), BAR, NOT.trim(), "|\\(|\\)|,|", RIGHTLEFTARROW.trim(), BAR,
 			OR.trim(), BAR, TRUE.trim(), BAR, FALSE.trim());
 	private static final Logger LOGGER = Logger.getLogger( ConstraintConnector.class.getName() );
+	@Getter
 	private String constraint;
 	private final ConnectorFactory factory = new ConnectorFactory();
 	private String[] states;
@@ -51,7 +55,13 @@ public class ConstraintConnector extends AbstractConnector {
 	public ConstraintConnector(final String constraint, final String... boundaryPortNames) {
 		super(boundaryPortNames);
 		connection = new Connection();
-		setConstraint(constraint);
+		this.constraint = constraint;
+	}
+
+	public ConstraintConnector(final String constraint, final List<String> boundaryPortNames) {
+		super(boundaryPortNames);
+		connection = new Connection();
+		this.constraint = (constraint);
 	}
 
 	/**
@@ -65,22 +75,6 @@ public class ConstraintConnector extends AbstractConnector {
 			result.put(lowerCaseState.replace(CURRENT_MEMORY, NEXT_MEMORY), false);
 		}
 		return result;
-	}
-
-	/**
-	 * Constraint
-	 * @return
-	 */
-	public String getConstraint() {
-		return constraint;
-	}
-
-	/**
-	 * Sets constraint
-	 * @return
-	 */
-	public void setConstraint(final String constraint) {
-		this.constraint = constraint;
 	}
 
 	/**

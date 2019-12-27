@@ -1,4 +1,5 @@
 package priority.solving;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Builder;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import priority.PropertyReader;
 import priority.Starter;
@@ -26,7 +28,6 @@ public class Solver implements Containable {
 	private IOAwareStateValue initState;
 	@Builder.Default
 	private String reduceProgram = PropertyReader.reduceProgram();
-	;
 
 	public List<IOAwareSolution> solve(int maxLimit) throws IOException {
 		List<IOAwareStateValue> visitedStates = new ArrayList<>();
@@ -79,14 +80,14 @@ public class Solver implements Containable {
 		//Starter.log("Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
 	}
 
-	private void visit(final List<IOAwareStateValue> visitedStates, final IOAwareStateValue currentStatesValues) {
+	private void visit(@NonNull final List<IOAwareStateValue> visitedStates, @NonNull final IOAwareStateValue currentStatesValues) {
 		//Starter.log("B4 visit states: " + visitedStates.size() + " " + visitedStates.toString());
 		if (!contains(visitedStates, currentStatesValues))
 			visitedStates.add(new IOAwareStateValue(currentStatesValues.getStateValue(), currentStatesValues.getIOs()));
 		//Starter.log("After visit states: " + visitedStates.size() + " " + visitedStates.toString());
 	}
 
-	private void addToSolutions(final List<IOAwareSolution> solutions, final List<IOAwareSolution> stepSolutions) {
+	private void addToSolutions(@NonNull final List<IOAwareSolution> solutions, @NonNull final List<IOAwareSolution> stepSolutions) {
 		//	IOAwareSolution temp = new IOAwareSolution(s.getSolution(), /*updateRequests(s.getSolution(),*/ s.getPreIOs());
 		//if (!contains(solutions, temp)) {
 		//Starter.log("Solution added "+temp.toString());
@@ -111,7 +112,7 @@ public class Solver implements Containable {
 		return currentStatesValues;
 	}
 
-	public List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws IOException {
+	 List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws IOException {
 		if (StringUtils.isBlank(reduceProgram)) {
 			throw new RuntimeException("Reduce path not provided");
 		}
