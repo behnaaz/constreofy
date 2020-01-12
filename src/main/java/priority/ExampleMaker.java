@@ -9,7 +9,8 @@ import static priority.connector.AbstractConnector.TRUE;
 public class ExampleMaker {
 	private ConstraintConnector connector;
 	private int exampleChoice;
-	 public ExampleMaker(int exampleChoice) {
+
+	public ExampleMaker(int exampleChoice) {
 		this.exampleChoice = exampleChoice;
 	}
 
