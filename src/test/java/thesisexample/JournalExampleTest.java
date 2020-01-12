@@ -25,11 +25,11 @@ public class JournalExampleTest implements ExampleData {
     private final List<String> routes = new ArrayList<>();
     private final List<String> merges = new ArrayList<>();
     private final List<Pair<String, String>> syncs = new ArrayList<>();//Primitive
-    private final List<String> fifos = new ArrayList<>();
-    private final List<String> lossys = new ArrayList<>();
+    private final List<Pair<String, String>>  fifos = new ArrayList<>();
+    private final List<Pair<String, String>> lossys = new ArrayList<>();
     private final List<Pair<String, String>> syncdrains = new ArrayList<>();
-    private final List<String> twoPrioritySyncs = new ArrayList<>();
-    private final List<String> onePrioritySyncs = new ArrayList<>();
+    private final List<Pair<String, String>> twoPrioritySyncs = new ArrayList<>();
+    private final List<Pair<String, String>> onePrioritySyncs = new ArrayList<>();
     private final Map<String, String> connections = new HashMap<>();
 
     private JSONObject jsonObject;
@@ -72,13 +72,10 @@ public class JournalExampleTest implements ExampleData {
         assertEquals(24,  fifos.size() + twoPrioritySyncs.size() + onePrioritySyncs.size() + lossys.size() + syncdrains.size() + syncs.size());
         assertEquals("A2B->AB1, D2F->DF1, E2F->EF2, Q2T->QT1, J4L->JL2", syncs.stream().map(e -> e.getKey() + "->" + e.getValue()).collect(Collectors.joining(", ")));
         assertEquals("E4T<->ET2, O1D<->OD4, H1C<->HC4, C3M<->CM1, D3U<->DU1, E3L<->EL1", syncdrains.stream().map(e -> e.getKey() + "<->" + e.getValue()).collect(Collectors.joining(", ")));
-
-       /* assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
-        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
-        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
-        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
-        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
-    */
+        assertEquals("Q3O.>QO2, Q4H.>QH2, J3M.>JM2, J6U.>JU2", lossys.stream().map(e -> e.getKey() + ".>" + e.getValue()).collect(Collectors.joining(", ")));
+        assertEquals("I2J!>IJ1", onePrioritySyncs.stream().map(e -> e.getKey() + "!>" + e.getValue()).collect(Collectors.joining(", ")));
+        assertEquals("S2Q!!>SQ1", twoPrioritySyncs.stream().map(e -> e.getKey() + "!!>" + e.getValue()).collect(Collectors.joining(", ")));
+        assertEquals("B2C[]>BC1, C2D[]>CD1, F3G[]>FG1, B3E[]>BE1, Q5P[]>QP1, J2K[]>JK1, J5N[]>JN1", fifos.stream().map(e -> e.getKey() + "[]>" + e.getValue()).collect(Collectors.joining(", ")));
     }
 
     @Test
@@ -131,19 +128,19 @@ public class JournalExampleTest implements ExampleData {
                 syncs.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
                 break;
             case "FIFO":
-                fifos.add(channelify(t, node.getJSONArray(t)));
+                fifos.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
                 break;
             case "SyncDrain":
                 syncdrains.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Source")));
                 break;
             case "PrioritySync2":
-                twoPrioritySyncs.add(channelify(t, node.getJSONArray(t)));
+                twoPrioritySyncs.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
                 break;
             case "PrioritySync1":
-                onePrioritySyncs.add(channelify(t, node.getJSONArray(t)));
+                onePrioritySyncs.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
                 break;
             case "Lossy":
-                lossys.add(channelify(t, node.getJSONArray(t)));
+                lossys.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
                 break;
             case "ends":
                 //TODO bad data
