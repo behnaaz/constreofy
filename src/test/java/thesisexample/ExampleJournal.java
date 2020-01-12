@@ -8,10 +8,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
 public class ExampleJournal implements ExampleData {
@@ -19,6 +22,7 @@ public class ExampleJournal implements ExampleData {
     final List<String> routes = new ArrayList<>();
     final List<String> merges = new ArrayList<>();
     final List<String> syncs = new ArrayList<>();
+    final Map<String, String> connections = new HashMap<>();
 
     private JSONObject jsonObject;
     @Before
@@ -47,8 +51,16 @@ public class ExampleJournal implements ExampleData {
 
     @Test
     public void checkConnections() {
-        final JSONArray connections = jsonObject.getJSONArray("connections");
-        assertEquals(49, connections.length());
+        final JSONArray temp = jsonObject.getJSONArray("connections");
+        assertEquals(49, temp.length());
+        for (int i=0; i < temp.length(); i++) {
+            JSONObject connection = temp.getJSONObject(i);
+            String from = connection.getString("one");
+            String to = connection.getString("two");
+            connections.put(from, to);
+            connections.put(to, from);
+        }
+        assertEquals(92, connections.size());
     }
 
     @Test
@@ -92,9 +104,10 @@ public class ExampleJournal implements ExampleData {
                 syncs.add(channelify(t, node.getJSONArray(t)));
                 break;
             case "ends":
-                break;//??TODO why it is there?
+                //TODO bad data
+                break;
             default:
-                assertEquals(t, "");
+                fail();
         }
     }
 
