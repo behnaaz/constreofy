@@ -1,4 +1,4 @@
-package legacy;
+package constraints;
 
 import static org.junit.Assert.assertNotNull;
 

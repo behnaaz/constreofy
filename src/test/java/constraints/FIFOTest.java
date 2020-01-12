@@ -1,4 +1,4 @@
-package legacy;
+package constraints;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,7 +15,6 @@ import priority.solving.IOAwareStateValue;
 import priority.solving.IOComponent;
 import priority.solving.Solver;
 import priority.states.StateValue;
-import priority.states.StateVariableValue;
 
 /**
  * Tests functionality of a FIFO connected to a writer

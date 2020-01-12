@@ -1,4 +1,4 @@
-package legacy.solving;
+package constraints.solving;
 //import org.sosy_lab.common.ShutdownManager;
 //import org.sosy_lab.common.configuration.Configuration;
 //import org.sosy_lab.common.configuration.InvalidConfigurationException;

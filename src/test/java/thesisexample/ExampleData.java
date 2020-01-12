@@ -1,24 +1,7 @@
-package legacy;
+package thesisexample;
 
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-@RunWith(JUnit4.class)
-public class ExampleJournal {
-    private final String CONTENT = "{\"nodes\":[{\"Replicate\":{\"name\":\"A\",\n" +
+public interface ExampleData {
+    final String CONTENT = "{\"nodes\":[{\"Replicate\":{\"name\":\"A\",\n" +
             "  \"ends\":[{\"name\":\"A1\",\n" +
             "    \"type\":\"Source\"},\n" +
             "    {\"name\":\"A2\",\n" +
@@ -316,14 +299,5 @@ public class ExampleJournal {
             "    {\"one\":\"JU2\",\n" +
             "      \"two\":\"U2\"}\n" +
             "    ]}";
-    @Test
-    public void example() {
-        final JSONObject jsonObject = new JSONObject(CONTENT);
-        assertEquals(20, jsonObject.getJSONArray("nodes").length());
-        assertEquals(49, jsonObject.getJSONArray("connections").length());
-        assertEquals(24, jsonObject.getJSONArray("channels").length());
-        assertEquals(4, jsonObject.getJSONArray("readers").length());
-        assertEquals(3, jsonObject.getJSONArray("writers").length());
 
-    }
 }

@@ -1,4 +1,4 @@
-package legacy;
+package constraints;
 
 import static org.junit.Assert.assertEquals;//TODO
 import static org.junit.Assert.assertFalse;
