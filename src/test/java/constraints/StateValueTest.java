@@ -7,10 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.*;
 
+import org.behnaz.rcsp.*;
 import org.junit.Test;
-
-import priority.states.StateValue;
-import priority.states.StateVariableValue;
 
 public class StateValueTest {
 	Optional<Boolean> optTrue = Optional.of(Boolean.TRUE);

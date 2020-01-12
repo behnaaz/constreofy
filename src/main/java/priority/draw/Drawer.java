@@ -8,18 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.behnaz.rcsp.IOAwareSolution;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import grph.Grph;
 import grph.in_memory.InMemoryGrph;
-import priority.Starter;
-import priority.solving.IOAwareSolution;
 
+import static org.behnaz.rcsp.AbstractConnector.SPACE;
 import static priority.Variable.CURRENT_MEMORY;
 import static priority.Variable.NEXT_MEMORY;
-import static priority.connector.AbstractConnector.SPACE;
 
 public class Drawer {
 	public static final String STRING_EMPTY = "";
@@ -101,8 +100,8 @@ public class Drawer {
 
 	 public String toGoJS() {
     	String result = toJSON().toString();
-    	Starter.log("....................");
-    	Starter.log(result);
+    //	Starter.log("....................");
+    //	Starter.log(result);
      	//linkLabels.forEach((k,v) -> Starter.log(toJSON(k,v) /*toString(k ,v, true)*/));
     	return result;
 	}

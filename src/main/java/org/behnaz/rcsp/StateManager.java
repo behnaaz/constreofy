@@ -1,12 +1,9 @@
-package priority.states;
+package org.behnaz.rcsp;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.NonNull;
-import priority.Starter;
-import priority.solving.IOAwareSolution;
-import priority.solving.IOAwareStateValue;
 
 /**
  * 

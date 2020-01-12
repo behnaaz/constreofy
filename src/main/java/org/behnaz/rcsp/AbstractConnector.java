@@ -1,4 +1,4 @@
-package priority.connector;
+package org.behnaz.rcsp;
 
 import org.apache.commons.lang3.StringUtils;
 

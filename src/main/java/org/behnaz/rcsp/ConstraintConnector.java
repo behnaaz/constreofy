@@ -1,4 +1,4 @@
-package priority.connector;
+package org.behnaz.rcsp;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -17,13 +17,12 @@ import java.util.stream.Collectors;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import priority.Starter;
-import priority.primitives.Primitive;
-import priority.states.StateValue;
 
+import static org.behnaz.rcsp.Solver.FORMULA_NAME;
+import static org.behnaz.rcsp.Solver.SHUT;
+import static org.behnaz.rcsp.Solver.USE_EQUAL_SET_ON;
 import static priority.Variable.CURRENT_MEMORY;
 import static priority.Variable.NEXT_MEMORY;
-import static priority.solving.Solver.*;
 
 /**
  * The building block of a network 

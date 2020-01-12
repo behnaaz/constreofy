@@ -1,4 +1,4 @@
-package priority.semantics;
+package org.behnaz.rcsp;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package priority.primitives;
+package org.behnaz.rcsp;
 
 import static priority.Variable.*;
 

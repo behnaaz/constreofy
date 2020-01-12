@@ -1,9 +1,7 @@
-package priority.semantics;
+package org.behnaz.rcsp;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import priority.connector.ColoringConnector;
 
 public class Coloring extends AbstractSemantics {
 	public Coloring() {

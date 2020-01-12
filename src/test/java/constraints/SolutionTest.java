@@ -2,9 +2,8 @@ package constraints;
 
 import static org.junit.Assert.assertEquals;
 
+import org.behnaz.rcsp.Solution;
 import org.junit.Test;
-
-import priority.solving.Solution;
 
 public class SolutionTest {
 	private static final String TILDE = "tilde";

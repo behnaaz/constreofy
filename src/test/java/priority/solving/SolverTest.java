@@ -5,17 +5,10 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.Optional;
 
+import org.behnaz.rcsp.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import priority.ExampleMaker;
-import priority.solving.IOAwareSolution;
-import priority.solving.IOAwareStateValue;
-import priority.solving.IOComponent;
-import priority.solving.Solver;
-import priority.states.StateValue;
-import priority.states.StateVariableValue;
 
 public class SolverTest {
 	Optional<Boolean> optTrue = Optional.of(Boolean.TRUE);

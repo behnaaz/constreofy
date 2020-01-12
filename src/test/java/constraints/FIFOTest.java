@@ -5,16 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.Optional;
 
+import org.behnaz.rcsp.*;
 import org.junit.Test;
-
-import priority.connector.ConnectorFactory;
-import priority.connector.ConstraintConnector;
-import priority.primitives.FIFO;
-import priority.solving.IOAwareSolution;
-import priority.solving.IOAwareStateValue;
-import priority.solving.IOComponent;
-import priority.solving.Solver;
-import priority.states.StateValue;
 
 /**
  * Tests functionality of a FIFO connected to a writer

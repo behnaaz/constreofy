@@ -1,4 +1,4 @@
-package priority.solving;
+package org.behnaz.rcsp;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -7,11 +7,9 @@ import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import priority.states.StateValue;
-import priority.states.StateVariableValue;
 
+import static org.behnaz.rcsp.AbstractConnector.CIRC;
 import static priority.Variable.*;
-import static priority.connector.AbstractConnector.CIRC;
 
 @EqualsAndHashCode
 public class Solution {

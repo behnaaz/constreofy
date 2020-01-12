@@ -1,4 +1,4 @@
-package priority.solving;
+package org.behnaz.rcsp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import priority.primitives.Primitive;
 
 @EqualsAndHashCode
 @ToString

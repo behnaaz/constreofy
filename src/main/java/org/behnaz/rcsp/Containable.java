@@ -1,4 +1,4 @@
-package priority.solving;
+package org.behnaz.rcsp;
 
 import java.util.Arrays;
 import java.util.List;

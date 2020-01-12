@@ -1,4 +1,4 @@
-package priority.states;
+package org.behnaz.rcsp;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

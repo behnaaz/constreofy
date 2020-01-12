@@ -1,12 +1,7 @@
 package priority;
 
+import org.behnaz.rcsp.*;
 import org.junit.Test;
-import priority.connector.ConnectorFactory;
-import priority.connector.ConstraintConnector;
-import priority.solving.IOAwareStateValue;
-import priority.solving.IOComponent;
-import priority.solving.Solver;
-import priority.states.StateValue;
 
 import java.io.IOException;
 

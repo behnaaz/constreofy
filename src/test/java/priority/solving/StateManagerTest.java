@@ -5,13 +5,9 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.behnaz.rcsp.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import priority.ExampleMaker;
-import priority.connector.ConstraintConnector;
-import priority.states.StateManager;
-import priority.states.StateValue;
 
 
 public class StateManagerTest {

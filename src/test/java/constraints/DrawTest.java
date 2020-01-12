@@ -2,19 +2,13 @@ package constraints;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.List;
-
+import org.behnaz.rcsp.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import priority.connector.ConnectorFactory;
-import priority.connector.ConstraintConnector;
 import priority.draw.Drawer;
-import priority.solving.IOAwareSolution;
-import priority.solving.IOAwareStateValue;
-import priority.solving.IOComponent;
-import priority.solving.Solver;
-import priority.states.StateValue;
+
+import java.util.List;
 
 public class DrawTest {
 	private List<IOAwareSolution> solutions;

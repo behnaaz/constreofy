@@ -1,7 +1,4 @@
-package priority.semantics;
-
-import priority.Starter;
-import priority.solving.Solution;
+package org.behnaz.rcsp;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,8 +6,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static priority.connector.AbstractConnector.AND;
-import static priority.connector.AbstractConnector.OR;
+import static org.behnaz.rcsp.AbstractConnector.*;
 
 public class DNF {
 	private List<String> variables;

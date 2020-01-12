@@ -1,10 +1,6 @@
-package priority;
+package org.behnaz.rcsp;
 
-import priority.connector.ConnectorFactory;
-import priority.connector.ConstraintConnector;
-import priority.solving.IOAwareStateValue;
-
-import static priority.connector.AbstractConnector.TRUE;
+import static org.behnaz.rcsp.AbstractConnector.TRUE;
 
 public class ExampleMaker {
 	private ConstraintConnector connector;

@@ -1,6 +1,4 @@
-package priority.connector;
-
-import priority.Starter;
+package org.behnaz.rcsp;
 
 import java.util.ArrayList;
 import java.util.List;

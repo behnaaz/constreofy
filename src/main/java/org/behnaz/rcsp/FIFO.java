@@ -1,18 +1,15 @@
-package priority.primitives;
+package org.behnaz.rcsp;
 
-import priority.connector.ConstraintConnector;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+
 import javax.validation.constraints.NotBlank;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static priority.connector.AbstractConnector.*;
+import static org.behnaz.rcsp.AbstractConnector.*;
 
 public class FIFO extends Primitive {
 	@NotBlank

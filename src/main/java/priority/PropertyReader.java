@@ -29,9 +29,9 @@ public class PropertyReader {
                 loadProperty();
             } catch (IOException e) {
                 e.printStackTrace();
-                return "";
+                return "/usr/bin/redpsl";
             }
-            reducePath = properties.getProperty("reduce");
+            reducePath = properties == null ? "/usr/bin/redpsl" : properties.getProperty("reduce");
         }
         return reducePath;
     }
@@ -43,7 +43,8 @@ public class PropertyReader {
 
         InputStream is = PropertyReader.class.getClassLoader().getResourceAsStream("properties.yml");
         if (is == null) {
-            throw new RuntimeException("Property file not read");
+            return;
+            //throw new RuntimeException("Property file not read");
         }
         properties = new Properties();
         properties.load(is);

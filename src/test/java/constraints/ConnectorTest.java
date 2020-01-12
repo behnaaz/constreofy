@@ -3,10 +3,9 @@ package constraints;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import org.behnaz.rcsp.*;
 import org.junit.Test;
 
-import priority.connector.ConnectorFactory;
-import priority.connector.ConstraintConnector;
 
 public class ConnectorTest {
 	@Test

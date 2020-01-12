@@ -1,7 +1,6 @@
-package priority.solving;
+package org.behnaz.rcsp;
 
 import lombok.ToString;
-import priority.states.StateValue;
 
 @ToString
 public class IOAwareStateValue {

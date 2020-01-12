@@ -1,4 +1,4 @@
-package priority.solving;
+package org.behnaz.rcsp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,11 +11,6 @@ import lombok.Builder;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import priority.PropertyReader;
-import priority.Starter;
-import priority.connector.ConstraintConnector;
-import priority.semantics.DNF;
-import priority.states.StateManager;
-import priority.states.StateValue;
 
 @Builder
 public class Solver implements Containable {
@@ -111,7 +106,7 @@ public class Solver implements Containable {
 		return currentStatesValues;
 	}
 
-	 List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws IOException {
+	 public List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws IOException {
 		if (StringUtils.isBlank(reduceProgram)) {
 			throw new RuntimeException("Reduce path not provided");
 		}
