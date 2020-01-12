@@ -1,21 +1,117 @@
 package thesisexample;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
 public class ExampleJournal implements ExampleData {
+    final List<String> replicates = new ArrayList<>();
+    final List<String> routes = new ArrayList<>();
+    final List<String> merges = new ArrayList<>();
+    final List<String> syncs = new ArrayList<>();
+
+    private JSONObject jsonObject;
+    @Before
+    public void init() {
+       jsonObject  = new JSONObject(CONTENT);
+    }
+
     @Test
     public void example() {
-        final JSONObject jsonObject = new JSONObject(CONTENT);
-        assertEquals(20, jsonObject.getJSONArray("nodes").length());
-        assertEquals(49, jsonObject.getJSONArray("connections").length());
-        assertEquals(24, jsonObject.getJSONArray("channels").length());
         assertEquals(4, jsonObject.getJSONArray("readers").length());
         assertEquals(3, jsonObject.getJSONArray("writers").length());
+    }
+
+    @Test
+    public void checkChannels() {
+        final JSONArray channels = jsonObject.getJSONArray("channels");
+        assertEquals(24, channels.length());
+
+        for (int i=0; i < channels.length(); i++) {
+            JSONObject node = channels.getJSONObject(i);
+            handle(node);
+        }
+        assertEquals(24, syncs.size());
+        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
+    }
+
+    @Test
+    public void checkConnections() {
+        final JSONArray connections = jsonObject.getJSONArray("connections");
+        assertEquals(49, connections.length());
+    }
+
+    @Test
+    public void checkNodes() {
+        final JSONArray nodes = jsonObject.getJSONArray("nodes");
+        assertEquals(20, nodes.length());
+
+        for (int i=0; i < nodes.length(); i++) {
+            JSONObject node = nodes.getJSONObject(i);
+            handle(node);
+        }
+        assertEquals(13, replicates.size());
+        assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q", replicates.stream().collect(Collectors.joining(", ")));
+
+        assertEquals(3, routes.size());
+        assertEquals("C, D, E", routes.stream().collect(Collectors.joining(", ")));
+
+        assertEquals(1, merges.size());
+        assertEquals("F", merges.stream().collect(Collectors.joining(", ")));
+    }
+
+    private void handle(final JSONObject node) {
+        String t = node.keys().next();
+
+        switch (t) {
+            case "Replicate":
+                replicates.add(node.getJSONObject(t).getString("name"));
+                break;
+            case "Route":
+                routes.add(node.getJSONObject(t).getString("name"));
+                break;
+            case "Merge":
+                merges.add(node.getJSONObject(t).getString("name"));
+                break;
+            case "Sync":
+            case "FIFO":
+            case "SyncDrain":
+            case "PrioritySync2":
+            case "PrioritySync1":
+            case "Lossy":
+                syncs.add(channelify(t, node.getJSONArray(t)));
+                break;
+            case "ends":
+                break;//??TODO why it is there?
+            default:
+                assertEquals(t, "");
+        }
+    }
+
+    private String channelify(final String type, final JSONArray jsonArray) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            final JSONObject jsonObject = jsonArray.getJSONObject(i);
+            if (jsonObject.has("Source")) {
+                final boolean addType = (sb.length() == 0);
+                sb.append(jsonObject.getString("Source"));
+                if (addType) {
+                    sb.append("-").append(type).append("-");
+                }
+            } else if (jsonObject.has("Sink")) {
+                sb.append(jsonObject.getString("Sink"));
+            }
+        }
+        return sb.toString();
     }
 }
