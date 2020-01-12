@@ -15,24 +15,23 @@ import static priority.connector.AbstractConnector.OR;
 public class DNF {
 	private List<String> variables;
 	private List<Solution> solutions = new ArrayList<>();
-	static final String CNFFILE = "/Users/behnaz.changizi/reoworkspace/priority/src/Users/behnaz.changizi/Desktop/Dropbox/sol.txt";
 
-	public DNF(List<String> variables) throws IOException {
+	public DNF(final List<String> variables) throws IOException {
 		this.variables = variables;
 	}
 
-	public void printFlows() {
+	private void printFlows() {
 		Starter.log("Flows~~~~~~~~~~~");
 		for (Solution sol : solutions) {
 			Starter.log(sol.toString());
 		}
 	}
 
-	public void reportVars() {
+	private void reportVars() {
 		variables.forEach(v -> Starter.log(variables.indexOf(v.trim().toUpperCase()) + " " + v));
 	}
 	
-	public void solveByReduce(final String constraint, final String outputFile) throws NotFeasibleException, IOException, VaiableNotFoundException {
+	private void solveByReduce(final String constraint, final String outputFile) throws NotFeasibleException, IOException, VaiableNotFoundException {
 		Writer writer = new FileWriter(outputFile);
 
 		writer.write("c test\r\n");
@@ -64,7 +63,7 @@ public class DNF {
 		assert(constraint.contains(OR.trim()));//OTHERWISE not supported yet
 	}
 
-	private String[] extractTerms(String and) {
+	private String[] extractTerms(final String and) {
 		String res = and.trim();
 		int index = 0;
 		if (!res.matches("^[a-zA-Z].*$"))
@@ -73,7 +72,7 @@ public class DNF {
 		return res.split(AND.trim());
 	}
 
-	public List<Solution> extractSolutions(String reduceOutput) {
+	public List<Solution> extractSolutions(final String reduceOutput) {
 		String[] ands = reduceOutput.split(OR.trim());
 
 		for (String and : ands) {
@@ -89,7 +88,7 @@ public class DNF {
 		return solutions;
 	}
 	
-	private boolean contains(List<Solution> sols, Solution s) {
+	private boolean contains(final List<Solution> sols, final Solution s) {
 		for (Solution t : sols)
 			if (t.getFlowVariables().equals(s.getFlowVariables()) && t.getFromVariables().equals(s.getFromVariables()) && t.getToVariables().equals(s.getToVariables()))
 				return true;
