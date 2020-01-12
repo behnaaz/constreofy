@@ -1,13 +1,9 @@
-package priority;
+package old;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Convert {
-	private static final String PATH = "/Users/behnaz.changizi/Desktop/Dropbox/tz/calculation/";
+	//private static final String PATH = "/Users/behnaz.changizi/Desktop/Dropbox/tz/calculation/";
 
 	public static void main(String[] a) throws IOException {
 		//ls();
@@ -18,9 +14,9 @@ public class Convert {
 		//cat("syncprio.txt");
 		//cat("prioritysync.txt");
 		//cat("priorityfifo.txt");
-		cat("b.txt", 8);
+	//	cat("b.txt", 8);
 	}
-
+/*
 	private static void cat(String file, int no) throws IOException {
 		try (Stream<String> stream = Files.lines(Paths.get(PATH + file))) {
 		    String joined = stream
@@ -32,7 +28,7 @@ public class Convert {
 		    Starter.log("List: " + joined);
 		}		
 	}
-/*
+
 	private static void ls() throws IOException {
 		try (Stream<Path> stream = Files.list(Paths.get(PATH))) {
 		    String joined = stream
@@ -56,4 +52,3 @@ public class Convert {
 		}
 	}*/
 }
-//

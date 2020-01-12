@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import priority.primitives.Primitive;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,11 +19,16 @@ import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
 public class ExampleJournal implements ExampleData {
-    final List<String> replicates = new ArrayList<>();
-    final List<String> routes = new ArrayList<>();
-    final List<String> merges = new ArrayList<>();
-    final List<String> syncs = new ArrayList<>();
-    final Map<String, String> connections = new HashMap<>();
+    private final List<String> replicates = new ArrayList<>();
+    private final List<String> routes = new ArrayList<>();
+    private final List<String> merges = new ArrayList<>();
+    private final List<Primitive> syncs = new ArrayList<>();//Primitive
+    private final List<String> fifos = new ArrayList<>();
+    private final List<String> lossys = new ArrayList<>();
+    private final List<String> syncdrains = new ArrayList<>();
+    private final List<String> twoPrioritySyncs = new ArrayList<>();
+    private final List<String> onePrioritySyncs = new ArrayList<>();
+    private final Map<String, String> connections = new HashMap<>();
 
     private JSONObject jsonObject;
     @Before
@@ -45,8 +51,20 @@ public class ExampleJournal implements ExampleData {
             JSONObject node = channels.getJSONObject(i);
             handle(node);
         }
-        assertEquals(24, syncs.size());
+        assertEquals(7, fifos.size());
+        assertEquals(5, syncs.size());
+        assertEquals(6, syncdrains.size());
+        assertEquals(4, lossys.size());
+        assertEquals(1, onePrioritySyncs.size());
+        assertEquals(1, twoPrioritySyncs.size());
+        assertEquals(24,  fifos.size() + twoPrioritySyncs.size() + onePrioritySyncs.size() + lossys.size() + syncdrains.size() + syncs.size());
+       /* assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
         assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
+        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
+        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
+        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
+        assertEquals("A2B-Sync-AB1, B2C-FIFO-BC1, C2D-FIFO-CD1, D2F-Sync-DF1, F3G-FIFO-FG1, B3E-FIFO-BE1, E2F-Sync-EF2, E4T-SyncDrain-ET2, Q2T-Sync-QT1, S2Q-PrioritySync2-SQ1, Q5P-FIFO-QP1, Q3O-Lossy-QO2, Q4H-Lossy-QH2, O1D-SyncDrain-OD4, H1C-SyncDrain-HC4, C3M-SyncDrain-CM1, D3U-SyncDrain-DU1, J3M-Lossy-JM2, J6U-Lossy-JU2, I2J-PrioritySync1-IJ1, J2K-FIFO-JK1, J4L-Sync-JL2, J5N-FIFO-JN1, E3L-SyncDrain-EL1", syncs.stream().collect(Collectors.joining(", ")));
+    */
     }
 
     @Test
@@ -96,12 +114,22 @@ public class ExampleJournal implements ExampleData {
                 merges.add(node.getJSONObject(t).getString("name"));
                 break;
             case "Sync":
+                syncs.add(new Primitive());//    channelify(t, node.getJSONArray(t)));
+                break;
             case "FIFO":
+                fifos.add(channelify(t, node.getJSONArray(t)));
+                break;
             case "SyncDrain":
+                syncdrains.add(channelify(t, node.getJSONArray(t)));
+                break;
             case "PrioritySync2":
+                twoPrioritySyncs.add(channelify(t, node.getJSONArray(t)));
+                break;
             case "PrioritySync1":
+                onePrioritySyncs.add(channelify(t, node.getJSONArray(t)));
+                break;
             case "Lossy":
-                syncs.add(channelify(t, node.getJSONArray(t)));
+                lossys.add(channelify(t, node.getJSONArray(t)));
                 break;
             case "ends":
                 //TODO bad data
