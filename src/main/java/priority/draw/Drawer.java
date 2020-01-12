@@ -36,11 +36,11 @@ public class Drawer {
 	/**
 	 *
 	 */
-	List<String> content;
-    Map<Integer, Integer> vertexState = new HashMap<>();
-    List<Set<String>> states;
-    Map<Integer, ArrayList<Integer>> links = new HashMap<>();
-    Map<String, String> linkLabels = new HashMap<>();
+	private List<String> content;
+    private Map<Integer, Integer> vertexState = new HashMap<>();
+    private List<Set<String>> states;
+    private Map<Integer, ArrayList<Integer>> links = new HashMap<>();
+    private Map<String, String> linkLabels = new HashMap<>();
 
 	public Drawer(Set<IOAwareSolution> solutions) {
 		this.content = solutionsToList(solutions, false);
@@ -65,14 +65,12 @@ public class Drawer {
 		return list;
 	}
 
-	List<String> solutionsToList(List<IOAwareSolution> solutions, boolean withPriority) {
-		List<String> list = new ArrayList<>();
+	List<String> solutionsToList(final List<IOAwareSolution> solutions, boolean withPriority) {
+		final List<String> list = new ArrayList<>();
 		for (IOAwareSolution s : solutions) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(s.getSolution().toString(withPriority));
-			sb.append(Arrays.toString(s.getPreIOs()));
-			sb.append(Arrays.toString(s.getPostIOs()));
-			list.add(sb.toString());
+			list.add(s.getSolution().toString(withPriority) +
+					Arrays.toString(s.getPreIOs()) +
+					Arrays.toString(s.getPostIOs()));
 		}
 		return list;
 	}
@@ -154,7 +152,7 @@ public class Drawer {
 		return jar;
 	}
 
-	private String toString(String k, String v, boolean csv) {
+	private String toString(String k, String v) {
 		StringBuilder sb = new StringBuilder();
 		int indexOfStateDelimiter = k.indexOf(STATE_DELIMINATOR);
 		String source = k.substring(0, indexOfStateDelimiter);
@@ -243,8 +241,7 @@ public class Drawer {
 		}
 		if (result.length() > 0) {
 			String[] vars = result.substring(0, result.length() - 1).split(STRING_COMMA);
-			for (String v : vars)
-				res.add(v);
+			res.addAll(Arrays.asList(vars));
 		}
 		return res;
 	}
