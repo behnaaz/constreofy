@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
@@ -55,13 +56,7 @@ public class JournalExampleTest implements ExampleData {
 
     @Test
     public void checkChannels() {
-        final JSONArray channels = jsonObject.getJSONArray("channels");
-        assertEquals(24, channels.length());
-
-        for (int i=0; i < channels.length(); i++) {
-            JSONObject node = channels.getJSONObject(i);
-            handle(node);
-        }
+        readChannels();
         assertEquals(7, fifos.size());
         assertEquals(5, syncs.size());
         assertEquals(6, syncdrains.size());
@@ -78,6 +73,16 @@ public class JournalExampleTest implements ExampleData {
         assertEquals("B2C[]>BC1, C2D[]>CD1, F3G[]>FG1, B3E[]>BE1, Q5P[]>QP1, J2K[]>JK1, J5N[]>JN1", fifos.stream().map(e -> e.getKey() + "[]>" + e.getValue()).collect(Collectors.joining(", ")));
     }
 
+    private void readChannels() {
+        final JSONArray channels = jsonObject.getJSONArray("channels");
+        assertEquals(24, channels.length());
+
+        for (int i=0; i < channels.length(); i++) {
+            JSONObject node = channels.getJSONObject(i);
+            handle(node);
+        }
+    }
+
     @Test
     public void checkConnections() {
         final JSONArray temp = jsonObject.getJSONArray("connections");
@@ -90,6 +95,30 @@ public class JournalExampleTest implements ExampleData {
             connections.put(to, from);
         }
         assertEquals(92, connections.size());
+
+        readChannels();;
+        for (Pair<String, String> p : syncs) {
+            assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+        }
+        for (Pair<String, String> p : syncdrains) {
+            assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+        }
+
+        for (Pair<String, String> p : lossys) {
+            assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+        }
+
+        for (Pair<String, String> p : fifos) {
+            assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+        }
+
+        for (Pair<String, String> p : onePrioritySyncs) {
+            assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+        }
+
+        for (Pair<String, String> p : twoPrioritySyncs) {
+            assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+        }
     }
 
     @Test
