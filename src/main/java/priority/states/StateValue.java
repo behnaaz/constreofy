@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.Value;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -13,9 +14,9 @@ import java.util.Set;
 @Builder
 @EqualsAndHashCode
 @ToString
+@Value
 public class StateValue implements Cloneable {
 	@Builder.Default
-	@Getter
 	private Set<StateVariableValue> variableValues = new HashSet<>();
 
 	public Optional<Boolean> getValue(String m) {

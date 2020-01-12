@@ -3,6 +3,7 @@ package priority.solving;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,10 +56,10 @@ public class Solution {
 		else if (atoms[0].trim().endsWith(BULLET) || atoms[0].trim().endsWith(CIRC) && ONE.equals(atoms[1].trim()))
 			priority.add(atoms[0].trim());
 		else if (atoms[0].trim().endsWith(NEXT_MEMORY) && !isNegative(atoms[1])) {
-			toVariables.add((atoms[1].trim().equals(ZERO)?NEG:SPACE)+(atoms[0].trim()));
+			toVariables.add((atoms[1].trim().equals(ZERO)?NEG:EMPTY)+(atoms[0].trim()));
 		}
 		else if (atoms[0].trim().endsWith(CURRENT_MEMORY) && !isNegative(atoms[1]))
-			fromVariables.add((atoms[1].trim().equals(ZERO)?NEG:SPACE)+(atoms[0].trim()));
+			fromVariables.add((atoms[1].trim().equals(ZERO)?NEG:EMPTY)+(atoms[0].trim()));
 	}
 	
 	private boolean isNegative(String atom) {
@@ -116,5 +117,17 @@ public class Solution {
 			name = name.replace(NEXT_MEMORY, CURRENT_MEMORY);
 		Optional<Boolean> optTemp = neg ? Optional.of(Boolean.FALSE) : Optional.of(Boolean.TRUE);
 		return StateVariableValue.builder().stateName(name.trim()).value(optTemp).build();
+	}
+
+	public String readable() {
+		return new StringBuilder()
+							.append("(")
+							.append(fromVariables.stream().map(e -> e + ", ").collect(Collectors.joining()))
+							.append(") ----{ ")
+							.append(flowVariables.stream().map(e -> e + ", ").collect(Collectors.joining()))
+							.append("} ----> (")
+							.append(toVariables.stream().map(e -> e + ", ").collect(Collectors.joining()))
+							.append(")")
+				.toString();
 	}
 }

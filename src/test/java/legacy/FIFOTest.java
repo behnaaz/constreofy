@@ -1,13 +1,10 @@
 package legacy;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Rule;
 import org.junit.Test;
 
 import priority.connector.ConnectorFactory;
@@ -18,6 +15,7 @@ import priority.solving.IOAwareStateValue;
 import priority.solving.IOComponent;
 import priority.solving.Solver;
 import priority.states.StateValue;
+import priority.states.StateVariableValue;
 
 /**
  * Tests functionality of a FIFO connected to a writer
@@ -47,19 +45,43 @@ public class FIFOTest {
 	}
 //TODO using uninit fifo must be prevented
 	@Test
-	public void testNonInitializedFIFO() {
+	public void nonInitializedFIFO() {
 		String expectedConstraint = "(W1TILDE  or   not  W1TILDE)  and  (CD1TILDE  equiv  (CD1CD2XRING  and   not  CD1CD2RING))  and  (CD2TILDE  equiv  (CD1CD2RING  and   not  CD1CD2XRING))  and  (( not  (CD1TILDE  or  CD2TILDE))  impl  (CD1CD2RING  equiv  CD1CD2XRING))  and  ( not  (CD1TILDE  and  CD2TILDE))  and  ( W1TILDE  equiv  CD1TILDE )";
 		List<IOAwareSolution> solutions = initializeData(Optional.empty());
 		//assertEquals(expectedConstraint, connector.getConstraint());
 		assertEquals(4, solutions.size());
+		assertEquals("() ----{ cd1tilde, } ----> (cd1cd2xring, )", solutions.get(0).getSolution().readable());
+		assertEquals("(cd1cd2ring, ) ----{ cd2tilde, } ----> ()", solutions.get(3).getSolution().readable());
+		assertEquals("(cd1cd2ring, ) ----{ } ----> (cd1cd2xring, )", solutions.get(2).getSolution().readable());
+		assertEquals("() ----{ } ----> ()", solutions.get(1).getSolution().readable());
+/*
 	}
 	
 	@Test
-	public void testEmptyFIFO() {
+	public void solveEmptyFIFO() {
 		List<IOAwareSolution> solutions = initializeData(Optional.of(Boolean.FALSE));
-		String allSolutions = "[[1w1] [] ------ {  cd1tilde w1tilde } -------> (cd1cd2xringtrue ) [0w1], [1w1] [] ------ {  } -------> () [1w1], [0w1] [] ------ {  } -------> () [0w1], [0w1] [] ------ {  cd1tilde w1tilde } -------> (cd1cd2xringtrue ) [0w1], [0w1] [] ------ {  } -------> () [0w1]]";
+		//String allSolutions = "[[1w1] [] ------ {  cd1tilde w1tilde } -------> (cd1cd2xringtrue ) [0w1], [1w1] [] ------ {  } -------> () [1w1], [0w1] [] ------ {  } -------> () [0w1], [0w1] [] ------ {  cd1tilde w1tilde } -------> (cd1cd2xringtrue ) [0w1], [0w1] [] ------ {  } -------> () [0w1]]";
 		assertNotNull(solutions);
 		assertEquals(4, solutions.size());
+		assertEquals(1, solutions.get(0).getPreIOs().length);
+		assertEquals("w1", solutions.get(0).getPreIOs()[0].getNodeName());
+		assertEquals(1, solutions.get(0).getPreIOs()[0].getRequests());
+		assertEquals(0, solutions.get(0).getPreIOs()[0].consume());
+
+		assertEquals("w1", solutions.get(0).getPostIOs()[0].getNodeName());
+		assertEquals(1, solutions.get(0).getPostIOs()[0].getRequests());
+		assertEquals(0, solutions.get(0).getPostIOs()[0].consume());
+
+		assertEquals(1, solutions.get(0).getSolution().getNextStateValue().getVariableValues().size());
+		assertEquals(StateVariableValue.builder().stateName("cd1cd2ring").value(Optional.ofNullable(true)).build(), solutions.get(0).getSolution().getNextStateValue().getVariableValues().toArray()[0]);
+
+		assertEquals(1, solutions.get(0).getSolution().getToVariables().size());
+		assertEquals("cd1cd2xring", solutions.get(0).getSolution().getToVariables().toArray()[0]);
+
+		assertEquals("() ----{ cd1tilde, } ----> (cd1cd2xring, )", solutions.get(0).getSolution().readable());
+		assertEquals("(cd1cd2ring, ) ----{ cd2tilde, } ----> ()", solutions.get(3).getSolution().readable());
+		assertEquals("(cd1cd2ring, ) ----{ } ----> (cd1cd2xring, )", solutions.get(2).getSolution().readable());
+		assertEquals("() ----{ } ----> ()", solutions.get(1).getSolution().readable());
 /*
 		assertEquals(allSolutions, solutions.toString());
 		
