@@ -70,7 +70,6 @@ public class Solver implements Containable {
 
 	public void addToExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
 			StateManager stateManager, List<IOAwareSolution> solutions) {
-		//if (debug)
 	//Starter.log("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
 		List<IOAwareStateValue> nexts = stateManager.findNextStates(solutions, visitedStates, explorableStates);
 		for (IOAwareStateValue state : nexts) {

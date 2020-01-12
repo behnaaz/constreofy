@@ -10,7 +10,7 @@ public class PropertyReader {
     private static String reducePath;
     private static Properties properties;
     private static Boolean debugEnabled;
-    public static boolean debug() {
+    static boolean debug() {
         if (debugEnabled != null) {
             return debugEnabled;
         }

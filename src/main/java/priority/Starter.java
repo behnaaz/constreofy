@@ -16,9 +16,6 @@ import priority.states.StateVariableValue;
 public class Starter {
 	
 	public static void main(String[] args) {
-	//	if (args.length == 0) {
-	//		log.error("Please provide the path to reduce program i.e. /mydrive/reduce/trunk/bin/redpsl");
-	//	}
 		final StateValue initStateValue = makeInitState("a1b1ring");
 		final IOAwareStateValue initState = new IOAwareStateValue(initStateValue, null/*new IOComponent("w1", 10000000)*/);
 		final ExampleMaker exampleMaker = new ExampleMaker(1);
