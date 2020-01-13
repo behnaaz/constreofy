@@ -12,8 +12,11 @@ import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +25,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
 public class JournalExampleTest implements ExampleData {
+    private final Set<String> checkedEnds = new HashSet<>();
     private final List<String> replicates = new ArrayList<>();
     private final List<String> routes = new ArrayList<>();
     private final List<String> merges = new ArrayList<>();
@@ -98,26 +102,55 @@ public class JournalExampleTest implements ExampleData {
 
         readChannels();;
         for (Pair<String, String> p : syncs) {
+            reportErrors(p);
             assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
         }
         for (Pair<String, String> p : syncdrains) {
+            reportErrors(p);
             assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
         }
 
         for (Pair<String, String> p : lossys) {
+            reportErrors(p);
             assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
         }
 
         for (Pair<String, String> p : fifos) {
+            reportErrors(p);
             assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
         }
 
         for (Pair<String, String> p : onePrioritySyncs) {
+            reportErrors(p);
             assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
         }
 
         for (Pair<String, String> p : twoPrioritySyncs) {
+            reportErrors(p);
             assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+        }
+
+        int cnt = 0;
+        final StringBuilder sb = new StringBuilder();
+        Iterator<String> iterator = checkedEnds.iterator();
+        while (iterator.hasNext()) {
+            String t = iterator.next();
+            sb.append(t).append(", ");
+            cnt++;
+        }
+        System.out.println(cnt + " Missing or double connections: " + sb.toString());//TODO figure out why missing or double
+    }
+
+    private void reportErrors(final Pair<String, String> p) {
+        if (! connections.containsKey(p.getKey()) || checkedEnds.contains(p.getKey())) {
+            System.out.println(p.getKey());
+        } else {
+            checkedEnds.add(p.getKey());
+        }
+        if (! connections.containsKey(p.getValue()) || checkedEnds.contains(p.getValue())) {
+            System.out.println(p.getValue());
+        } else {
+            checkedEnds.add(p.getValue());
         }
     }
 
@@ -177,22 +210,5 @@ public class JournalExampleTest implements ExampleData {
             default:
                 fail();
         }
-    }
-
-    private String channelify(final String type, final JSONArray jsonArray) {
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            final JSONObject jsonObject = jsonArray.getJSONObject(i);
-            if (jsonObject.has("Source")) {
-                final boolean addType = (sb.length() == 0);
-                sb.append(jsonObject.getString("Source"));
-                if (addType) {
-                    sb.append("-").append(type).append("-");
-                }
-            } else if (jsonObject.has("Sink")) {
-                sb.append(jsonObject.getString("Sink"));
-            }
-        }
-        return sb.toString();
     }
 }
