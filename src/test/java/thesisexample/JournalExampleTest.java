@@ -18,7 +18,6 @@ import org.junit.runners.JUnit4;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -313,11 +312,7 @@ public class JournalExampleTest implements ExampleData {
         }
 
         assertEquals(4, solutions.size());
-       // assertEquals(1, solutions.get(9));
-      //  assertEquals("() ----{ ij1tilde, i2tilde, i1tilde, i2jtilde, } ----> ()", solutions.get(0).getSolution().readable());
-        //() ----{ i2tilde, i1tilde, } ----> () assertEquals("() ----{ } ----> ()", solutions.get(1).getSolution().readable());
-       // [] ------ { ij1tilde ij1PRIORITY i2jtilde i2jPRIORITY} -------> ()   assertEquals("() ----{ } ----> ()", solutions.get(2).getSolution().readable());
-        assertEquals("() ----{j1,ij1,j2,i2,j2k,i1,i2j,w11} ----> (j2kjk1xring)", solutions.get(0).getSolution().readable());
+        assertEquals("() ----{j3,j6,j6u,ij1,j2,j4,ju2,j2k,jl2,i1,w11,j4l,j1,j3m,i2,i2j} ----> (j2kjk1xring)", solutions.get(0).getSolution().readable());
         assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
         assertEquals("(j2kjk1ring) ----{} ----> (j2kjk1xring)", solutions.get(2).getSolution().readable());
         assertEquals("(j2kjk1ring) ----{jk1,k2,r12,k1} ----> ()", solutions.get(3).getSolution().readable());
@@ -329,7 +324,7 @@ public class JournalExampleTest implements ExampleData {
                                 .connectorConstraint(connector)
                                 .initState(initState)
                                 .build()
-                                .solve(-1);
+                                .solve(20);
    }
 
     private ConstraintConnector network() {
@@ -338,11 +333,17 @@ public class JournalExampleTest implements ExampleData {
         connector.add(factory.writer("W11", 1), "W11", connections.get("W11"));
         connector.add(factory.sync("I1", "I2"), "I2", connections.get("I2"));
         connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
-        connector.add(factory.sync("J1", "J2"), "J1", connections.get("J1"));
+        connector.add(factory.replicator("J1", "J2", "J3", "J4", "J5", "J6"), "J1", connections.get("J1"));
         connector.add(factory.sync("K1", "K2"), "K1", connections.get("K1"));
         connector.add(factory.writer("R12", 1), "R12", connections.get("R12"));//TODO reader
+        connector.add(factory.lossySync("J3M", "JM2"), "J3", connections.get("J3"));
+        connector.add(factory.lossySync("JU2", "J6U"), "J6", connections.get("J6"));
+        connector.add(factory.sync("J4L", "JL2"), "J4L", connections.get("J4L"));
+        connector.add(factory.fifo("J5N", "JN1"), "J5N", connections.get("J5N"));
+        connector.add(factory.sync("N1", "N2"), "N2", connections.get("N2"));
+        connector.add(factory.writer("R22", 1), "R22", connections.get("R22"));//TODO reader
+
         //  connector.add(factory.merger("c", "d", "e"), "c", "b");
-        //connector.add(factory.sync("f", "g"), "f", "a");
         //connector.add(factory.merger("h", "i", "j"), "h", "g");
         return connector;
     }

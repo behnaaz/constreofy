@@ -1,5 +1,9 @@
 package org.behnaz.rcsp;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ConnectorFactory extends Primitive {
 	public ConstraintConnector merger(final String p1, final String p2, final String p3) {
 		final String merger = String.format(
@@ -34,9 +38,9 @@ public class ConnectorFactory extends Primitive {
 		return new ConstraintConnector(router, c, k1, k2);
 	}
 
-	public ConstraintConnector lossyDrain(final String p1, final String p2) {
-		String lossyDrain = String.format("(%s %s %s)", flow(p2), AbstractConnector.IMPLIES, flow(p1));
-		return new ConstraintConnector(lossyDrain, p1, p2);
+	public ConstraintConnector lossySync(final String p1, final String p2) {
+		final String lossy = String.format("(%s %s %s)", flow(p2), AbstractConnector.IMPLIES, flow(p1));
+		return new ConstraintConnector(lossy, p1, p2);
 	}
 
 	public ConstraintConnector syncDrain(final String p1, final String p2) {
@@ -50,12 +54,21 @@ public class ConnectorFactory extends Primitive {
 		return new ConstraintConnector(prioritySync, p1, p2);
 	}
 
-	public ConstraintConnector replicator(final String c, final String k1, final String k2) {
-		String replicator = String.format("(%s %s %s) %s (%s %s %s)",
-				// + NOT + "(%sc" + AND + "%sk)" + AND + "%sbullet" + AND +
-				// "%sbullet",
-				flow(c), AbstractConnector.RIGHTLEFTARROW, flow(k1), AbstractConnector.AND, flow(c), AbstractConnector.RIGHTLEFTARROW, flow(k2));
-		return new ConstraintConnector(replicator, c, k1, k2);
+	public ConstraintConnector replicator(final String c, final String... ks) {
+		String replicator = "";
+		for (String k : ks) {
+			if (!replicator.isEmpty()) {
+				replicator += AbstractConnector.AND;
+			}
+			replicator += String.format("(%s %s %s) %s (%s %s %s)",
+					// + NOT + "(%sc" + AND + "%sk)" + AND + "%sbullet" + AND +
+					// "%sbullet",
+					flow(c), AbstractConnector.RIGHTLEFTARROW, flow(k), AbstractConnector.AND, flow(c), AbstractConnector.RIGHTLEFTARROW, flow(k));
+		}
+		final List<String> l = new ArrayList<>();
+		l.add(c);
+		l.addAll(Arrays.asList(ks));
+		return new ConstraintConnector(replicator, l);
 	}
 
 	public ConstraintConnector replicator(final String c, final String k) {

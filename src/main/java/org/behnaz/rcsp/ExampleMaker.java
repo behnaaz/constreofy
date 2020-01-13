@@ -18,7 +18,7 @@ public class ExampleMaker {
 		connector.add(factory.prioritySync("d1", "d2"), "d1", "c3");
 		connector.add(factory.syncDrain("e1", "e2"), "e1", "d2");
 		connector.add(factory.router("f2", "f1", "f3"), "f1", "e2");
-		connector.add(factory.lossyDrain("g2", "g1"), "g1", "f2");
+		connector.add(factory.lossySync("g2", "g1"), "g1", "f2");
 		connector.add(factory.syncDrain("h1", "h2"), "h1", "f3");
 		connector.add(factory.prioritySync("i2", "i1"), "i1", "h2");
 		connector.add(connector.connect("i2", "a3"), "", "");
