@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
 @RunWith(JUnit4.class)
 public class JournalExampleTest implements ExampleData {
     private final Set<String> checkedEnds = new HashSet<>();
-    private final List<String> replicates = new ArrayList<>();
+    private final List<Pair<String, Pair<Set<String>, Set<String>>>> replicates = new ArrayList<>();
     private final List<String> routes = new ArrayList<>();
     private final List<String> merges = new ArrayList<>();
     private final List<Pair<String, String>> syncs = new ArrayList<>();//Primitive
@@ -164,7 +164,7 @@ public class JournalExampleTest implements ExampleData {
             handle(node);
         }
         assertEquals(13, replicates.size());
-        assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q", replicates.stream().collect(Collectors.joining(", ")));
+        assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q", replicates.stream().map(e -> e.getKey()).collect(Collectors.joining(", ")));
 
         assertEquals(3, routes.size());
         assertEquals("C, D, E", routes.stream().collect(Collectors.joining(", ")));
@@ -178,7 +178,7 @@ public class JournalExampleTest implements ExampleData {
 
         switch (t) {
             case "Replicate":
-                replicates.add(node.getJSONObject(t).getString("name"));
+                replicates.add(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t)));
                 break;
             case "Route":
                 routes.add(node.getJSONObject(t).getString("name"));
@@ -210,5 +210,22 @@ public class JournalExampleTest implements ExampleData {
             default:
                 fail();
         }
+    }
+
+    private Pair<Set<String>, Set<String>> extractEnds(JSONObject node, String t) {
+        final JSONArray array = node.getJSONObject(t).getJSONArray("ends");
+        final Set<String> sources = new HashSet<>();
+        final Set<String> sinks = new HashSet<>();
+        for (int i = 0; i < array.length(); i++) {
+            final JSONObject obj = array.getJSONObject(i);
+            if (obj.getString("type").equals("Source")) {
+                sources.add(obj.getString("name"));
+            } else  if (obj.getString("type").equals("Sink")) {
+                sinks.add(obj.getString("name"));
+            } else {
+                fail("bad type " + obj.getJSONArray("type") + " for " +  obj.getString("name"));
+            }
+        }
+        return new Pair<>(sources, sinks);
     }
 }
