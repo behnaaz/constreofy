@@ -3,6 +3,11 @@ package thesisexample;
 import javafx.util.Pair;
 import org.behnaz.rcsp.ConnectorFactory;
 import org.behnaz.rcsp.ConstraintConnector;
+import org.behnaz.rcsp.IOAwareSolution;
+import org.behnaz.rcsp.IOAwareStateValue;
+import org.behnaz.rcsp.IOComponent;
+import org.behnaz.rcsp.Solver;
+import org.behnaz.rcsp.StateValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -11,7 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -158,15 +165,6 @@ public class JournalExampleTest implements ExampleData {
         return new Pair<>(sources, sinks);
     }
 
-    private ConstraintConnector network() {
-        final ConnectorFactory factory = new ConnectorFactory();
-        ConstraintConnector connector = factory.prioritySync("a", "b");
-        connector.add(factory.merger("c", "d", "e"), "c", "b");
-        connector.add(factory.sync("f", "g"), "f", "a");
-        connector.add(factory.merger("h", "i", "j"), "h", "g");
-        return connector;
-    }
-
     @Before
     public void init() {
         jsonObject  = new JSONObject(CONTENT);
@@ -296,5 +294,40 @@ public class JournalExampleTest implements ExampleData {
             cnt++;
         }
         assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
+
+        final ConstraintConnector connector = network();
+        assertEquals(new HashSet<>(Arrays.asList("I2JTILDE", "I2JC", "IJ1K", "IJ1TILDE", "I2JBULLET", "IJ1BULLET")), connector.getVariables());
+        assertEquals("(I2JTILDE equiv IJ1TILDE) and  not (I2JC and IJ1K) and I2JBULLET and IJ1BULLET", connector.getConstraint());
+
+        List<IOAwareSolution> solutions = null;
+        try {
+            solutions = checkSolutions(connector);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Failed to solve");
+        }
+
+        assertEquals(2, solutions.size());
+        assertEquals("() ----{ ij1tilde, i2jtilde, } ----> ()", solutions.get(0).getSolution().readable());
+        assertEquals("() ----{ } ----> ()", solutions.get(1).getSolution().readable());
     }
+
+    private List<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
+        IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("W31", 1));
+        return Solver.builder()
+                .connectorConstraint(connector)
+                .initState(initState)
+                .build()
+                .solve(-1);
+    }
+
+    private ConstraintConnector network() {
+        final ConnectorFactory factory = new ConnectorFactory();
+        ConstraintConnector connector = factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
+      //  connector.add(factory.merger("c", "d", "e"), "c", "b");
+        //connector.add(factory.sync("f", "g"), "f", "a");
+        //connector.add(factory.merger("h", "i", "j"), "h", "g");
+        return connector;
+    }
+
 }
