@@ -116,21 +116,21 @@ public interface ExampleData {
             "        \"type\":\"Sink\"},\n" +
             "      {\"name\":\"Q5\",\n" +
             "        \"type\":\"Sink\"}]}},\n" +
-            "  {\"name\":\"S\",\n" +
+            "  {\"Replicate\":{\"name\":\"S\",\n" +
             "    \"ends\":[{\"name\":\"S1\",\n" +
             "      \"type\":\"Source\"},\n" +
             "      {\"name\":\"S2\",\n" +
-            "        \"type\":\"Sink\"}]},\n" +
-            "  {\"name\":\"T\",\n" +
+            "        \"type\":\"Sink\"}]}},\n" +
+            "  {\"Replicate\":{\"name\":\"T\",\n" +
             "    \"ends\":[{\"name\":\"T1\",\n" +
             "      \"type\":\"Source\"},\n" +
             "      {\"name\":\"T2\",\n" +
-            "        \"type\":\"Sink\"}]},\n" +
-            "  {\"name\":\"U\",\n" +
+            "        \"type\":\"Sink\"}]}},\n" +
+            "  {\"Replicate\":{\"name\":\"U\",\n" +
             "    \"ends\":[{\"name\":\"U1\",\n" +
             "      \"type\":\"Sink\"},\n" +
             "      {\"name\":\"U2\",\n" +
-            "        \"type\":\"Source\"}]}],\n" +
+            "        \"type\":\"Source\"}]}}],\n" +
             "  \"readers\":[{\"name\":\"R1\",\n" +
             "    \"ends\":[{\"name\":\"R12\",\n" +
             "      \"type\":\"Sink\"}]},\n" +

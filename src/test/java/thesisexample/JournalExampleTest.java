@@ -136,9 +136,6 @@ public class JournalExampleTest implements ExampleData {
             case "Lossy":
                 lossys.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
                 break;
-            case "ends":
-                //TODO bad data
-                break;
             default:
                 fail();
         }
@@ -221,8 +218,8 @@ public class JournalExampleTest implements ExampleData {
 
     @Test
     public void checkNodes() {
-        assertEquals(13, replicates.size());
-        assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q", replicates.stream().map(e -> e.getKey()).collect(Collectors.joining(", ")));
+        assertEquals(16, replicates.size());
+        assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q, S, T, U", replicates.stream().map(e -> e.getKey()).collect(Collectors.joining(", ")));
 
         assertEquals(3, routes.size());
         assertEquals("C, D, E", routes.stream().map(e -> e.getKey()).collect(Collectors.joining(", ")));
