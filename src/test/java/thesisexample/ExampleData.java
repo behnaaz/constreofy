@@ -1,7 +1,7 @@
 package thesisexample;
 
 public interface ExampleData {
-    final String CONTENT = "{\"nodes\":[{\"Replicate\":{\"name\":\"A\",\n" +
+    String CONTENT = "{\"nodes\":[{\"Replicate\":{\"name\":\"A\",\n" +
             "  \"ends\":[{\"name\":\"A1\",\n" +
             "    \"type\":\"Source\"},\n" +
             "    {\"name\":\"A2\",\n" +
