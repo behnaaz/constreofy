@@ -14,7 +14,7 @@ import priority.PropertyReader;
 
 @Builder
 public class Solver implements Containable {
-	public 	static final boolean USE_EQUAL_SET_ON = true;
+	public 	static final boolean USE_EQUAL_SET_ON = false;//TODO check imorivement
 	public static final String FORMULA_NAME = "qaz";
 	public static final String FORMULA_NAME_EQUAL = "qaz :=";
 	public static final String SHUT = "shut";

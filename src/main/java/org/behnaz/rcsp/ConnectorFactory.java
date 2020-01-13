@@ -45,7 +45,7 @@ public class ConnectorFactory extends Primitive {
 	}
 
 	public ConstraintConnector prioritySync(final String p1, final String p2) {
-		String prioritySync = String.format("(%s" + AbstractConnector.RIGHTLEFTARROW + "%s)" + AbstractConnector.AND + AbstractConnector.NOT + "(%sc" + AbstractConnector.AND + "%sk)" + AbstractConnector.AND
+		final String prioritySync = String.format("(%s" + AbstractConnector.RIGHTLEFTARROW + "%s)" + AbstractConnector.AND + AbstractConnector.NOT + "(%sc" + AbstractConnector.AND + "%sk)" + AbstractConnector.AND
 				+ "%sbullet" + AbstractConnector.AND + "%sbullet", flow(p1), flow(p2), p1, p2, p1, p2);
 		return new ConstraintConnector(prioritySync, p1, p2);
 	}
@@ -81,5 +81,9 @@ public class ConnectorFactory extends Primitive {
 				String.format("(%s %s %s %s)", flow(source), AbstractConnector.OR, AbstractConnector.NOT, flow(source)) :
 		 		String.format("( %s %s)", AbstractConnector.NOT, flow(source)),
 		 	source);
+	}
+
+	public ConstraintConnector fifo(final String source, final String sink) {
+		return new FIFO(source, sink).generateConstraint();
 	}
 }

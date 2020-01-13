@@ -118,14 +118,12 @@ public class Solution {
 	}
 
 	public String readable() {
-		return new StringBuilder()
-							.append("(")
-							.append(fromVariables.stream().map(e -> e + ", ").collect(Collectors.joining()))
-							.append(") ----{ ")
-							.append(flowVariables.stream().map(e -> e + ", ").collect(Collectors.joining()))
-							.append("} ----> (")
-							.append(toVariables.stream().map(e -> e + ", ").collect(Collectors.joining()))
-							.append(")")
-				.toString();
+		return "(" +
+				fromVariables.stream().map(e -> e.replace("tilde", "")).collect(Collectors.joining(",")) +
+				") ----{" +
+				flowVariables.stream().map(e -> e.replace("tilde", "")).collect(Collectors.joining(",")) +
+				"} ----> (" +
+				toVariables.stream().map(e -> e.replace("tilde", "")).collect(Collectors.joining(",")) +
+				")";
 	}
 }

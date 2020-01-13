@@ -13,15 +13,15 @@ import static org.behnaz.rcsp.AbstractConnector.*;
 
 public class FIFO extends Primitive {
 	@NotBlank
-	private String port1;
+	private final String port1;
 	@NotBlank
-	private String port2;
-	private String stateless;
+	private final String port2;
+	private final String stateless;
 
 	public FIFO(final String port1, final String port2) {
 		this.port1 = port1;
 		this.port2 = port2;
-		Set<ConstraintViolation<FIFO>> violations = Validation.buildDefaultValidatorFactory().getValidator().validate(this);
+		final Set<ConstraintViolation<FIFO>> violations = Validation.buildDefaultValidatorFactory().getValidator().validate(this);
 		if (! violations.isEmpty()) {
 			throw new RuntimeException( violations.stream().map(e -> e.getMessage()).collect(Collectors.joining(",")));
 		}
@@ -57,8 +57,7 @@ public class FIFO extends Primitive {
 	 * @return
 	 */
 	public ConstraintConnector generateConstraint() {
-		String fifo = stateless;
-		return new ConstraintConnector(fifo, port1, port2, memory(port1, port2), nextMemory(port1, port2));
+		return new ConstraintConnector(stateless, port1, port2, memory(port1, port2), nextMemory(port1, port2));
 	}
 
 	/**

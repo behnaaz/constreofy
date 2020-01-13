@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +59,12 @@ public class JournalExampleTest implements ExampleData {
         }
 
         assertEquals(110, connections.size());
+        assertEquals("I1", connections.get("W11"));
+        assertEquals("W11", connections.get("I1"));
+        assertEquals("I2J", connections.get("I2"));
+        assertEquals("I2", connections.get("I2J"));
+        assertEquals("J2", connections.get("J2K"));
+        assertEquals("JK1", connections.get("K1"));
     }
 
     private void readNodes() {
@@ -217,13 +222,13 @@ public class JournalExampleTest implements ExampleData {
     @Test
     public void checkNodes() {
         assertEquals(16, replicates.size());
-        assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q, S, T, U", replicates.stream().map(e -> e.getKey()).collect(Collectors.joining(", ")));
+        assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q, S, T, U", replicates.stream().map(Pair::getKey).collect(Collectors.joining(", ")));
 
         assertEquals(3, routes.size());
-        assertEquals("C, D, E", routes.stream().map(e -> e.getKey()).collect(Collectors.joining(", ")));
+        assertEquals("C, D, E", routes.stream().map(Pair::getKey).collect(Collectors.joining(", ")));
 
         assertEquals(1, merges.size());
-        assertEquals("F", merges.stream().map(e -> e.getKey()).collect(Collectors.joining(", ")));
+        assertEquals("F", merges.stream().map(Pair::getKey).collect(Collectors.joining(", ")));
     }
 
     @After
@@ -287,21 +292,21 @@ public class JournalExampleTest implements ExampleData {
 
         int cnt = 0;
         final StringBuilder sb = new StringBuilder();
-        final Iterator<String> iterator = bads.iterator();
-        while (iterator.hasNext()) {
-            String t = iterator.next();
+        for (String t : bads) {
             sb.append(t).append(", ");
             cnt++;
         }
         assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
 
-        //final ConstraintConnector connector = network();
-        //assertEquals(new HashSet<>(Arrays.asList("I2JTILDE", "I2JC",  "I2TILDE", "W11TILDE", "I1TILDE", "IJ1K", "IJ1TILDE", "I2JBULLET", "IJ1BULLET")), connector.getVariables());
+        final ConstraintConnector connector = network();
+     //   assertEquals(new HashSet<>(Arrays.asList("I2JTILDE", "JK1TILDE", "I2JC", "IJ1TILDE", "J2KJK1RING", "IJ1BULLET",
+          //      "I2TILDE", "W11TILDE", "I1TILDE", "IJ1K", "J2KTILDE", "J2KJK1XRING", "I2JBULLET")), connector.getVariables());
+  //      assertEquals(14, connector.getVariables().size());
         //assertEquals("(I2JTILDE equiv IJ1TILDE) and  not (I2JC and IJ1K) and I2JBULLET and IJ1BULLET  and  (W11TILDE  or   not  W11TILDE)", connector.getConstraint());
 
         List<IOAwareSolution> solutions = null;
         try {
-            solutions = checkSolutions(network());
+            solutions = checkSolutions(connector);
         } catch (IOException e) {
             e.printStackTrace();
             fail("Failed to solve");
@@ -312,7 +317,10 @@ public class JournalExampleTest implements ExampleData {
       //  assertEquals("() ----{ ij1tilde, i2tilde, i1tilde, i2jtilde, } ----> ()", solutions.get(0).getSolution().readable());
         //() ----{ i2tilde, i1tilde, } ----> () assertEquals("() ----{ } ----> ()", solutions.get(1).getSolution().readable());
        // [] ------ { ij1tilde ij1PRIORITY i2jtilde i2jPRIORITY} -------> ()   assertEquals("() ----{ } ----> ()", solutions.get(2).getSolution().readable());
-       // assertEquals("() ----{ } ----> ()", solutions.get(3).getSolution().readable());
+        assertEquals("() ----{j1,ij1,j2,i2,j2k,i1,i2j,w11} ----> (j2kjk1xring)", solutions.get(0).getSolution().readable());
+        assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
+        assertEquals("(j2kjk1ring) ----{} ----> (j2kjk1xring)", solutions.get(2).getSolution().readable());
+        assertEquals("(j2kjk1ring) ----{jk1,k2,r12,k1} ----> ()", solutions.get(3).getSolution().readable());
     }
 
     private List<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
@@ -329,12 +337,14 @@ public class JournalExampleTest implements ExampleData {
         ConstraintConnector connector = factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
         connector.add(factory.writer("W11", 1), "W11", connections.get("W11"));
         connector.add(factory.sync("I1", "I2"), "I2", connections.get("I2"));
-        assertEquals("I1", connections.get("W11"));
-        assertEquals("I2J", connections.get("I2"));
+        connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
+        connector.add(factory.sync("J1", "J2"), "J1", connections.get("J1"));
+        connector.add(factory.sync("K1", "K2"), "K1", connections.get("K1"));
+        connector.add(factory.writer("R12", 1), "R12", connections.get("R12"));//TODO reader
         //  connector.add(factory.merger("c", "d", "e"), "c", "b");
         //connector.add(factory.sync("f", "g"), "f", "a");
         //connector.add(factory.merger("h", "i", "j"), "h", "g");
         return connector;
     }
-
 }
+

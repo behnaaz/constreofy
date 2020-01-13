@@ -192,14 +192,14 @@ public class ConstraintConnector extends AbstractConnector {
 			String newConstraint = newConnector.getConstraint();
 			if (USE_EQUAL_SET_ON)
 				newConstraint = replaceEquals(newConnector);
-			if (TRUE.equals(constraint))
-				constraint = newConstraint;
-			else
-				constraint = String.format("%s %s %s", constraint, AND, newConstraint);
+			constraint = (TRUE.equals(constraint)) ? newConstraint : String.format("%s %s %s", constraint, AND, newConstraint);
 		}
 		if (!USE_EQUAL_SET_ON) {
 			if (StringUtils.isNotBlank(port1)) {
 				variableNames.add(port1);
+			}
+			if (StringUtils.isNotBlank(port2)) {
+				variableNames.add(port2);
 			}
 			if (StringUtils.isNotBlank(port1) && StringUtils.isNotBlank(port2))
 				constraint = String.format("%s %s ( %s %s  %s)",
@@ -269,7 +269,7 @@ public class ConstraintConnector extends AbstractConnector {
 		long endTime = System.nanoTime();
 
 		long duration = endTime - startTime;
-		Starter.log("replaceEquals took in miliseconds: " + duration/1000000);
+		Starter.log("replaceEquals took in milliseconds: " + duration/1000000);
 		return wipConstraint;
 	}
 
@@ -277,9 +277,9 @@ public class ConstraintConnector extends AbstractConnector {
 		String newConstraint = cc.getConstraint();
 		for (String var : cc.getVariableNames()) {
 			final Set<String> equals = connection.findEquals(var);
-			final Optional<String> representor = equals.stream().findFirst();
-			if (representor.isPresent() && !var.equals(representor.get()) && newConstraint.contains(var))
-				newConstraint = newConstraint.replaceAll(prim.flow(var), prim.flow(representor.get()));
+			final Optional<String> representative = equals.stream().findFirst();
+			if (representative.isPresent() && !var.equals(representative.get()) && newConstraint.contains(var))
+				newConstraint = newConstraint.replaceAll(prim.flow(var), prim.flow(representative.get()));
 		}
 		return newConstraint;
 	}
