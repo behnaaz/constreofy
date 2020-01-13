@@ -301,3 +301,4 @@ public interface ExampleData {
             "    ]}";
 
 }
+//18 Missing or double connections: Q1, Q2, Q3, Q4, Q4H, Q5, L1, L2, J1, EL1, Q3O, Q5P, JL2, IJ1, C4, Q2T, SQ1, C3M,
