@@ -295,36 +295,43 @@ public class JournalExampleTest implements ExampleData {
         }
         assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
 
-        final ConstraintConnector connector = network();
-        assertEquals(new HashSet<>(Arrays.asList("I2JTILDE", "I2JC", "IJ1K", "IJ1TILDE", "I2JBULLET", "IJ1BULLET")), connector.getVariables());
-        assertEquals("(I2JTILDE equiv IJ1TILDE) and  not (I2JC and IJ1K) and I2JBULLET and IJ1BULLET", connector.getConstraint());
+        //final ConstraintConnector connector = network();
+        //assertEquals(new HashSet<>(Arrays.asList("I2JTILDE", "I2JC",  "I2TILDE", "W11TILDE", "I1TILDE", "IJ1K", "IJ1TILDE", "I2JBULLET", "IJ1BULLET")), connector.getVariables());
+        //assertEquals("(I2JTILDE equiv IJ1TILDE) and  not (I2JC and IJ1K) and I2JBULLET and IJ1BULLET  and  (W11TILDE  or   not  W11TILDE)", connector.getConstraint());
 
         List<IOAwareSolution> solutions = null;
         try {
-            solutions = checkSolutions(connector);
+            solutions = checkSolutions(network());
         } catch (IOException e) {
             e.printStackTrace();
             fail("Failed to solve");
         }
 
-        assertEquals(2, solutions.size());
-        assertEquals("() ----{ ij1tilde, i2jtilde, } ----> ()", solutions.get(0).getSolution().readable());
-        assertEquals("() ----{ } ----> ()", solutions.get(1).getSolution().readable());
+        assertEquals(4, solutions.size());
+       // assertEquals(1, solutions.get(9));
+      //  assertEquals("() ----{ ij1tilde, i2tilde, i1tilde, i2jtilde, } ----> ()", solutions.get(0).getSolution().readable());
+        //() ----{ i2tilde, i1tilde, } ----> () assertEquals("() ----{ } ----> ()", solutions.get(1).getSolution().readable());
+       // [] ------ { ij1tilde ij1PRIORITY i2jtilde i2jPRIORITY} -------> ()   assertEquals("() ----{ } ----> ()", solutions.get(2).getSolution().readable());
+       // assertEquals("() ----{ } ----> ()", solutions.get(3).getSolution().readable());
     }
 
     private List<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
-        IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("W31", 1));
-        return Solver.builder()
-                .connectorConstraint(connector)
-                .initState(initState)
-                .build()
-                .solve(-1);
-    }
+                IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("W31", 1));
+                return Solver.builder()
+                                .connectorConstraint(connector)
+                                .initState(initState)
+                                .build()
+                                .solve(-1);
+   }
 
     private ConstraintConnector network() {
         final ConnectorFactory factory = new ConnectorFactory();
         ConstraintConnector connector = factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
-      //  connector.add(factory.merger("c", "d", "e"), "c", "b");
+        connector.add(factory.writer("W11", 1), "W11", connections.get("W11"));
+        connector.add(factory.sync("I1", "I2"), "I2", connections.get("I2"));
+        assertEquals("I1", connections.get("W11"));
+        assertEquals("I2J", connections.get("I2"));
+        //  connector.add(factory.merger("c", "d", "e"), "c", "b");
         //connector.add(factory.sync("f", "g"), "f", "a");
         //connector.add(factory.merger("h", "i", "j"), "h", "g");
         return connector;

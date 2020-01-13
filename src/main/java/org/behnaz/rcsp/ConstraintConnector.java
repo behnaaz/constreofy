@@ -81,10 +81,10 @@ public class ConstraintConnector extends AbstractConnector {
 	 * @return
 	 */
 	public Set<String> getVariables() {
-		return extractVariablesAndUpdtateConstraint(constraint, true);//TODO bad design side effect
+		return extractVariablesAndUpdateConstraint(constraint, true);//TODO bad design side effect
 	}
 
-	private Set<String> extractVariablesAndUpdtateConstraint(final String newConstraint, boolean updateConstraint) {
+	private Set<String> extractVariablesAndUpdateConstraint(final String newConstraint, final boolean updateConstraint) {
 		final Set<String> result = new HashSet<>();
 
 		if (newConstraint != null && newConstraint.trim().length() > 0) {
@@ -110,7 +110,7 @@ public class ConstraintConnector extends AbstractConnector {
 
 	private String prepareVariables(final String formulae) throws IOException {
 		final StringBuilder builder = new StringBuilder();
-		final Set<String> vars = this.extractVariablesAndUpdtateConstraint(formulae, true).stream().filter(item -> !item.isEmpty())//TODO orElse??
+		final Set<String> vars = this.extractVariablesAndUpdateConstraint(formulae, true).stream().filter(item -> !item.isEmpty())//TODO orElse??
 				.map(String::toUpperCase).collect(Collectors.toSet());
 		builder.append("rlpcvar ");
 		final String variable = vars.toString();
