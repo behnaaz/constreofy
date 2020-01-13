@@ -41,13 +41,35 @@ public class JournalExampleTest implements ExampleData {
 
     private JSONObject jsonObject;
 
+    private void readConnections() {
+        final JSONArray temp = jsonObject.getJSONArray("connections");
+        assertEquals(49, temp.length());
+        for (int i=0; i < temp.length(); i++) {
+            JSONObject connection = temp.getJSONObject(i);
+            String from = connection.getString("one");
+            String to = connection.getString("two");
+            connections.put(from, to);
+            connections.put(to, from);
+        }
+
+        assertEquals(92, connections.size());
+    }
+
+    private void readNodes() {
+        final JSONArray nodes = jsonObject.getJSONArray("nodes");
+        assertEquals(20, nodes.length());
+
+        for (int i=0; i < nodes.length(); i++) {
+            handle(nodes.getJSONObject(i));
+        }
+    }
+
     private void readChannels() {
         final JSONArray channels = jsonObject.getJSONArray("channels");
         assertEquals(24, channels.length());
 
         for (int i=0; i < channels.length(); i++) {
-            JSONObject node = channels.getJSONObject(i);
-            handle(node);
+            handle(channels.getJSONObject(i));
         }
     }
 
@@ -154,6 +176,8 @@ public class JournalExampleTest implements ExampleData {
         readChannels();
         readWriters();
         readReaders();
+        readNodes();
+        readConnections();
     }
 
     @Test
@@ -182,19 +206,7 @@ public class JournalExampleTest implements ExampleData {
 
     @Test
     public void checkConnections() {
-        final JSONArray temp = jsonObject.getJSONArray("connections");
-        assertEquals(49, temp.length());
-        for (int i=0; i < temp.length(); i++) {
-            JSONObject connection = temp.getJSONObject(i);
-            String from = connection.getString("one");
-            String to = connection.getString("two");
-            connections.put(from, to);
-            connections.put(to, from);
-        }
-
-        assertEquals(92, connections.size());
-
-        List<Pair<String, String>> channelEnds = new ArrayList<>();
+        final List<Pair<String, String>> channelEnds = new ArrayList<>();
         channelEnds.addAll(syncs);
         channelEnds.addAll(syncdrains);
         channelEnds.addAll(lossys);
@@ -209,14 +221,6 @@ public class JournalExampleTest implements ExampleData {
 
     @Test
     public void checkNodes() {
-        final JSONArray nodes = jsonObject.getJSONArray("nodes");
-        assertEquals(20, nodes.length());
-
-        for (int i=0; i < nodes.length(); i++) {
-            JSONObject node = nodes.getJSONObject(i);
-            handle(node);
-        }
-
         assertEquals(13, replicates.size());
         assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q", replicates.stream().map(e -> e.getKey()).collect(Collectors.joining(", ")));
 
