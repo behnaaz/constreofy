@@ -43,7 +43,7 @@ public class JournalExampleTest implements ExampleData {
 
     private void readConnections() {
         final JSONArray temp = jsonObject.getJSONArray("connections");
-        assertEquals(49, temp.length());
+        assertEquals(57, temp.length());
         for (int i=0; i < temp.length(); i++) {
             JSONObject connection = temp.getJSONObject(i);
             String from = connection.getString("one");
@@ -52,7 +52,7 @@ public class JournalExampleTest implements ExampleData {
             connections.put(to, from);
         }
 
-        assertEquals(92, connections.size());
+        assertEquals(110, connections.size());
     }
 
     private void readNodes() {
@@ -298,6 +298,6 @@ public class JournalExampleTest implements ExampleData {
             sb.append(t).append(", ");
             cnt++;
         }
-        System.out.println(cnt + " Missing or double connections: " + sb.toString());//TODO figure out why missing or double
+        assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
     }
 }

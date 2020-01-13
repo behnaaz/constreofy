@@ -204,6 +204,14 @@ public interface ExampleData {
             "    \"two\":\"I1\"},\n" +
             "    {\"one\":\"I2\",\n" +
             "      \"two\":\"I2J\"},\n" +
+            "    {\"one\":\"J1\",\"two\":\"IJ1\"},\n" +
+            "    {\"one\":\"Q1\",\"two\":\"SQ1\"},\n" +
+            "    {\"one\":\"Q2\",\"two\":\"Q2T\"},\n" +
+            "    {\"one\":\"Q3\",\"two\":\"Q3O\"},\n" +
+            "    {\"one\":\"Q4\",\"two\":\"Q4H\"},\n" +
+            "    {\"one\":\"Q5\",\"two\":\"Q5P\"},\n" +
+            "    {\"one\":\"L2\",\"two\":\"JL2\"},\n" +
+            "    {\"one\":\"L1\",\"two\":\"EL1\"},\n" +
             "    {\"one\":\"W21\",\n" +
             "      \"two\":\"A1\"},\n" +
             "    {\"one\":\"A2B\",\n" +
@@ -218,9 +226,9 @@ public interface ExampleData {
             "      \"two\":\"C1\"},\n" +
             "    {\"one\":\"C2D\",\n" +
             "      \"two\":\"C2\"},\n" +
-            "    {\"one\":\"E3L\",\n" +
+            "    {\"one\":\"C3M\",\n" +
             "      \"two\":\"C3\"},\n" +
-            "    {\"one\":\"A2B\",\n" +
+            "    {\"one\":\"C4\",\n" +
             "      \"two\":\"HC4\"},\n" +
             "    {\"one\":\"CD1\",\n" +
             "      \"two\":\"D1\"},\n" +
@@ -301,4 +309,3 @@ public interface ExampleData {
             "    ]}";
 
 }
-//18 Missing or double connections: Q1, Q2, Q3, Q4, Q4H, Q5, L1, L2, J1, EL1, Q3O, Q5P, JL2, IJ1, C4, Q2T, SQ1, C3M,
