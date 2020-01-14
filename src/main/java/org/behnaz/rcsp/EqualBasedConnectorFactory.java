@@ -37,12 +37,8 @@ public class EqualBasedConnectorFactory extends Primitive {
 		final String p2 = getEqual(source2);
 		final String p3 = getEqual(sink);
 
-		final String merger = String.format(
-				"(%s" + AbstractConnector.RIGHTLEFTARROW + "(%s" + AbstractConnector.OR + "%s))" + AbstractConnector.AND + "(" + AbstractConnector.NOT + "(%s" + AbstractConnector.AND + "%s))" + AbstractConnector.AND + "((" + AbstractConnector.NOT
-						+ "%s )" + AbstractConnector.IMPLIES + "((" + AbstractConnector.NOT + "%sk )" + AbstractConnector.AND + "%sk" + AbstractConnector.AND + "%sk)" + AbstractConnector.OR + "(%sc" + AbstractConnector.AND + ""
-						+ AbstractConnector.NOT + " %sk " + AbstractConnector.AND + " %sk)" + AbstractConnector.OR + "(%sc" + "" + AbstractConnector.AND + "" + " %sk" + AbstractConnector.AND + AbstractConnector.NOT + "%sk))"
-						+ AbstractConnector.AND + "(" + AbstractConnector.NOT + " (%s" + AbstractConnector.AND + "%s))",
-				flow(p3), flow(p1), flow(p2), flow(p1), flow(p2), flow(p3), p3, p1, p2, p3, p1, p2, p3, p1, p2, p1, p2);
+		final String merger = "((" + flow(p1) + AbstractConnector.RIGHTLEFTARROW + flow(p2) + ")" +
+				AbstractConnector.AND + "(" + flow(p1) + AbstractConnector.RIGHTLEFTARROW + flow(p3) + "))";
 		return new ConstraintConnector(merger, p1, p2, p3);
 	}
 
