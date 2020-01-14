@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class EqualBasedConnectorFactory extends Primitive {
 	private List<HashSet<String>> equals;
@@ -23,7 +22,7 @@ public class EqualBasedConnectorFactory extends Primitive {
 		}
 	}
 
-	public int find(final String token) {
+	private int find(final String token) {
 		for (int i = 0; i < equals.size(); i++) {
 			if (equals.get(i).contains(token)) {
 				return i;
@@ -46,16 +45,6 @@ public class EqualBasedConnectorFactory extends Primitive {
 		String sync = String.format("(%s %s %s)"/* + AND + NOT + "(%sc" + AND + "%sk)"*/, 
 				flow(p1), AbstractConnector.RIGHTLEFTARROW, flow(p2));//, p1, p2);
 		return new ConstraintConnector(sync, p1, p2);
-	}
-
-	/**
-	 * Returns the constraints of a new instance of FIFO initialized or uninitialized depending on the third parameter
-	 * @param source
-	 * @param sink
-	 * @return
-	 */
-	public ConstraintConnector getFIFOConstraint(final String source, final String sink) {
-		return new FIFO(source, sink).generateConstraint();
 	}
 
 	public ConstraintConnector router(final String c, final String k1, final String k2) {
@@ -133,7 +122,7 @@ public class EqualBasedConnectorFactory extends Primitive {
 	}
 
 	private String getEqual(final String end) {
-		int index = find(end);
+		int index = find(end.toUpperCase());
 		if (index < 0) return end;
 		return representative.get(index);
 	}

@@ -299,10 +299,6 @@ public class JournalExampleTest implements ExampleData {
         assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
 
         final ConstraintConnector connector = network();
-     //   assertEquals(new HashSet<>(Arrays.asList("I2JTILDE", "JK1TILDE", "I2JC", "IJ1TILDE", "J2KJK1RING", "IJ1BULLET",
-          //      "I2TILDE", "W11TILDE", "I1TILDE", "IJ1K", "J2KTILDE", "J2KJK1XRING", "I2JBULLET")), connector.getVariables());
-  //      assertEquals(14, connector.getVariables().size());
-        //assertEquals("(I2JTILDE equiv IJ1TILDE) and  not (I2JC and IJ1K) and I2JBULLET and IJ1BULLET  and  (W11TILDE  or   not  W11TILDE)", connector.getConstraint());
 
         List<IOAwareSolution> solutions = null;
         try {
@@ -312,11 +308,18 @@ public class JournalExampleTest implements ExampleData {
             fail("Failed to solve");
         }
 
-        assertEquals(16, solutions.size());
+        assertEquals(10, solutions.size());
         //[[I2J, J2K, J5N, J4L, J3M, J1, J2, J6U, I2, J3, J4, J5, J6, IJ1], [JK1, K1], [R22, N2]]
-        assertEquals("() ----{ju2,j2k,i2j} ----> (j2kjk1xring,j5njn1xring)", solutions.get(0).getSolution().readable());
-        assertEquals("() ----{ju2,i2j} ----> (j5njn1xring)", solutions.get(1).getSolution().readable());
-        assertEquals("() ----{j2k} ----> (j2kjk1xring)", solutions.get(2).getSolution().readable());
+        assertEquals("() ----{ju2,i2j} ----> (j2kjk1xring,j5njn1xring)", solutions.get(0).getSolution().readable());
+        assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
+        assertEquals("(j2kjk1ring,j5njn1ring) ----{} ----> (j2kjk1xring,j5njn1xring)", solutions.get(2).getSolution().readable());
+        assertEquals("(j2kjk1ring,j5njn1ring) ----{jn1} ----> (j2kjk1xring)", solutions.get(3).getSolution().readable());
+        assertEquals("(j2kjk1ring,j5njn1ring) ----{jk1} ----> (j5njn1xring)", solutions.get(4).getSolution().readable());
+        assertEquals("(j2kjk1ring,j5njn1ring) ----{jk1,jn1} ----> ()", solutions.get(5).getSolution().readable());
+        assertEquals("(j2kjk1ring) ----{} ----> (j2kjk1xring)", solutions.get(6).getSolution().readable());
+        assertEquals("(j2kjk1ring) ----{jk1} ----> ()", solutions.get(7).getSolution().readable());
+        assertEquals("(j5njn1ring) ----{} ----> (j5njn1xring)", solutions.get(8).getSolution().readable());
+        assertEquals("(j5njn1ring) ----{jn1} ----> ()", solutions.get(9).getSolution().readable());
 
         //assertEquals("", connector.getConstraint());
     }
@@ -339,6 +342,8 @@ public class JournalExampleTest implements ExampleData {
         }
 
         equalize(result, onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
+        equalize(result, "I1", connections.get("I1"));//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
+        equalize(result, "I1", "I2");//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
         equalize(result, "I2", connections.get("I2"));//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
         equalize(result, "IJ1", connections.get("IJ1"));//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
         equalize(result, "J1", "J2");equalize(result, "J1", "J3");equalize(result, "J1", "J4");equalize(result, "J1", "J5");equalize(result, "J1", "J6");//(factory.replicator("J1", "J2", "J3", "J4", "J5", "J6"), "J1", connections.get("J1"));
@@ -350,11 +355,11 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "N2", connections.get("N2"));//factory.sync("N1", "N2"), "N2", connections.get("N2"));
 
         assertEquals(3, result.size());
-     //   assertEquals("", result);
+        //assertEquals("", result);  [[I2J, J2K, J5N, J4L, J3M, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2]]
         return result;
     }
 
-    private void equalize(List<HashSet<String>> result, final String a, final String b) {
+    private void equalize(final List<HashSet<String>> result, final String a, final String b) {
         int addedA = -1;
         int addedB = -1;
         for (int i = 0; i < result.size(); i++) {
