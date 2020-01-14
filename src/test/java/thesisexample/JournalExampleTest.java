@@ -387,16 +387,23 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "K1", "K2");
         equalize(result, "R12", "K2");
         equalize(result, "B2C", "B2");
+        equalize(result, "D2F", "DF1");//sync
+        equalize(result, "D2F", "D2");
+        equalize(result, "DF1", "F1");
+        equalize(result, "M2", "M1");
 
         assertEquals(9, result.size());
-       // assertEquals("", result);  //[[I2J, J2K, J5N, J4L, J3M, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2]]
-        //[[I:[[BC1, C1], [C2D, C2], [CD1, D1], [I2J, J2K, J5N, J4L, J3M, M2, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N1, N2, JN1], [M1, JM2], [B2, AB1, A1, B3, A2B, A2, W21, B1], [DU1, JU2, D3U, U1, U2, D3]]
+       // assertEquals("", result);
+        //[[[BC1, C1], [C2D, C2], [CD1, D1], [I2J, J2K, J5N, J4L, M1, J3M, M2, J1, I1, J2, J6U, I2, J3,
+        // J4, J5, J6, JM2, IJ1, W11], [JK1, R12, K1, K2], [R22, N1, N2, JN1], [B2, AB1, A1, B3, A2B, A2, B2C, W21, B1],
+        // [DU1, JU2, D3U, U1, U2, D3], [D2F, F1, DF1, D2]]
         return result;
     }
 
     private void equalize(final List<HashSet<String>> result, final String a, final String b) {
         int addedA = -1;
         int addedB = -1;
+
         for (int i = 0; i < result.size(); i++) {
             HashSet<String> s = result.get(i);
             if (s.contains(a) && s.contains(b)) {
@@ -415,7 +422,7 @@ public class JournalExampleTest implements ExampleData {
             result.add(new HashSet<>(Arrays.asList(a, b)));
         }
 
-        if (addedA > -1 && addedB > -1) {
+        else if (addedA > -1 && addedB > -1) {
             final Set<String> temp = result.get(addedA);
             temp.addAll(result.get(addedB));
             result.remove(addedB);
@@ -443,13 +450,10 @@ public class JournalExampleTest implements ExampleData {
         connector.add(factory.writer("W21", 1), "W21", connections.get("W21"));//TODO reader
         connector.add(factory.syncDrain("D3U", "DU1"), "D3U", connections.get("DU1"));
 
-
-
         connector.add(factory.fifo("C2D", "CD1"), "C2D", connections.get("C2D"));
         connector.add(factory.router("D1", "D2", "D3", "D4"), "D1", connections.get("D1"));
 
-
-        //connector.add(factory.merger("h", "i", "j"), "h", "g");
+        connector.add(factory.merger("F1", "F2", "F3"), "F3", connections.get("F3"));
         return connector;
     }
 }

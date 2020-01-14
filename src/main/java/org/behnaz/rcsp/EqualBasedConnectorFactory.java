@@ -32,7 +32,11 @@ public class EqualBasedConnectorFactory extends Primitive {
 		return -1;
 	}
 
-	public ConstraintConnector merger(final String p1, final String p2, final String p3) {
+	public ConstraintConnector merger(final String source1, final String source2, final String sink) {
+		final String p1 = getEqual(source1);
+		final String p2 = getEqual(source2);
+		final String p3 = getEqual(sink);
+
 		final String merger = String.format(
 				"(%s" + AbstractConnector.RIGHTLEFTARROW + "(%s" + AbstractConnector.OR + "%s))" + AbstractConnector.AND + "(" + AbstractConnector.NOT + "(%s" + AbstractConnector.AND + "%s))" + AbstractConnector.AND + "((" + AbstractConnector.NOT
 						+ "%s )" + AbstractConnector.IMPLIES + "((" + AbstractConnector.NOT + "%sk )" + AbstractConnector.AND + "%sk" + AbstractConnector.AND + "%sk)" + AbstractConnector.OR + "(%sc" + AbstractConnector.AND + ""
@@ -46,13 +50,6 @@ public class EqualBasedConnectorFactory extends Primitive {
 		String sync = String.format("(%s %s %s)"/* + AND + NOT + "(%sc" + AND + "%sk)"*/, 
 				flow(p1), AbstractConnector.RIGHTLEFTARROW, flow(p2));//, p1, p2);
 		return new ConstraintConnector(sync, p1, p2);
-	}
-
-	public ConstraintConnector router(final String c, final String k1, final String k2) {
-		String router = String.format(
-				"(%s %s ( %s %s %s )) %s (%s (%s %s %s))", 
-				flow(c), AbstractConnector.RIGHTLEFTARROW, flow(k1), AbstractConnector.OR, flow(k2), AbstractConnector.AND, AbstractConnector.NOT, flow(k1), AbstractConnector.AND, flow(k2));
-		return new ConstraintConnector(router, c, k1, k2);
 	}
 
 	public ConstraintConnector router(final String source, final String... ks) {
