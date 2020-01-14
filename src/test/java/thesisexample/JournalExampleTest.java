@@ -313,10 +313,19 @@ public class JournalExampleTest implements ExampleData {
             fail("Failed to solve");
         }
 
-        assertEquals(3, solutions.size());
-        assertEquals("() ----{j2k} ----> (j2kjk1xring)", solutions.get(0).getSolution().readable());
+        assertEquals(10, solutions.size());
         assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
-        assertEquals("(2kjk1ring) ----{} ----> (j2kjk1xring)", solutions.get(2).getSolution().readable());
+        assertEquals("() ----{j2k} ----> (j2kjk1xring)", solutions.get(0).getSolution().readable());
+        assertEquals("(j2kjk1ring) ----{ju2,i2j} ----> (j5njn1xring)", solutions.get(2).getSolution().readable());
+        assertEquals("(j2kjk1ring) ----{} ----> (j2kjk1xring)", solutions.get(3).getSolution().readable());
+        assertEquals("(j5njn1ring) ----{j2k} ----> (j2kjk1xring,j5njn1xring)", solutions.get(4).getSolution().readable());
+        assertEquals("(j5njn1ring) ----{jn1,j2k} ----> (j2kjk1xring)", solutions.get(5).getSolution().readable());
+        assertEquals("(j5njn1ring) ----{} ----> (j5njn1xring)", solutions.get(6).getSolution().readable());
+        assertEquals("(j5njn1ring) ----{jn1} ----> ()", solutions.get(7).getSolution().readable());
+        assertEquals("(j2kjk1ring,j5njn1ring) ----{} ----> (j2kjk1xring,j5njn1xring)", solutions.get(8).getSolution().readable());
+        assertEquals("(j2kjk1ring,j5njn1ring) ----{jn1} ----> (j2kjk1xring)", solutions.get(9).getSolution().readable());
+
+        assertEquals("", connector.getConstraint());
     }
 
     private List<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
@@ -328,10 +337,12 @@ public class JournalExampleTest implements ExampleData {
                                 .solve(20);
    }
 
-    private List<HashSet<String>> createEquals() {
+    private List<HashSet<String>> createEquals(final List<String> usedEnds) {
         final List<HashSet<String>> result = new ArrayList<>();
         for (Map.Entry<String, String> s : connections.entrySet()) {
-            equalize(result, s.getKey(), s.getValue());
+            if (usedEnds.contains(s.getKey()) && usedEnds.contains(s.getValue())) {
+                equalize(result, s.getKey(), s.getValue());
+            }
         }
 
         equalize(result, onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
@@ -345,29 +356,49 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "J4L", connections.get("J4L"));//(factory.sync("J4L", "JL2"), "J4L", connections.get("J4L"));
         equalize(result, "N2", connections.get("N2"));//factory.sync("N1", "N2"), "N2", connections.get("N2"));
 
-        assertEquals(55, result.size());
+        assertEquals(3, result.size());
+        //assertEquals("", result);
         return result;
     }
 
     private void equalize(List<HashSet<String>> result, final String a, final String b) {
-        for (HashSet s : result) {
-            if (s.contains(a)) {
-                s.add(b);
+        int addedA = -1;
+        int addedB = -1;
+        for (int i = 0; i < result.size(); i++) {
+            HashSet<String> s = result.get(i);
+            if (s.contains(a) && s.contains(b)) {
                 return;
             }
-            if (s.contains(b)) {
-                s.add(a);
-                return;
+            if (s.contains(a)) {
+                if (! s.contains(b)) {
+                    s.add(b);
+                }
+                addedA = i;
+            }
+            else if (s.contains(b)) {
+                if (! s.contains(a)) {
+                    s.add(a);
+                }
+                addedB = i;
             }
         }
-        result.add(new HashSet<>(Arrays.asList(a, b)));
+        if (addedA == -1 && addedB == -1) {
+            result.add(new HashSet<>(Arrays.asList(a, b)));
+        }
+
+        if (addedA > -1 && addedB > -1) {
+            final Set<String> temp = result.get(addedA);
+            temp.addAll(result.get(addedB));
+            result.remove(addedB);
+        }
     }
 
     private ConstraintConnector network() {
-        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals());
+        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals(Arrays.asList("W11", "J2K", "JK1", "R12", "J3", "J3M", "JM2", "R22", "J5N", "JN1", "JU2", "J6U")));
         ConstraintConnector connector = factory.writer("W11", 1);
 //factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
         connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
+        //assertEquals("", factory.fifo("J2k", "JK1").getConstraint());
         connector.add(factory.writer("R12", 1), "R12", connections.get("R12"));//TODO reader
         connector.add(factory.lossySync("J3M", "JM2"), "J3", connections.get("J3"));
         connector.add(factory.lossySync("JU2", "J6U"), "J6", connections.get("J6"));
