@@ -3,6 +3,7 @@ package thesisexample;
 import javafx.util.Pair;
 import org.behnaz.rcsp.ConnectorFactory;
 import org.behnaz.rcsp.ConstraintConnector;
+import org.behnaz.rcsp.EqualBasedConnectorFactory;
 import org.behnaz.rcsp.IOAwareSolution;
 import org.behnaz.rcsp.IOAwareStateValue;
 import org.behnaz.rcsp.IOComponent;
@@ -18,6 +19,7 @@ import org.junit.runners.JUnit4;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -311,41 +313,73 @@ public class JournalExampleTest implements ExampleData {
             fail("Failed to solve");
         }
 
-        assertEquals(4, solutions.size());
-        assertEquals("() ----{j3,j6,j6u,ij1,j2,j4,ju2,j2k,jl2,i1,w11,j4l,j1,j3m,i2,i2j} ----> (j2kjk1xring)", solutions.get(0).getSolution().readable());
+        assertEquals(3, solutions.size());
+        assertEquals("() ----{j2k} ----> (j2kq1xring)", solutions.get(0).getSolution().readable());
         assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
-        assertEquals("(j2kjk1ring) ----{} ----> (j2kjk1xring)", solutions.get(2).getSolution().readable());
-        assertEquals("(j2kjk1ring) ----{jk1,k2,r12,k1} ----> ()", solutions.get(3).getSolution().readable());
+        assertEquals("(: j2kq1ring) ----{} ----> (j2kq1xring)", solutions.get(2).getSolution().readable());
     }
 
     private List<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
                 IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("W31", 1));
                 return Solver.builder()
-                                .connectorConstraint(connector)
+                                .connectorConstraint(connector.clean())
                                 .initState(initState)
                                 .build()
                                 .solve(20);
    }
 
+    private List<HashSet<String>> createEquals() {
+        final List<HashSet<String>> result = new ArrayList<>();
+        for (Map.Entry<String, String> s : connections.entrySet()) {
+            equalize(result, s.getKey(), s.getValue());
+        }
+
+        equalize(result, onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
+        equalize(result, "I2", connections.get("I2"));//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
+        equalize(result, "IJ1", connections.get("IJ1"));//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
+        equalize(result, "J1", "J2");equalize(result, "J1", "J3");equalize(result, "J1", "J4");equalize(result, "J1", "J5");equalize(result, "J1", "J6");//(factory.replicator("J1", "J2", "J3", "J4", "J5", "J6"), "J1", connections.get("J1"));
+        equalize(result, "J1", connections.get("J1"));equalize(result, "J2", connections.get("J2"));
+        equalize(result, "J3", connections.get("J3"));equalize(result, "J4", connections.get("J4"));
+        equalize(result, "J5", connections.get("J5"));equalize(result, "J6", connections.get("J6"));
+        equalize(result, "K1", connections.get("K1"));//(factory.sync("K1", "K2"), "K1", connections.get("K1"));
+        equalize(result, "J4L", connections.get("J4L"));//(factory.sync("J4L", "JL2"), "J4L", connections.get("J4L"));
+        equalize(result, "N2", connections.get("N2"));//factory.sync("N1", "N2"), "N2", connections.get("N2"));
+
+        assertEquals(55, result.size());
+        return result;
+    }
+
+    private void equalize(List<HashSet<String>> result, final String a, final String b) {
+        for (HashSet s : result) {
+            if (s.contains(a)) {
+                s.add(b);
+                return;
+            }
+            if (s.contains(b)) {
+                s.add(a);
+                return;
+            }
+        }
+        result.add(new HashSet<>(Arrays.asList(a, b)));
+    }
+
     private ConstraintConnector network() {
-        final ConnectorFactory factory = new ConnectorFactory();
-        ConstraintConnector connector = factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
-        connector.add(factory.writer("W11", 1), "W11", connections.get("W11"));
-        connector.add(factory.sync("I1", "I2"), "I2", connections.get("I2"));
+        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals());
+        ConstraintConnector connector = factory.writer("W11", 1);
+//factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
         connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
-        connector.add(factory.replicator("J1", "J2", "J3", "J4", "J5", "J6"), "J1", connections.get("J1"));
-        connector.add(factory.sync("K1", "K2"), "K1", connections.get("K1"));
         connector.add(factory.writer("R12", 1), "R12", connections.get("R12"));//TODO reader
         connector.add(factory.lossySync("J3M", "JM2"), "J3", connections.get("J3"));
         connector.add(factory.lossySync("JU2", "J6U"), "J6", connections.get("J6"));
-        connector.add(factory.sync("J4L", "JL2"), "J4L", connections.get("J4L"));
         connector.add(factory.fifo("J5N", "JN1"), "J5N", connections.get("J5N"));
-        connector.add(factory.sync("N1", "N2"), "N2", connections.get("N2"));
         connector.add(factory.writer("R22", 1), "R22", connections.get("R22"));//TODO reader
 
+        //assertEquals(null, connector.getEquals());
+        //Ij1 fix
+      //  connector.add(factory.sync(""));
         //  connector.add(factory.merger("c", "d", "e"), "c", "b");
         //connector.add(factory.merger("h", "i", "j"), "h", "g");
         return connector;
     }
 }
-
+//[[W11, I1], [I2J, J2K, J5N, J4L, J3M, J1, J2, J6U, I2, J3, J4, J5, J6, IJ1], [JK1, K1], [R22, N2], [R12, K2]]

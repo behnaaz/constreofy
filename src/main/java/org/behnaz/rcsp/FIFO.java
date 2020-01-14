@@ -28,7 +28,11 @@ public class FIFO extends Primitive {
 		this.stateless = getStatelessConstraint();
 	}
 
-	private String getStatelessConstraint() {
+	public String getStatelessConstraint() {
+		return getStatelessConstraint(port1, port2);
+	}
+
+	private String getStatelessConstraint(final String port1 ,final String port2) {
 		return String.format("(%s %s (%s %s %s %s)) %s (%s %s (%s %s %s %s)) %s ((%s (%s %s %s)) %s (%s %s %s)) %s (%s (%s %s %s))", 
 				flow(port1), RIGHTLEFTARROW, nextMemory(port1, port2), AND, NOT, memory(port1, port2),
 				AND,

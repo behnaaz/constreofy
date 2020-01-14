@@ -190,9 +190,14 @@ public class ConstraintConnector extends AbstractConnector {
 	public void add(final ConstraintConnector newConnector, final String port1, final String port2) {
 		if (newConnector != null) {
 			String newConstraint = newConnector.getConstraint();
-			if (USE_EQUAL_SET_ON)
+			if (USE_EQUAL_SET_ON) {
+				addEquals(port1, port2);
 				newConstraint = replaceEquals(newConnector);
-			constraint = (TRUE.equals(constraint)) ? newConstraint : String.format("%s %s %s", constraint, AND, newConstraint);
+			}
+			if (TRUE.equals(constraint))
+				constraint = newConstraint;
+			else
+				constraint = String.format("%s %s %s", constraint, AND, newConstraint);
 		}
 		if (!USE_EQUAL_SET_ON) {
 			if (StringUtils.isNotBlank(port1)) {
@@ -264,7 +269,7 @@ public class ConstraintConnector extends AbstractConnector {
 		long startTime = System.nanoTime();
 
 		final Primitive prim = new Primitive();
-		String wipConstraint = doReplace(prim, rawConstraint);
+		final String wipConstraint = doReplace(prim, rawConstraint);
 
 		long endTime = System.nanoTime();
 
@@ -287,5 +292,20 @@ public class ConstraintConnector extends AbstractConnector {
 	public void addEquals(String port1, String port2) {
 		if (USE_EQUAL_SET_ON)
 			connection.addEqual(port1, port2);
+	}
+
+	public ConstraintConnector clean() {
+		for (Set<String> eq : connection.getEquals()) {
+			String temp = eq.iterator().next();
+			for (String s : eq) {
+				constraint = constraint.replace(" "+s+" ", " "+temp+" ");
+			}
+		}
+		constraint = replaceEquals(this);
+		return this;
+	}
+
+	public Set<HashSet<String>> getEquals() {
+		return connection.getEquals();
 	}
 }

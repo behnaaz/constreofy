@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class Starter {
-	
+	private static boolean debug = false;
+
 	public static void main(String[] args) {
 		final IOAwareStateValue initState = new IOAwareStateValue(makeInitState("a1b1ring"), null/*new IOComponent("w1", 10000000)*/);
 		final ConstraintConnector cc = new ExampleMaker(1).getExample(initState);
@@ -27,7 +28,8 @@ public class Starter {
 	}
 
 	public static void log(String s) {
-		System.out.println(s);
+		if (debug)
+			System.out.println(s);
 	}
 
 	private static StateValue makeInitState(final String stateName) {

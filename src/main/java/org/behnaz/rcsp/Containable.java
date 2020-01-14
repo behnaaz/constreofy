@@ -11,7 +11,7 @@ public interface Containable {
 		for (IOAwareStateValue t : states) {
 			if (Arrays.equals(t.getIOs(), state.getIOs()) &&
 					t.getStateValue().getVariableValues().toString().trim().equals(state.getStateValue().getVariableValues().toString().trim())) {
-				System.out.println("Visited b4: " + state.toString() + " in " + states.toString());
+				Starter.log("Visited b4: " + state.toString() + " in " + states.toString());
 				return true;
 			}
 		}
