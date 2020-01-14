@@ -391,9 +391,29 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "D2F", "D2");
         equalize(result, "DF1", "F1");
         equalize(result, "M2", "M1");
+        equalize(result, "F3G", "F3");
+        equalize(result, "FG1", "G1");
+        equalize(result, "G2", "G1");
+        equalize(result, "G2", "R32");
+        equalize(result, "F2F", "EF2");
+        equalize(result, "F2", "EF2");
+        equalize(result, "E2", "EF2");
+        equalize(result, "E3L", "E3");
+        equalize(result, "E3L", "EL1");
+        equalize(result, "L1", "EL1");
+        equalize(result, "L1", "L2");
+        equalize(result, "F1", "F2");
+        equalize(result, "F1", "F3");
+        equalize(result, "B3E", "B3");
+        equalize(result, "BE1", "E1");
+        equalize(result, "J4L", "JL2");
+        equalize(result, "L2", "JL2");
+        equalize(result, "E2F", "EF2");
+        equalize(result, "F2", "EF2");
 
-        assertEquals(9, result.size());
-       // assertEquals("", result);
+
+        assertEquals(11, result.size());
+        assertEquals("", result);
         //[[[BC1, C1], [C2D, C2], [CD1, D1], [I2J, J2K, J5N, J4L, M1, J3M, M2, J1, I1, J2, J6U, I2, J3,
         // J4, J5, J6, JM2, IJ1, W11], [JK1, R12, K1, K2], [R22, N1, N2, JN1], [B2, AB1, A1, B3, A2B, A2, B2C, W21, B1],
         // [DU1, JU2, D3U, U1, U2, D3], [D2F, F1, DF1, D2]]
@@ -442,18 +462,23 @@ public class JournalExampleTest implements ExampleData {
         connector.add(factory.fifo("J5N", "JN1"), "J5N", connections.get("J5N"));
         connector.add(factory.writer("R22", 1), "R22", connections.get("R22"));//TODO reader
 
-        //assertEquals(null, connector.getEquals());
-
         connector.add(factory.syncDrain("CM1", "C3M"), "M1", "CM1");
         connector.add(factory.router("C1", "C2", "C3", "C4"), "C3", "C3M");
         connector.add(factory.fifo("B2C", "BC1"), "BC1", connections.get("BC1"));
         connector.add(factory.writer("W21", 1), "W21", connections.get("W21"));//TODO reader
-        connector.add(factory.syncDrain("D3U", "DU1"), "D3U", connections.get("DU1"));
+        connector.add(factory.syncDrain("D3U", "DU1"), "D3U", connections.get("D3U"));
 
         connector.add(factory.fifo("C2D", "CD1"), "C2D", connections.get("C2D"));
         connector.add(factory.router("D1", "D2", "D3", "D4"), "D1", connections.get("D1"));
 
         connector.add(factory.merger("F1", "F2", "F3"), "F3", connections.get("F3"));
+        connector.add(factory.fifo("F3G", "FG11"), "F3G", connections.get("F3G"));
+        connector.add(factory.router("E1", "E2", "E3", "E4"), "E2", connections.get("E2"));
+        connector.add(factory.syncDrain("E3L", "EL1"), "E3L", connections.get("E3L"));
+        connector.add(factory.fifo("B3E", "BE1"), "BE1", connections.get("BE1"));
+
+        connector.add(factory.syncDrain("E3L", "EL1"), "E3L", connections.get("E3L"));
+
         return connector;
     }
 }
