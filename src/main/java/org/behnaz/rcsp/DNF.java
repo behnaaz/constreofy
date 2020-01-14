@@ -73,8 +73,8 @@ public class DNF {
 
 		for (String and : ands) {
 			if (!and.trim().isEmpty()) {
-			String[] terms = and.trim().substring(1, and.trim().length()-1).split(AND.trim());
-			Solution newSol = new Solution(terms);//TODO
+			final String[] terms = and.trim().substring(1, and.trim().length()-1).split(AND.trim());
+			final Solution newSol = new Solution(terms);//TODO
 			Starter.log(newSol.toString() + " \r\n");
 
 			if (!contains(solutions, newSol))

@@ -106,14 +106,14 @@ public class Solver implements Containable {
 		return currentStatesValues;
 	}
 
-	 public List<IOAwareSolution> doSolve(IOAwareStateValue currentStatesValue, ConstraintConnector cc) throws IOException {
+	 public List<IOAwareSolution> doSolve(final IOAwareStateValue currentStatesValue, final ConstraintConnector cc) throws IOException {
 		if (StringUtils.isBlank(reduceProgram)) {
 			throw new RuntimeException("Reduce path not provided");
 		}
 		Starter.log("Solving the constraint using " + reduceProgram);
 		final List<String> reduceOutput = executeReduce(cc, currentStatesValue.getStateValue());
 		final String strReduceOutput = getOnlyAnswer(reduceOutput);
-		DNF dnf = new DNF(new ArrayList<>(cc.getVariables()));
+		final DNF dnf = new DNF(new ArrayList<>(cc.getVariables()));
 		final List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
 		return ioAwarify(solutions, currentStatesValue.getIOs());
 	}

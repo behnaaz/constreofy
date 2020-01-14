@@ -121,7 +121,7 @@ public class EqualBasedConnectorFactory extends Primitive {
 	public ConstraintConnector writer(final String originalSource, final int capacity) {
 		final String source = getEqual(originalSource);
 		return new ConstraintConnector(capacity > 0 ?
-				String.format("(%s %s %s %s)", flow(source), AbstractConnector.OR, AbstractConnector.NOT, flow(source)) :
+				 String.format("(%s %s %s %s)", flow(source), AbstractConnector.OR, AbstractConnector.NOT, flow(source)) :
 		 		String.format("( %s %s)", AbstractConnector.NOT, flow(source)),
 		 	source);
 	}
@@ -129,7 +129,7 @@ public class EqualBasedConnectorFactory extends Primitive {
 	public ConstraintConnector fifo(final String source, final String sink) {
 		final String eqsource = getEqual(source);
 		final String eqsink = getEqual(sink);
-		return new FIFO(eqsource, eqsink).generateConstraint();
+		return new FIFO(source, sink).generateConstraintOnLyRenameEnds(eqsource, eqsink);
 	}
 
 	private String getEqual(final String end) {

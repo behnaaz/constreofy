@@ -72,4 +72,8 @@ public class FIFO extends Primitive {
 	public String getMemory() {
 		return memory(port1, port2);
 	}
+
+	public ConstraintConnector generateConstraintOnLyRenameEnds(String eqsource, String eqsink) {
+		return new ConstraintConnector(stateless.replaceAll(flow(port1), flow(eqsource)).replaceAll(flow(port2), flow(eqsink)), port1, port2, memory(port1, port2), nextMemory(port1, port2));
+	}
 }

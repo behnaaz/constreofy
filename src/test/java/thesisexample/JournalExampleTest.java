@@ -314,15 +314,15 @@ public class JournalExampleTest implements ExampleData {
         }
 
         assertEquals(3, solutions.size());
-        assertEquals("() ----{j2k} ----> (j2kq1xring)", solutions.get(0).getSolution().readable());
+        assertEquals("() ----{j2k} ----> (j2kjk1xring)", solutions.get(0).getSolution().readable());
         assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
-        assertEquals("(: j2kq1ring) ----{} ----> (j2kq1xring)", solutions.get(2).getSolution().readable());
+        assertEquals("(2kjk1ring) ----{} ----> (j2kjk1xring)", solutions.get(2).getSolution().readable());
     }
 
     private List<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
                 IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("W31", 1));
                 return Solver.builder()
-                                .connectorConstraint(connector.clean())
+                                .connectorConstraint(connector)
                                 .initState(initState)
                                 .build()
                                 .solve(20);

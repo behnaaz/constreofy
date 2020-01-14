@@ -294,17 +294,6 @@ public class ConstraintConnector extends AbstractConnector {
 			connection.addEqual(port1, port2);
 	}
 
-	public ConstraintConnector clean() {
-		for (Set<String> eq : connection.getEquals()) {
-			String temp = eq.iterator().next();
-			for (String s : eq) {
-				constraint = constraint.replace(" "+s+" ", " "+temp+" ");
-			}
-		}
-		constraint = replaceEquals(this);
-		return this;
-	}
-
 	public Set<HashSet<String>> getEquals() {
 		return connection.getEquals();
 	}

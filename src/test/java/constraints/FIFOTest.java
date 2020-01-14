@@ -41,10 +41,10 @@ public class FIFOTest {
 		List<IOAwareSolution> solutions = initializeData(Optional.empty());
 		//assertEquals(expectedConstraint, connector.getConstraint());
 		assertEquals(4, solutions.size());
-		assertEquals("() ----{ cd1tilde, } ----> (cd1cd2xring, )", solutions.get(0).getSolution().readable());
-		assertEquals("(cd1cd2ring, ) ----{ cd2tilde, } ----> ()", solutions.get(3).getSolution().readable());
-		assertEquals("(cd1cd2ring, ) ----{ } ----> (cd1cd2xring, )", solutions.get(2).getSolution().readable());
-		assertEquals("() ----{ } ----> ()", solutions.get(1).getSolution().readable());
+		assertEquals("() ----{cd1} ----> (cd1cd2xring)", solutions.get(0).getSolution().readable());
+		assertEquals("(cd1cd2ring) ----{cd2} ----> ()", solutions.get(3).getSolution().readable());
+		assertEquals("(cd1cd2ring) ----{} ----> (cd1cd2xring)", solutions.get(2).getSolution().readable());
+		assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
 /*
 	}
 	

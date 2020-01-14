@@ -28,6 +28,6 @@ public class StateManagerTest {
 	@Test
 	public void testNextStates() {
 		List<IOAwareStateValue> next = mgr.findNextStates(solutions, new ArrayList<>(), new ArrayList<>());
-		assertEquals(36, next.size());
+		assertEquals(5, next.size());
 	}
 }
