@@ -55,8 +55,9 @@ public class EqualBasedConnectorFactory extends Primitive {
 		return new ConstraintConnector(router, c, k1, k2);
 	}
 
-	public ConstraintConnector router(final String c, final String... ks) {
-		final String or = Arrays.asList(ks).stream().map(this::flow).collect(Collectors.joining(AbstractConnector.OR));
+	public ConstraintConnector router(final String source, final String... ks) {
+		final String c = getEqual(source);
+		final String or = Arrays.asList(ks).stream().map(this::getEqual).map(this::flow).collect(Collectors.joining(AbstractConnector.OR));
 		final String exclusives = Arrays.asList(ks).stream().map(this::flow).collect(Collectors.joining(AbstractConnector.AND));
 		final List<String> l = new ArrayList<>();
 		l.add(c);

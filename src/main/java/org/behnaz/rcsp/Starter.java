@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Starter {
-	private static boolean debug = false;
+	private static boolean debug = true;
 
 	public static void main(String[] args) {
 		final IOAwareStateValue initState = new IOAwareStateValue(makeInitState("a1b1ring"), null/*new IOComponent("w1", 10000000)*/);

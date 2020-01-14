@@ -310,7 +310,7 @@ public class JournalExampleTest implements ExampleData {
             fail("Failed to solve");
         }
 
-        assertEquals(176, solutions.size());
+        assertEquals(244, solutions.size());
         //[[I2J, J2K, J5N, J4L, J3M, J1, J2, J6U, I2, J3, J4, J5, J6, IJ1], [JK1, K1], [R22, N2]]
       /*  assertEquals("() ----{ju2,i2j} ----> (j2kjk1xring,j5njn1xring)", solutions.get(0).getSolution().readable());
         assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
@@ -351,11 +351,13 @@ public class JournalExampleTest implements ExampleData {
             }
         }
 
+        equalize(result, "C1", "BC1");
+        equalize(result, "BC1", "C1");
         equalize(result, onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
-        equalize(result, "I1", connections.get("I1"));//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
-        equalize(result, "I1", "I2");//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
-        equalize(result, "I2", connections.get("I2"));//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
-        equalize(result, "IJ1", connections.get("IJ1"));//(factory.sync("I1", "I2"), "I2", connections.get("I2"));
+        equalize(result, "I1", connections.get("I1"));
+        equalize(result, "I1", "I2");
+        equalize(result, "I2", connections.get("I2"));
+        equalize(result, "IJ1", connections.get("IJ1"));
         equalize(result, "J1", "J2");equalize(result, "J1", "J3");equalize(result, "J1", "J4");equalize(result, "J1", "J5");equalize(result, "J1", "J6");//(factory.replicator("J1", "J2", "J3", "J4", "J5", "J6"), "J1", connections.get("J1"));
         equalize(result, "J1", connections.get("J1"));equalize(result, "J2", connections.get("J2"));
         equalize(result, "J3", connections.get("J3"));equalize(result, "J4", connections.get("J4"));
@@ -367,7 +369,7 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "M1", connections.get("CM1"));
         equalize(result, "J3M", connections.get("JM2"));
         equalize(result, "JM2", connections.get("M2"));
-        equalize(result, "BC1", "C1");
+
         equalize(result, "B1", "B2");
         equalize(result, "B1", "B3");
         equalize(result, "B1", "AB1");
@@ -375,12 +377,20 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "A1", "A2");
         equalize(result, "A2B", "A2");
         equalize(result, "A1", "W21");
+        equalize(result, "D3U", "D3");
+        equalize(result, "JU2", "U2");
+        equalize(result, "U1", "U2");
+        equalize(result, "U1", "DU1");
+        equalize(result, "D3U", "DU1");
+        equalize(result, "JN1", "N1");
+        equalize(result, "N2", "N1");
+        equalize(result, "K1", "K2");
+        equalize(result, "R12", "K2");
+        equalize(result, "B2C", "B2");
 
-        assertEquals(6, result.size());
-    //    assertEquals("", result);  //[[I2J, J2K, J5N, J4L, J3M, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2]]
-        //[[I2J, J2K, J5N, J4L, J3M, M2, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2], [M1, JM2]]
-        //[[BC1, C1], [I2J, J2K, J5N, J4L, J3M, M2, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2], [M1, JM2]]
-        //[[BC1, B2C, C1], [I2J, J2K, J5N, J4L, J3M, M2, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2], [M1, JM2], [B2, AB1, A1, B3, A2B, A2, W21, B1]]
+        assertEquals(9, result.size());
+       // assertEquals("", result);  //[[I2J, J2K, J5N, J4L, J3M, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2]]
+        //[[I:[[BC1, C1], [C2D, C2], [CD1, D1], [I2J, J2K, J5N, J4L, J3M, M2, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N1, N2, JN1], [M1, JM2], [B2, AB1, A1, B3, A2B, A2, W21, B1], [DU1, JU2, D3U, U1, U2, D3]]
         return result;
     }
 
@@ -413,7 +423,9 @@ public class JournalExampleTest implements ExampleData {
     }
 
     private ConstraintConnector network() {
-        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals(Arrays.asList("B2C", "BC1", "C1", "C2", "C3", "C4", "W11", "J2K", "JK1", "R12", "J3", "J3M", "JM2", "R22", "J5N", "JN1", "JU2", "J6U")));
+        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals(Arrays.asList("C2D", "CD1", "B2C", "BC1",
+                "D1", "D2", "D3", "D4"
+                ,"C1", "C2", "C3", "C4", "W11", "J2K", "JK1", "R12", "J3", "J3M", "JM2", "R22", "J5N", "JN1", "JU2", "J6U")));
         ConstraintConnector connector = factory.writer("W11", 1);
 //factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
         connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
@@ -429,9 +441,15 @@ public class JournalExampleTest implements ExampleData {
         connector.add(factory.router("C1", "C2", "C3", "C4"), "C3", "C3M");
         connector.add(factory.fifo("B2C", "BC1"), "BC1", connections.get("BC1"));
         connector.add(factory.writer("W21", 1), "W21", connections.get("W21"));//TODO reader
+        connector.add(factory.syncDrain("D3U", "DU1"), "D3U", connections.get("DU1"));
+
+
+
+        connector.add(factory.fifo("C2D", "CD1"), "C2D", connections.get("C2D"));
+        connector.add(factory.router("D1", "D2", "D3", "D4"), "D1", connections.get("D1"));
+
 
         //connector.add(factory.merger("h", "i", "j"), "h", "g");
         return connector;
     }
 }
-//[[W11, I1], [I2J, J2K, J5N, J4L, J3M, J1, J2, J6U, I2, J3, J4, J5, J6, IJ1], [JK1, K1], [R22, N2], [R12, K2]]
