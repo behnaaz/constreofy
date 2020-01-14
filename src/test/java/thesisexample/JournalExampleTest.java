@@ -6,7 +6,6 @@ import org.behnaz.rcsp.EqualBasedConnectorFactory;
 import org.behnaz.rcsp.IOAwareSolution;
 import org.behnaz.rcsp.IOAwareStateValue;
 import org.behnaz.rcsp.IOComponent;
-import org.behnaz.rcsp.Solution;
 import org.behnaz.rcsp.Solver;
 import org.behnaz.rcsp.StateValue;
 import org.behnaz.rcsp.StateVariableValue;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,10 +48,6 @@ public class JournalExampleTest implements ExampleData {
     private final Map<String, String> connections = new HashMap<>();
 
     private JSONObject jsonObject;
-
-    private static void accept(final IOAwareSolution e) {
-        System.out.println(e.getSolution().readable());
-    }
 
     private void readConnections() {
         final JSONArray temp = jsonObject.getJSONArray("connections");
@@ -197,7 +191,7 @@ public class JournalExampleTest implements ExampleData {
         checkConnections();
     }
 
-    public void checkChannels() {
+    private void checkChannels() {
         assertEquals(7, fifos.size());
         assertEquals(5, syncs.size());
         assertEquals(6, syncdrains.size());
@@ -214,7 +208,7 @@ public class JournalExampleTest implements ExampleData {
         assertEquals("B2C[]>BC1, C2D[]>CD1, F3G[]>FG1, B3E[]>BE1, Q5P[]>QP1, J2K[]>JK1, J5N[]>JN1", fifos.stream().map(e -> e.getKey() + "[]>" + e.getValue()).collect(Collectors.joining(", ")));
     }
 
-    public void checkConnections() {
+    private void checkConnections() {
         final List<Pair<String, String>> channelEnds = new ArrayList<>();
         channelEnds.addAll(syncs);
         channelEnds.addAll(syncdrains);
@@ -228,7 +222,7 @@ public class JournalExampleTest implements ExampleData {
         }
     }
 
-    public void checkNodes() {
+    private void checkNodes() {
         assertEquals(16, replicates.size());
         assertEquals("A, B, G, H, I, J, K, L, M, N, O, P, Q, S, T, U", replicates.stream().map(Pair::getKey).collect(Collectors.joining(", ")));
 
@@ -310,14 +304,13 @@ public class JournalExampleTest implements ExampleData {
 
         List<IOAwareSolution> solutions = null;
         try {
-            solutions = checkSolutions(connector).stream().collect(Collectors.toList());
+            solutions = new ArrayList<>(checkSolutions(connector));
         } catch (IOException e) {
             e.printStackTrace();
             fail("Failed to solve");
         }
 
-        assertEquals(10, solutions.size());
-        final Iterator<IOAwareSolution> it = solutions.iterator();
+        assertEquals(176, solutions.size());
         //[[I2J, J2K, J5N, J4L, J3M, J1, J2, J6U, I2, J3, J4, J5, J6, IJ1], [JK1, K1], [R22, N2]]
       /*  assertEquals("() ----{ju2,i2j} ----> (j2kjk1xring,j5njn1xring)", solutions.get(0).getSolution().readable());
         assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
@@ -332,7 +325,7 @@ public class JournalExampleTest implements ExampleData {
         assertEquals("(j5njn1ring) ----{} ----> (j5njn1xring)", solutions.get(10).getSolution().readable());
         assertEquals("(j5njn1ring) ----{jn1} ----> ()", solutions.get(11).getSolution().readable());*/
         for (IOAwareSolution i : solutions) {
-            if (i.getSolution().getFromVariables().size() == 0)
+       //     if (i.getSolution().getFromVariables().size() == 0)
                 System.out.println(i.getSolution().readable());
         }
         //assertEquals("", connector.getConstraint());
@@ -342,7 +335,7 @@ public class JournalExampleTest implements ExampleData {
         final Set<StateVariableValue> fifos = new HashSet<>();
         fifos.add(StateVariableValue.builder().stateName("j2kjk1ring").value(Optional.of(Boolean.FALSE)).build());
         fifos.add(StateVariableValue.builder().stateName("j5njn1ring").value(Optional.of(Boolean.FALSE)).build());
-        IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1));
+        IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
                 return new HashSet<>(Solver.builder()
                                 .connectorConstraint(connector)
                                 .initState(initState)
@@ -367,12 +360,27 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "J1", connections.get("J1"));equalize(result, "J2", connections.get("J2"));
         equalize(result, "J3", connections.get("J3"));equalize(result, "J4", connections.get("J4"));
         equalize(result, "J5", connections.get("J5"));equalize(result, "J6", connections.get("J6"));
-        equalize(result, "K1", connections.get("K1"));//(factory.sync("K1", "K2"), "K1", connections.get("K1"));
-        equalize(result, "J4L", connections.get("J4L"));//(factory.sync("J4L", "JL2"), "J4L", connections.get("J4L"));
-        equalize(result, "N2", connections.get("N2"));//factory.sync("N1", "N2"), "N2", connections.get("N2"));
+        equalize(result, "K1", connections.get("K1"));
+        equalize(result, "J4L", connections.get("J4L"));
+        equalize(result, "N2", connections.get("N2"));
+        equalize(result, "M1", connections.get("M2"));
+        equalize(result, "M1", connections.get("CM1"));
+        equalize(result, "J3M", connections.get("JM2"));
+        equalize(result, "JM2", connections.get("M2"));
+        equalize(result, "BC1", "C1");
+        equalize(result, "B1", "B2");
+        equalize(result, "B1", "B3");
+        equalize(result, "B1", "AB1");
+        equalize(result, "A2B", "AB1");
+        equalize(result, "A1", "A2");
+        equalize(result, "A2B", "A2");
+        equalize(result, "A1", "W21");
 
-        assertEquals(3, result.size());
-        //assertEquals("", result);  [[I2J, J2K, J5N, J4L, J3M, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2]]
+        assertEquals(6, result.size());
+    //    assertEquals("", result);  //[[I2J, J2K, J5N, J4L, J3M, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2]]
+        //[[I2J, J2K, J5N, J4L, J3M, M2, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2], [M1, JM2]]
+        //[[BC1, C1], [I2J, J2K, J5N, J4L, J3M, M2, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2], [M1, JM2]]
+        //[[BC1, B2C, C1], [I2J, J2K, J5N, J4L, J3M, M2, J1, I1, J2, J6U, I2, J3, J4, J5, J6, IJ1, W11], [JK1, K1], [R22, N2], [M1, JM2], [B2, AB1, A1, B3, A2B, A2, W21, B1]]
         return result;
     }
 
@@ -385,15 +393,11 @@ public class JournalExampleTest implements ExampleData {
                 return;
             }
             if (s.contains(a)) {
-                if (! s.contains(b)) {
-                    s.add(b);
-                }
+                s.add(b);
                 addedA = i;
             }
             else if (s.contains(b)) {
-                if (! s.contains(a)) {
-                    s.add(a);
-                }
+                s.add(a);
                 addedB = i;
             }
         }
@@ -409,11 +413,10 @@ public class JournalExampleTest implements ExampleData {
     }
 
     private ConstraintConnector network() {
-        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals(Arrays.asList("W11", "J2K", "JK1", "R12", "J3", "J3M", "JM2", "R22", "J5N", "JN1", "JU2", "J6U")));
+        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals(Arrays.asList("B2C", "BC1", "C1", "C2", "C3", "C4", "W11", "J2K", "JK1", "R12", "J3", "J3M", "JM2", "R22", "J5N", "JN1", "JU2", "J6U")));
         ConstraintConnector connector = factory.writer("W11", 1);
 //factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
         connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
-        //assertEquals("", factory.fifo("J2k", "JK1").getConstraint());
         connector.add(factory.writer("R12", 1), "R12", connections.get("R12"));//TODO reader
         connector.add(factory.lossySync("J3M", "JM2"), "J3", connections.get("J3"));
         connector.add(factory.lossySync("JU2", "J6U"), "J6", connections.get("J6"));
@@ -421,9 +424,12 @@ public class JournalExampleTest implements ExampleData {
         connector.add(factory.writer("R22", 1), "R22", connections.get("R22"));//TODO reader
 
         //assertEquals(null, connector.getEquals());
-        //Ij1 fix
-      //  connector.add(factory.sync(""));
-        //  connector.add(factory.merger("c", "d", "e"), "c", "b");
+
+        connector.add(factory.syncDrain("CM1", "C3M"), "M1", "CM1");
+        connector.add(factory.router("C1", "C2", "C3", "C4"), "C3", "C3M");
+        connector.add(factory.fifo("B2C", "BC1"), "BC1", connections.get("BC1"));
+        connector.add(factory.writer("W21", 1), "W21", connections.get("W21"));//TODO reader
+
         //connector.add(factory.merger("h", "i", "j"), "h", "g");
         return connector;
     }

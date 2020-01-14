@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EqualBasedConnectorFactory extends Primitive {
 	private List<HashSet<String>> equals;
@@ -54,6 +55,15 @@ public class EqualBasedConnectorFactory extends Primitive {
 		return new ConstraintConnector(router, c, k1, k2);
 	}
 
+	public ConstraintConnector router(final String c, final String... ks) {
+		final String or = Arrays.asList(ks).stream().map(this::flow).collect(Collectors.joining(AbstractConnector.OR));
+		final String exclusives = Arrays.asList(ks).stream().map(this::flow).collect(Collectors.joining(AbstractConnector.AND));
+		final List<String> l = new ArrayList<>();
+		l.add(c);
+		l.addAll(Arrays.asList(ks));
+		return new ConstraintConnector("(" + flow(c) + AbstractConnector.RIGHTLEFTARROW + "("+ or +"))" + AbstractConnector.AND +"("+AbstractConnector.NOT+ " ("+ exclusives + "))", l);
+	}
+
 	public ConstraintConnector lossySync(final String source, final String sink) {
 		final String p1 = getEqual(source);
 		final String p2 = getEqual(sink);
@@ -61,7 +71,9 @@ public class EqualBasedConnectorFactory extends Primitive {
 		return new ConstraintConnector(lossy, p1, p2);
 	}
 
-	public ConstraintConnector syncDrain(final String p1, final String p2) {
+	public ConstraintConnector syncDrain(final String source, final String sink) {
+		final String p1 = getEqual(source);
+		final String p2 = getEqual(sink);
 		String syncDrain = String.format("(%s %s %s)", flow(p1), AbstractConnector.RIGHTLEFTARROW, flow(p2));
 		return new ConstraintConnector(syncDrain, p1, p2);
 	}
