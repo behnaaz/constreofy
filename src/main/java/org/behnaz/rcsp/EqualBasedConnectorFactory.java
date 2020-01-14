@@ -19,7 +19,7 @@ public class EqualBasedConnectorFactory extends Primitive {
 
 	private void makeRepresentative(final List<HashSet<String>> equals) {
 		for (int i = 0; i < equals.size(); i++) {
-			representative.put(i, equals.get(0).iterator().next());
+			representative.put(i, equals.get(i).iterator().next());
 		}
 	}
 
