@@ -343,12 +343,10 @@ public class JournalExampleTest implements ExampleData {
                                 .solve(20));
    }
 
-    private List<HashSet<String>> createEquals(final List<String> usedEnds) {
+    private List<HashSet<String>> createEquals() {
         final List<HashSet<String>> result = new ArrayList<>();
         for (Map.Entry<String, String> s : connections.entrySet()) {
-            if (usedEnds.contains(s.getKey()) && usedEnds.contains(s.getValue())) {
-                equalize(result, s.getKey(), s.getValue());
-            }
+            equalize(result, s.getKey(), s.getValue());
         }
 
         equalize(result, "C1", "BC1");
@@ -410,14 +408,40 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "L2", "JL2");
         equalize(result, "E2F", "EF2");
         equalize(result, "F2", "EF2");
+        equalize(result, "E4T", "E4");
+        equalize(result, "ET2", "T2");
+        equalize(result, "T2", "T1");
+        equalize(result, "T2", "T1");
+        equalize(result, "Q2T", "QT1");//sync
+        equalize(result, "Q2T", "Q2");
+        equalize(result, "QT1", "T1");
+        equalize(result, "Q1", "Q2");
+        equalize(result, "Q1", "Q3");
+        equalize(result, "Q1", "Q4");
+        equalize(result, "Q1", "Q5");
+        equalize(result, "SQ1", "S2Q");//priosync
+        equalize(result, "Q1", "SQ1");
+        equalize(result, "S2", "S2Q");
+        equalize(result, "S2", "S1");
+        equalize(result, "W31", "S1");
+        equalize(result, "Q5P", "Q5");
+        equalize(result, "QP1", "P1");
+        equalize(result, "P2", "P1");
+        equalize(result, "P2", "R42");
+        equalize(result, "O1", "O2");
+        equalize(result, "H1", "H2");
 
 
-        assertEquals(11, result.size());
-        assertEquals("", result);
-        //[[[BC1, C1], [C2D, C2], [CD1, D1], [I2J, J2K, J5N, J4L, M1, J3M, M2, J1, I1, J2, J6U, I2, J3,
-        // J4, J5, J6, JM2, IJ1, W11], [JK1, R12, K1, K2], [R22, N1, N2, JN1], [B2, AB1, A1, B3, A2B, A2, B2C, W21, B1],
-        // [DU1, JU2, D3U, U1, U2, D3], [D2F, F1, DF1, D2]]
-        return result;
+        assertEquals(19, result.size());
+       // assertEquals("", result);
+       //Expected :
+        //Actual   :[[Q1, Q2, ET2, Q3, Q4, Q4H, Q5, Q3O, Q5P, QT1, SQ1, Q2T, S2Q, W31, T1, T2, S1, S2],
+        // [J5N, M1, J3M, M2, CM1, I1, I2, JM2, E3, I2J, J2K, J4L, L1, L2, J1, J2, J6U, J3, J4, J5, EL1, J6, IJ1, JL2, W11, E3L],
+        // [A1, AB1, B2, A2, A2B, B3, B2C, B3E, W21, B1], [BC1, C1], [JK1, R12, K1, K2], [R22, N1, N2, JN1],
+        // [R32, FG1, G1, G2], [C2D, C2], [E1, BE1], [C3, C3M], [C4, HC4], [R42, P1, P2, QP1], [CD1, D1],
+        // [EF2, E2F, D2F, F1, F2F, F3G, F2, E2, F3, D2, DF1], [DU1, JU2, D3U, U1, U2, D3], [D4, OD4], [H1, H2, QH2, H1C],
+        // [E4T, E4], [O1, O1D, O2, QO2]]
+         return result;
     }
 
     private void equalize(final List<HashSet<String>> result, final String a, final String b) {
@@ -450,9 +474,9 @@ public class JournalExampleTest implements ExampleData {
     }
 
     private ConstraintConnector network() {
-        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals(Arrays.asList("C2D", "CD1", "B2C", "BC1",
-                "D1", "D2", "D3", "D4"
-                ,"C1", "C2", "C3", "C4", "W11", "J2K", "JK1", "R12", "J3", "J3M", "JM2", "R22", "J5N", "JN1", "JU2", "J6U")));
+        final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals());//Arrays.asList("C2D", "CD1", "B2C", "BC1",
+               // "D1", "D2", "D3", "D4"
+                //,"C1", "C2", "C3", "C4", "W11", "J2K", "JK1", "R12", "J3", "J3M", "JM2", "R22", "J5N", "JN1", "JU2", "J6U")));
         ConstraintConnector connector = factory.writer("W11", 1);
 //factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
         connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
@@ -477,7 +501,17 @@ public class JournalExampleTest implements ExampleData {
         connector.add(factory.syncDrain("E3L", "EL1"), "E3L", connections.get("E3L"));
         connector.add(factory.fifo("B3E", "BE1"), "BE1", connections.get("BE1"));
 
-        connector.add(factory.syncDrain("E3L", "EL1"), "E3L", connections.get("E3L"));
+        connector.add(factory.syncDrain("E4T", "ET2"), "E4T", connections.get("ET2"));
+        connector.add(factory.writer("W31", 1), "W31", connections.get("W31"));
+
+        connector.add(factory.fifo("Q5P", "QP1"), "F3G", connections.get("F3G"));
+        connector.add(factory.writer("R42", 1), "R42", connections.get("R42"));//TODO reader
+
+        connector.add(factory.lossySync("Q3O", "QO2"), "Q3O", connections.get("Q3O"));
+        connector.add(factory.lossySync("Q4H", "QH2"), "Q4H", connections.get("Q4H"));
+
+        connector.add(factory.syncDrain("O1D", "OD4"), "O1D", connections.get("O1D"));
+        connector.add(factory.syncDrain("HC4", "H1C"), "E3L", connections.get("E3L"));
 
         return connector;
     }
