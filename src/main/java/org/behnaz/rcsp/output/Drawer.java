@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class Drawer {
-    public static final String STATE_VARIABLE_DELIMITER = "AND";
+    public static final String STATE_VARIABLE_DELIMITER = "_";
     private final String path;
 
     final Map<String, String> labels = new HashMap<>();
@@ -48,7 +48,7 @@ public class Drawer {
         // 		String repesentationType= "twopi";
         // 		String repesentationType= "circo";
 
-        File out = new File( path + gv.getImageDpi() + "." + type);   // Linux
+        File out = new File( path  + gv.getImageDpi() + "." + type);   // Linux
         gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), type, repesentationType), out);
 
         final File desc = new File(path + "labels.txt");   // Linux
@@ -85,6 +85,6 @@ public class Drawer {
             return new HashSet<>(Arrays.asList("empty"));
         }
 
-        return set.stream().map(e -> e.replaceAll("\\d", "")).collect(Collectors.toSet());
+        return set.stream().map(e -> e.replaceAll("\\d", "").substring(0, 2)).collect(Collectors.toSet());
     }
 }
