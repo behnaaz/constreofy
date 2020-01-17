@@ -3,13 +3,13 @@ package thesisexample;
 import javafx.util.Pair;
 import org.behnaz.rcsp.ConstraintConnector;
 import org.behnaz.rcsp.EqualBasedConnectorFactory;
-import org.behnaz.rcsp.GraphViz;
 import org.behnaz.rcsp.IOAwareSolution;
 import org.behnaz.rcsp.IOAwareStateValue;
 import org.behnaz.rcsp.IOComponent;
 import org.behnaz.rcsp.Solver;
 import org.behnaz.rcsp.StateValue;
 import org.behnaz.rcsp.StateVariableValue;
+import org.behnaz.rcsp.output.Drawer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -18,8 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -331,82 +329,10 @@ public class JournalExampleTest implements ExampleData {
        //     if (i.getSolution().getFromVariables().size() == 0)
                 System.out.println(i.getSolution().readable());
         }
-        draw(solutions);
+        new Drawer("/tmp/").draw(solutions);
         //assertEquals("", connector.getConstraint());
     }
 
-    private void draw(List<IOAwareSolution> solutions) {
-        GraphViz gv = new GraphViz();
-        gv.addln(gv.start_graph());
-        for (IOAwareSolution sol : solutions) {
-            gv.addln(makeLine(sol));
-        }
-        gv.addln(gv.end_graph());
-        System.out.println(gv.getDotSource());
-
-        gv.increaseDpi();   // 106 dpi
-
-        String type = "svg";
-        //      String type = "dot";
-        //      String type = "fig";    // open with xfig
-        //      String type = "pdf";
-        //      String type = "ps";
-        //      String type = "svg";    // open with inkscape
-        //      String type = "png";
-        //      String type = "plain";
-
-        String repesentationType = "dot";
-        //		String repesentationType= "neato";
-        //		String repesentationType= "fdp";
-        //		String repesentationType= "sfdp";
-        // 		String repesentationType= "twopi";
-        // 		String repesentationType= "circo";
-
-        File out = new File("/tmp/out" + gv.getImageDpi() + "." + type);   // Linux
-        gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), type, repesentationType), out);
-
-
-        final File desc = new File("/tmp/labels.txt");   // Linux
-        try {
-            FileOutputStream fos = new FileOutputStream(desc);
-            fos.write(labels.entrySet().stream().map(e -> e.getValue() + " = " + e.getKey()).collect(Collectors.joining("\n")).getBytes());
-            fos.close();
-        } catch (java.io.IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-
-
-    }
-
-    private String makeLine(IOAwareSolution sol) {
-        String  s = handleState(sol.getSolution().getFromVariables()).stream().map(e -> e.replaceAll("ring", "")).collect(Collectors.joining(",")) + " -> " + handleState(sol.getSolution().getToVariables()).stream().collect(Collectors.joining(",")).replaceAll("xring", "")+flow(sol.getSolution().getFlowVariables())+";";
-        System.out.println(s);
-        return s;
-    }
-
-    private String flow(final Set<String> flowVariables) {
-        return " [ label=\""+ cache(flowVariables) + " \" "+"]";
-    }
-
-    Map<String, String> labels = new HashMap<>();
-    private String cache(Set<String> flowVariables) {
-        final String lbl = flowVariables.isEmpty() ? "{}" : flowVariables.stream().collect(Collectors.joining(","));
-        if (labels.containsKey(lbl)) {
-            return labels.get(lbl);
-        }
-
-        String tmp = "L" + (labels.size() + 1);
-        labels.put(lbl, tmp);
-        return tmp;
-    }
-
-    private Set<String> handleState(Set<String> set) {
-        if (set.isEmpty()) {
-            return new HashSet<>(Arrays.asList("empty"));
-        }
-        return set.stream().map(e -> e.replaceAll("\\d", "").substring(0, 2)).collect(Collectors.toSet());
-    }
 
     private Set<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
         final Set<StateVariableValue> fifos = new HashSet<>();
