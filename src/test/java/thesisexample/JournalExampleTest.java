@@ -9,6 +9,7 @@ import org.behnaz.rcsp.IOComponent;
 import org.behnaz.rcsp.Solver;
 import org.behnaz.rcsp.StateValue;
 import org.behnaz.rcsp.StateVariableValue;
+import org.behnaz.rcsp.input.JSONNetworkReader;
 import org.behnaz.rcsp.output.Drawer;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,6 +36,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
 public class JournalExampleTest implements ExampleData {
+    private final JSONNetworkReader networkReader = new JSONNetworkReader();
     private final List<Pair<String, Pair<Set<String>, Set<String>>>> replicates = new ArrayList<>();
     private final List<Pair<String, Pair<Set<String>, Set<String>>>> routes = new ArrayList<>();
     private final List<Pair<String, Pair<Set<String>, Set<String>>>> merges = new ArrayList<>();
@@ -44,31 +46,11 @@ public class JournalExampleTest implements ExampleData {
     private final List<Pair<String, String>> syncdrains = new ArrayList<>();
     private final List<Pair<String, String>> twoPrioritySyncs = new ArrayList<>();
     private final List<Pair<String, String>> onePrioritySyncs = new ArrayList<>();
-    private final List<String> readers = new ArrayList<>();
-    private final List<String> writers = new ArrayList<>();
-    private final Map<String, String> connections = new HashMap<>();
+
+    private Map<String, String> connections = null;
 
     private JSONObject jsonObject;
 
-    private void readConnections() {
-        final JSONArray temp = jsonObject.getJSONArray("connections");
-        assertEquals(57, temp.length());
-        for (int i=0; i < temp.length(); i++) {
-            JSONObject connection = temp.getJSONObject(i);
-            String from = connection.getString("one");
-            String to = connection.getString("two");
-            connections.put(from, to);
-            connections.put(to, from);
-        }
-
-        assertEquals(110, connections.size());
-        assertEquals("I1", connections.get("W11"));
-        assertEquals("W11", connections.get("I1"));
-        assertEquals("I2J", connections.get("I2"));
-        assertEquals("I2", connections.get("I2J"));
-        assertEquals("J2", connections.get("J2K"));
-        assertEquals("JK1", connections.get("K1"));
-    }
 
     private void readNodes() {
         final JSONArray nodes = jsonObject.getJSONArray("nodes");
@@ -85,38 +67,6 @@ public class JournalExampleTest implements ExampleData {
 
         for (int i=0; i < channels.length(); i++) {
             handle(channels.getJSONObject(i));
-        }
-    }
-
-    private void readWriters() {
-        final JSONArray writers = jsonObject.getJSONArray("writers");
-        assertEquals(3, writers.length());
-
-        for (int i=0; i < writers.length(); i++) {
-            handleReaderWriter(writers.getJSONObject(i));
-        }
-    }
-
-    private void handleReaderWriter(final JSONObject node) {
-        final String t = node.keys().next();
-        assertEquals("ends", t);
-        assertEquals(1, node.getJSONArray("ends").length()); // name
-        assertTrue(node.getJSONArray("ends").getJSONObject(0).has("name"));
-        assertTrue(node.getJSONArray("ends").getJSONObject(0).has("type"));
-        assertTrue(node.getJSONArray("ends").getJSONObject(0).getString("type"), "Source".equals(node.getJSONArray("ends").getJSONObject(0).getString("type")) || "Sink".equals(node.getJSONArray("ends").getJSONObject(0).getString("type")));
-        if ("Source".equals(node.getJSONArray("ends").getJSONObject(0).getString("type"))) {
-            writers.add(node.getJSONArray("ends").getJSONObject(0).getString("name"));
-        } else {
-            readers.add(node.getJSONArray("ends").getJSONObject(0).getString("name"));
-        }
-    }
-
-    private void readReaders() {
-        final JSONArray readers = jsonObject.getJSONArray("readers");
-        assertEquals(4, readers.length());
-
-        for (int i=0; i < readers.length(); i++) {
-            handleReaderWriter(readers.getJSONObject(i));
         }
     }
 
@@ -176,15 +126,34 @@ public class JournalExampleTest implements ExampleData {
     @Before
     public void init() {
         jsonObject  = new JSONObject(CONTENT);
+        networkReader.read(jsonObject);
+
         readChannels();
-        readWriters();
-        readReaders();
+
         readNodes();
-        readConnections();
+        connections = networkReader.getConnections();
     }
 
     @Test
     public void example() {
+        assertEquals(4, networkReader.getReaders().size());
+        assertEquals(3, networkReader.getWriters().size());
+
+//        assertEquals("ends", t);
+  //      assertEquals(1, node.getJSONArray("ends").length()); // name
+    //    assertTrue(node.getJSONArray("ends").getJSONObject(0).has("name"));
+      //  assertTrue(node.getJSONArray("ends").getJSONObject(0).has("type"));
+        //assertTrue(node.getJSONArray("ends").getJSONObject(0).getString("type"), "Source".equals(node.getJSONArray("ends").getJSONObject(0).getString("type")) || "Sink".equals(node.getJSONArray("ends").getJSONObject(0).getString("type")));
+
+
+        assertEquals(110, connections.size());
+        assertEquals("I1", connections.get("W11"));
+        assertEquals("W11", connections.get("I1"));
+        assertEquals("I2J", connections.get("I2"));
+        assertEquals("I2", connections.get("I2J"));
+        assertEquals("J2", connections.get("J2K"));
+        assertEquals("JK1", connections.get("K1"));
+
         assertEquals(4, jsonObject.getJSONArray("readers").length());
         assertEquals(3, jsonObject.getJSONArray("writers").length());
         checkChannels();
@@ -278,12 +247,12 @@ public class JournalExampleTest implements ExampleData {
             }
         }
 
-        assertEquals(3, writers.size());
-        assertEquals(4, readers.size());
+        assertEquals(3, networkReader.getWriters().size());
+        assertEquals(4, networkReader.getReaders().size());
 
         final List<String> components = new ArrayList<>();
-        components.addAll(readers);
-        components.addAll(writers);
+     //   components.addAll(nereaders);
+     //   components.addAll(writers);
 
         for (String p : components) {
             if (!connections.containsKey(p)) {

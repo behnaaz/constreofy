@@ -64,7 +64,7 @@ public class Drawer {
     }
 
     private String flow(final Set<String> flowVariables) {
-        return " [ label=\"" + cache(flowVariables) + " \" " + "]";
+        return " [ label=\"" + cache(flowVariables) + "\" " + "]";
     }
 
 
