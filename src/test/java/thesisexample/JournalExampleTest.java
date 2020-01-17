@@ -22,7 +22,6 @@ import org.junit.runners.JUnit4;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +36,15 @@ import static org.junit.Assert.fail;
 @RunWith(JUnit4.class)
 public class JournalExampleTest implements ExampleData {
     private final JSONNetworkReader networkReader = new JSONNetworkReader();
-    private final List<Pair<String, Pair<Set<String>, Set<String>>>> replicates = new ArrayList<>();
-    private final List<Pair<String, Pair<Set<String>, Set<String>>>> routes = new ArrayList<>();
-    private final List<Pair<String, Pair<Set<String>, Set<String>>>> merges = new ArrayList<>();
-    private final List<Pair<String, String>> syncs = new ArrayList<>();
-    private final List<Pair<String, String>> fifos = new ArrayList<>();
-    private final List<Pair<String, String>> lossys = new ArrayList<>();
-    private final List<Pair<String, String>> syncdrains = new ArrayList<>();
-    private final List<Pair<String, String>> twoPrioritySyncs = new ArrayList<>();
-    private final List<Pair<String, String>> onePrioritySyncs = new ArrayList<>();
+    private List<Pair<String, Pair<Set<String>, Set<String>>>> replicates = null;
+    private List<Pair<String, Pair<Set<String>, Set<String>>>> routes = null;
+    private List<Pair<String, Pair<Set<String>, Set<String>>>> merges = null;
+    private List<Pair<String, String>> syncs = null;
+    private List<Pair<String, String>> fifos = null;
+    private List<Pair<String, String>> lossys = null;
+    private List<Pair<String, String>> syncdrains = null;
+    private List<Pair<String, String>> twoPrioritySyncs = null;
+    private List<Pair<String, String>> onePrioritySyncs = null;
 
     private Map<String, String> connections = null;
 
@@ -57,7 +56,7 @@ public class JournalExampleTest implements ExampleData {
         assertEquals(20, nodes.length());
 
         for (int i=0; i < nodes.length(); i++) {
-            handle(nodes.getJSONObject(i));
+            networkReader.handle(nodes.getJSONObject(i));
         }
     }
 
@@ -66,72 +65,26 @@ public class JournalExampleTest implements ExampleData {
         assertEquals(24, channels.length());
 
         for (int i=0; i < channels.length(); i++) {
-            handle(channels.getJSONObject(i));
+            networkReader.handle(channels.getJSONObject(i));
         }
-    }
-
-    private void handle(final JSONObject node) {
-        final String t = node.keys().next();
-
-        switch (t) {
-            case "Replicate":
-                replicates.add(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t)));
-                break;
-            case "Route":
-                routes.add(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t)));
-                break;
-            case "Merge":
-                merges.add(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t)));
-                break;
-            case "Sync":
-                syncs.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
-                break;
-            case "FIFO":
-                fifos.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
-                break;
-            case "SyncDrain":
-                syncdrains.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Source")));
-                break;
-            case "PrioritySync2":
-                twoPrioritySyncs.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
-                break;
-            case "PrioritySync1":
-                onePrioritySyncs.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
-                break;
-            case "Lossy":
-                lossys.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
-                break;
-            default:
-                fail();
-        }
-    }
-
-    private Pair<Set<String>, Set<String>> extractEnds(JSONObject node, String t) {
-        final JSONArray array = node.getJSONObject(t).getJSONArray("ends");
-        final Set<String> sources = new HashSet<>();
-        final Set<String> sinks = new HashSet<>();
-        for (int i = 0; i < array.length(); i++) {
-            final JSONObject obj = array.getJSONObject(i);
-            if (obj.getString("type").equals("Source")) {
-                sources.add(obj.getString("name"));
-            } else if (obj.getString("type").equals("Sink")) {
-                sinks.add(obj.getString("name"));
-            } else {
-                fail("bad type " + obj.getJSONArray("type") + " for " +  obj.getString("name"));
-            }
-        }
-        return new Pair<>(sources, sinks);
     }
 
     @Before
     public void init() {
         jsonObject  = new JSONObject(CONTENT);
         networkReader.read(jsonObject);
-
         readChannels();
-
         readNodes();
         connections = networkReader.getConnections();
+        fifos = networkReader.getFifos();
+        syncs = networkReader.getSyncs();
+        lossys = networkReader.getLossys();
+        syncdrains = networkReader.getSyncdrains();
+        onePrioritySyncs = networkReader.getOnePrioritySyncs();
+        twoPrioritySyncs = networkReader.getTwoPrioritySyncs();
+        replicates = networkReader.getReplicates();
+        routes = networkReader.getRoutes();
+        merges= networkReader.getMerges();
     }
 
     @Test
