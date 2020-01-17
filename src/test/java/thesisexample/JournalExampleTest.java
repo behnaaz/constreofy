@@ -3,6 +3,7 @@ package thesisexample;
 import javafx.util.Pair;
 import org.behnaz.rcsp.ConstraintConnector;
 import org.behnaz.rcsp.EqualBasedConnectorFactory;
+import org.behnaz.rcsp.GraphViz;
 import org.behnaz.rcsp.IOAwareSolution;
 import org.behnaz.rcsp.IOAwareStateValue;
 import org.behnaz.rcsp.IOComponent;
@@ -17,6 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -310,7 +313,7 @@ public class JournalExampleTest implements ExampleData {
             fail("Failed to solve");
         }
 
-        assertEquals(244, solutions.size());
+        assertEquals(12, solutions.size());
         //[[I2J, J2K, J5N, J4L, J3M, J1, J2, J6U, I2, J3, J4, J5, J6, IJ1], [JK1, K1], [R22, N2]]
       /*  assertEquals("() ----{ju2,i2j} ----> (j2kjk1xring,j5njn1xring)", solutions.get(0).getSolution().readable());
         assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
@@ -328,7 +331,81 @@ public class JournalExampleTest implements ExampleData {
        //     if (i.getSolution().getFromVariables().size() == 0)
                 System.out.println(i.getSolution().readable());
         }
+        draw(solutions);
         //assertEquals("", connector.getConstraint());
+    }
+
+    private void draw(List<IOAwareSolution> solutions) {
+        GraphViz gv = new GraphViz();
+        gv.addln(gv.start_graph());
+        for (IOAwareSolution sol : solutions) {
+            gv.addln(makeLine(sol));
+        }
+        gv.addln(gv.end_graph());
+        System.out.println(gv.getDotSource());
+
+        gv.increaseDpi();   // 106 dpi
+
+        String type = "svg";
+        //      String type = "dot";
+        //      String type = "fig";    // open with xfig
+        //      String type = "pdf";
+        //      String type = "ps";
+        //      String type = "svg";    // open with inkscape
+        //      String type = "png";
+        //      String type = "plain";
+
+        String repesentationType = "dot";
+        //		String repesentationType= "neato";
+        //		String repesentationType= "fdp";
+        //		String repesentationType= "sfdp";
+        // 		String repesentationType= "twopi";
+        // 		String repesentationType= "circo";
+
+        File out = new File("/tmp/out" + gv.getImageDpi() + "." + type);   // Linux
+        gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), type, repesentationType), out);
+
+
+        final File desc = new File("/tmp/labels.txt");   // Linux
+        try {
+            FileOutputStream fos = new FileOutputStream(desc);
+            fos.write(labels.entrySet().stream().map(e -> e.getValue() + " = " + e.getKey()).collect(Collectors.joining("\n")).getBytes());
+            fos.close();
+        } catch (java.io.IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+
+
+    }
+
+    private String makeLine(IOAwareSolution sol) {
+        String  s = handleState(sol.getSolution().getFromVariables()).stream().map(e -> e.replaceAll("ring", "")).collect(Collectors.joining(",")) + " -> " + handleState(sol.getSolution().getToVariables()).stream().collect(Collectors.joining(",")).replaceAll("xring", "")+flow(sol.getSolution().getFlowVariables())+";";
+        System.out.println(s);
+        return s;
+    }
+
+    private String flow(final Set<String> flowVariables) {
+        return " [ label=\""+ cache(flowVariables) + " \" "+"]";
+    }
+
+    Map<String, String> labels = new HashMap<>();
+    private String cache(Set<String> flowVariables) {
+        final String lbl = flowVariables.isEmpty() ? "{}" : flowVariables.stream().collect(Collectors.joining(","));
+        if (labels.containsKey(lbl)) {
+            return labels.get(lbl);
+        }
+
+        String tmp = "L" + (labels.size() + 1);
+        labels.put(lbl, tmp);
+        return tmp;
+    }
+
+    private Set<String> handleState(Set<String> set) {
+        if (set.isEmpty()) {
+            return new HashSet<>(Arrays.asList("empty"));
+        }
+        return set.stream().map(e -> e.replaceAll("\\d", "").substring(0, 2)).collect(Collectors.toSet());
     }
 
     private Set<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
@@ -340,7 +417,7 @@ public class JournalExampleTest implements ExampleData {
                                 .connectorConstraint(connector)
                                 .initState(initState)
                                 .build()
-                                .solve(20));
+                                .solve(4));
    }
 
     private List<HashSet<String>> createEquals() {
@@ -365,7 +442,7 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "N2", connections.get("N2"));
         equalize(result, "M1", connections.get("M2"));
         equalize(result, "M1", connections.get("CM1"));
-        equalize(result, "J3M", connections.get("JM2"));
+        equalize(result, "C3M", connections.get("C3M"));
         equalize(result, "JM2", connections.get("M2"));
 
         equalize(result, "B1", "B2");
@@ -393,7 +470,7 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "FG1", "G1");
         equalize(result, "G2", "G1");
         equalize(result, "G2", "R32");
-        equalize(result, "F2F", "EF2");
+        equalize(result, "E2F", "EF2");
         equalize(result, "F2", "EF2");
         equalize(result, "E2", "EF2");
         equalize(result, "E3L", "E3");
@@ -430,18 +507,25 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "P2", "R42");
         equalize(result, "O1", "O2");
         equalize(result, "H1", "H2");
+        equalize(result, "ET2", "E4T");
 
 
-        assertEquals(19, result.size());
-       // assertEquals("", result);
-       //Expected :
-        //Actual   :[[Q1, Q2, ET2, Q3, Q4, Q4H, Q5, Q3O, Q5P, QT1, SQ1, Q2T, S2Q, W31, T1, T2, S1, S2],
-        // [J5N, M1, J3M, M2, CM1, I1, I2, JM2, E3, I2J, J2K, J4L, L1, L2, J1, J2, J6U, J3, J4, J5, EL1, J6, IJ1, JL2, W11, E3L],
-        // [A1, AB1, B2, A2, A2B, B3, B2C, B3E, W21, B1], [BC1, C1], [JK1, R12, K1, K2], [R22, N1, N2, JN1],
-        // [R32, FG1, G1, G2], [C2D, C2], [E1, BE1], [C3, C3M], [C4, HC4], [R42, P1, P2, QP1], [CD1, D1],
-        // [EF2, E2F, D2F, F1, F2F, F3G, F2, E2, F3, D2, DF1], [DU1, JU2, D3U, U1, U2, D3], [D4, OD4], [H1, H2, QH2, H1C],
-        // [E4T, E4], [O1, O1D, O2, QO2]]
-         return result;
+        //TODO TEMP taghalllob
+        equalize(result, "CM1", "C3M");
+
+
+        assertEquals(18, result.size());
+        validateEnds(result);
+        //assertEquals("", result);
+        return result;
+    }
+
+    private void validateEnds(final List<HashSet<String>> result) {
+        for (HashSet<String> set : result) {
+            for (String s : set) {
+                assertTrue("Invalid end " + s , connections.containsKey(s) | connections.containsValue(s));
+            }
+        }
     }
 
     private void equalize(final List<HashSet<String>> result, final String a, final String b) {
@@ -475,8 +559,6 @@ public class JournalExampleTest implements ExampleData {
 
     private ConstraintConnector network() {
         final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals());//Arrays.asList("C2D", "CD1", "B2C", "BC1",
-               // "D1", "D2", "D3", "D4"
-                //,"C1", "C2", "C3", "C4", "W11", "J2K", "JK1", "R12", "J3", "J3M", "JM2", "R22", "J5N", "JN1", "JU2", "J6U")));
         ConstraintConnector connector = factory.writer("W11", 1);
 //factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
         connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
