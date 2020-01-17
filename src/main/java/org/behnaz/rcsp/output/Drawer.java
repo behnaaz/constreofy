@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class Drawer {
+    public static final String STATE_VARIABLE_DELIMITER = "AND";
     private final String path;
 
     final Map<String, String> labels = new HashMap<>();
@@ -50,7 +51,6 @@ public class Drawer {
         File out = new File( path + gv.getImageDpi() + "." + type);   // Linux
         gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), type, repesentationType), out);
 
-
         final File desc = new File(path + "labels.txt");   // Linux
         try {
             FileOutputStream fos = new FileOutputStream(desc);
@@ -59,19 +59,14 @@ public class Drawer {
         } catch (java.io.IOException ioe) {
             ioe.printStackTrace();
         }
-
-
     }
 
     private String flow(final Set<String> flowVariables) {
         return " [ label=\"" + cache(flowVariables) + "\" " + "]";
     }
 
-
     private String makeLine(final IOAwareSolution sol) {
-        String s = handleState(sol.getSolution().getFromVariables()).stream().map(e -> e.replaceAll("ring", "")).collect(Collectors.joining(",")) + " -> " + handleState(sol.getSolution().getToVariables()).stream().collect(Collectors.joining(",")).replaceAll("xring", "") + flow(sol.getSolution().getFlowVariables()) + ";";
-        System.out.println(s);
-        return s;
+        return handleState(sol.getSolution().getFromVariables()).stream().map(e -> e.replaceAll("ring", "")).collect(Collectors.joining(STATE_VARIABLE_DELIMITER)) + " -> " + handleState(sol.getSolution().getToVariables()).stream().collect(Collectors.joining(STATE_VARIABLE_DELIMITER)).replaceAll("xring", "") + flow(sol.getSolution().getFlowVariables()) + ";";
     }
 
     private String cache(final Set<String> flowVariables) {
@@ -89,6 +84,7 @@ public class Drawer {
         if (set.isEmpty()) {
             return new HashSet<>(Arrays.asList("empty"));
         }
-        return set.stream().map(e -> e.replaceAll("\\d", "").substring(0, 2)).collect(Collectors.toSet());
+
+        return set.stream().map(e -> e.replaceAll("\\d", "")).collect(Collectors.toSet());
     }
 }

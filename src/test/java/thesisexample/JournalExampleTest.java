@@ -11,7 +11,6 @@ import org.behnaz.rcsp.StateValue;
 import org.behnaz.rcsp.StateVariableValue;
 import org.behnaz.rcsp.input.JSONNetworkReader;
 import org.behnaz.rcsp.output.Drawer;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -45,12 +44,8 @@ public class JournalExampleTest implements ExampleData {
     private List<Pair<String, String>> syncdrains = null;
     private List<Pair<String, String>> twoPrioritySyncs = null;
     private List<Pair<String, String>> onePrioritySyncs = null;
-
     private Map<String, String> connections = null;
-
     private JSONObject jsonObject;
-
-
 
     @Before
     public void init() {
@@ -216,27 +211,19 @@ public class JournalExampleTest implements ExampleData {
         }
 
         assertEquals(12, solutions.size());
-        //[[I2J, J2K, J5N, J4L, J3M, J1, J2, J6U, I2, J3, J4, J5, J6, IJ1], [JK1, K1], [R22, N2]]
-      /*  assertEquals("() ----{ju2,i2j} ----> (j2kjk1xring,j5njn1xring)", solutions.get(0).getSolution().readable());
-        assertEquals("() ----{} ----> ()", solutions.get(1).getSolution().readable());
-        assertEquals("(j2kjk1ring,j5njn1ring) ----{} ----> (j2kjk1xring,j5njn1xring)", solutions.get(2).getSolution().readable());
-        assertEquals("(j2kjk1ring,j5njn1ring) ----{jn1} ----> (j2kjk1xring)", solutions.get(3).getSolution().readable());
-        assertEquals("(j2kjk1ring,j5njn1ring) ----{jk1} ----> (j5njn1xring)", solutions.get(4).getSolution().readable());
-        assertEquals("(j2kjk1ring,j5njn1ring) ----{jk1,jn1} ----> ()", solutions.get(5).getSolution().readable());
-        assertEquals("() ----{ju2,i2j} ----> (j2kjk1xring,j5njn1xring)", solutions.get(6).getSolution().readable());
-        assertEquals("() ----{} ----> ()", solutions.get(7).getSolution().readable());
-        assertEquals("(j2kjk1ring) ----{} ----> (j2kjk1xring)", solutions.get(8).getSolution().readable());
-        assertEquals("(j2kjk1ring) ----{jk1} ----> ()", solutions.get(9).getSolution().readable());
-        assertEquals("(j5njn1ring) ----{} ----> (j5njn1xring)", solutions.get(10).getSolution().readable());
-        assertEquals("(j5njn1ring) ----{jn1} ----> ()", solutions.get(11).getSolution().readable());*/
-        for (IOAwareSolution i : solutions) {
-       //     if (i.getSolution().getFromVariables().size() == 0)
-                System.out.println(i.getSolution().readable());
+        for (IOAwareSolution s : solutions) {
+            if (s.getSolution().getFromVariables().size()  > 1) {
+                System.out.println("FROM STATE WITH MORE THAN ONE" + s.getSolution().readable());
+            }
+            System.out.println(s.getSolution().readable());
         }
         new Drawer("/tmp/").draw(solutions);
         //assertEquals("", connector.getConstraint());
+        assertEquals(2, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() > 1).count());
+        assertEquals(4, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() > 1).count());
+        assertEquals(1, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 0).count());
+        assertEquals(1, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
     }
-
 
     private Set<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
         final Set<StateVariableValue> fifos = new HashSet<>();
