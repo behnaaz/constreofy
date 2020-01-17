@@ -51,30 +51,11 @@ public class JournalExampleTest implements ExampleData {
     private JSONObject jsonObject;
 
 
-    private void readNodes() {
-        final JSONArray nodes = jsonObject.getJSONArray("nodes");
-        assertEquals(20, nodes.length());
-
-        for (int i=0; i < nodes.length(); i++) {
-            networkReader.handle(nodes.getJSONObject(i));
-        }
-    }
-
-    private void readChannels() {
-        final JSONArray channels = jsonObject.getJSONArray("channels");
-        assertEquals(24, channels.length());
-
-        for (int i=0; i < channels.length(); i++) {
-            networkReader.handle(channels.getJSONObject(i));
-        }
-    }
 
     @Before
     public void init() {
         jsonObject  = new JSONObject(CONTENT);
         networkReader.read(jsonObject);
-        readChannels();
-        readNodes();
         connections = networkReader.getConnections();
         fifos = networkReader.getFifos();
         syncs = networkReader.getSyncs();
@@ -91,7 +72,8 @@ public class JournalExampleTest implements ExampleData {
     public void example() {
         assertEquals(4, networkReader.getReaders().size());
         assertEquals(3, networkReader.getWriters().size());
-
+//        assertEquals(20, nodes.length());
+        //        assertEquals(24, channels.length());
 //        assertEquals("ends", t);
   //      assertEquals(1, node.getJSONArray("ends").length()); // name
     //    assertTrue(node.getJSONArray("ends").getJSONObject(0).has("name"));

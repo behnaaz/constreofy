@@ -108,6 +108,23 @@ public class JSONNetworkReader {
         }
     }
 
+    private void readNodes() {
+        final JSONArray nodes = jsonObject.getJSONArray("nodes");
+
+        for (int i=0; i < nodes.length(); i++) {
+            handle(nodes.getJSONObject(i));
+        }
+    }
+
+    private void readChannels() {
+        final JSONArray channels = jsonObject.getJSONArray("channels");
+
+        for (int i=0; i < channels.length(); i++) {
+            handle(channels.getJSONObject(i));
+        }
+    }
+
+
     private void readReaders() {
         final JSONArray readers = jsonObject.getJSONArray("readers");
 
@@ -129,6 +146,8 @@ public class JSONNetworkReader {
 
     public void read(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+        readChannels();
+        readNodes();
         readWriters();
         readReaders();
         readConnections();
