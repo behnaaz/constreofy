@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.behnaz.rcsp.model.util.SolverHelper.equalize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -65,6 +66,36 @@ public class ThesisTest implements ExampleData {
         merges= networkReader.getMerges();
     }
 
+    private List<HashSet<String>> findEquals() {
+        final List<HashSet<String>> result = new ArrayList<>();
+        for (Map.Entry<String, String> s : connections.entrySet()){
+            equalize(result, s.getKey(), s.getValue());
+        }
+        return result;
+    }
+
+    private ConstraintConnector network() {
+        List<HashSet<String>> equals = findEquals();
+        String source = networkReader.getFifos().get(0).getKey();
+        String sink = networkReader.getFifos().get(0).getValue();
+
+        ConstraintConnector connector = new ConstraintConnector(new FIFO(source, sink).generateConstraint().getConstraint());
+        Node bk = replicates.stream().filter(e -> e.ownsEnd("B2")).findAny().get();
+        Node tmp = routes.stream().filter(e -> e.ownsEnd("C1")).findAny().get();
+
+        assertEquals("B", bk.getName());
+        assertEquals("B2C", source);
+        assertEquals("BC1", sink);
+        assertEquals("B2", connections.get(source));
+        assertEquals("C1", connections.get(sink));
+        assertTrue(replicates.stream().anyMatch(e -> e.ownsEnd("B2")));
+        assertTrue(routes.stream().anyMatch(e -> e.ownsEnd("C1")));
+        assertTrue(replicates.stream().filter(e -> e.ownsEnd("B2")).findAny().isPresent());
+        assertFalse(replicates.stream().filter(e -> e.ownsEnd("C1")).findAny().isPresent());
+        assertEquals("C", tmp.getName());
+        assertEquals("(C1tilde equiv (C3tilde or C4tilde or C2tilde)) and ( not (C3tilde and C4tilde and C2tilde))", tmp.getConstraint());
+        return connector;
+    }
 
     @Test
     public void example() {
@@ -226,28 +257,6 @@ public class ThesisTest implements ExampleData {
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() > 1).count());
         assertEquals(1, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 0).count());
         assertEquals(1, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
-    }
-
-    private ConstraintConnector network() {
-        String source = networkReader.getFifos().get(0).getKey();
-        String sink = networkReader.getFifos().get(0).getValue();
-        assertEquals("B2C", source);
-        assertEquals("BC1", sink);
-
-        ConstraintConnector connector = new ConstraintConnector(new FIFO(source, sink).generateConstraint().getConstraint());
-        assertEquals("B2", connections.get(source));
-        assertEquals("C1", connections.get(sink));
-
-        assertTrue(replicates.stream().anyMatch(e -> e.ownsEnd("B2")));
-        assertTrue(routes.stream().anyMatch(e -> e.ownsEnd("C1")));
-        assertTrue(replicates.stream().filter(e -> e.ownsEnd("B2")).findAny().isPresent());
-        assertFalse(replicates.stream().filter(e -> e.ownsEnd("C1")).findAny().isPresent());
-        Node bk =  replicates.stream().filter(e -> e.ownsEnd("B2")).findAny().get();
-        assertEquals("B", bk.getName());
-        Node tmp =  routes.stream().filter(e -> e.ownsEnd("C1")).findAny().get();
-        assertEquals("C", tmp.getName());
-        assertEquals("(C1tilde equiv (C3tilde or C4tilde or C2tilde)) and ( not (C3tilde and C4tilde and C2tilde))", tmp.getConstraint());
-        return connector;
     }
 
     private Set<IOAwareSolution> checkSolutions(final String constraint, final List<String> variables) throws IOException {

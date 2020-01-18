@@ -36,6 +36,6 @@ public class ReplicateNode extends Node {
 
     @Override
     public String getConstraint() {
-        return "";
+        throw new RuntimeException("Not implemented");
     }
 }

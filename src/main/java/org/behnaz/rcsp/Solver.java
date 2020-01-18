@@ -36,7 +36,6 @@ public class Solver implements Containable {
 
         do {
             long startTime1 = System.nanoTime();
-
             visit(visitedStates, currentStatesValue);
             // Get solutions from current state
             List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, constraint);
@@ -47,15 +46,12 @@ public class Solver implements Containable {
             if (currentStatesValue != null)
                 Starter.log("Step " + ++n + " from " + currentStatesValue.toString());
 
-
             long endTime1 = System.nanoTime();
-
             long duration = endTime1 - startTime1;
             Starter.log("One solution took in miliseconds: " + duration / 1000000);
 
         } while (currentStatesValue != null && (maxLimit < 0 || n < maxLimit));
         long endTime0 = System.nanoTime();
-
         long duration = endTime0 - startTime0;
         Starter.log("whole solutions took in miliseconds: " + duration / 1000000 + " #solutions: "
                 + solutions.size() + " #cons len:" + constraint.length());
@@ -93,7 +89,7 @@ public class Solver implements Containable {
     private IOAwareStateValue getNextUnexploredState(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates) {
         IOAwareStateValue currentStatesValues = null;
         if (explorableStates.isEmpty())
-            return currentStatesValues;
+            return null;
         do {
             if (!explorableStates.isEmpty()) {
                 currentStatesValues = explorableStates.remove(0);

@@ -17,7 +17,7 @@ public class Starter {
 			solutions = Solver.builder()
 					.initState(initState)
 					.build()
-					.solve(cc.getConstraint(), -1);
+					.solve(cc.getConstraint(), 2);
 		} catch (IOException e) {
 			log("Solving constraints with reduce failed " +e.getMessage());
 		}

@@ -2,7 +2,6 @@ package org.behnaz.rcsp;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
 
@@ -27,7 +26,7 @@ public class StateValue implements Cloneable {
 		return Optional.empty();
 	}
 
-	public void add(StateVariableValue stateVariableValue) {
+	public StateValue add(final StateVariableValue stateVariableValue) {
 		boolean found = false;
 		for (StateVariableValue v : variableValues) {
 			if (v.getStateName().equals(stateVariableValue.getStateName()) && v.getValue().equals(stateVariableValue.getValue()))
@@ -35,5 +34,6 @@ public class StateValue implements Cloneable {
 		}
 		if (!found)
 			variableValues.add(stateVariableValue);
+		return this;
 	}
 }

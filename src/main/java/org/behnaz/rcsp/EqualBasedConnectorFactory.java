@@ -1,12 +1,21 @@
 package org.behnaz.rcsp;
 
+import org.behnaz.rcsp.model.MergerNode;
+import org.behnaz.rcsp.model.RouteNode;
+import org.behnaz.rcsp.model.util.SolverHelper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.behnaz.rcsp.model.util.SolverHelper.getEqual;
 
 public class EqualBasedConnectorFactory extends Primitive {
 	private List<HashSet<String>> equals;
@@ -23,22 +32,11 @@ public class EqualBasedConnectorFactory extends Primitive {
 		}
 	}
 
-	private int find(final String token) {
-		for (int i = 0; i < equals.size(); i++) {
-			if (equals.get(i).contains(token)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	public ConstraintConnector merger(final String source1, final String source2, final String sink) {
-		final String p1 = getEqual(source1);
-		final String p2 = getEqual(source2);
-		final String p3 = getEqual(sink);
-
-		final String merger = "((" + flow(p1) + AbstractConnector.RIGHTLEFTARROW + flow(p2) + ")" +
-				AbstractConnector.AND + "(" + flow(p1) + AbstractConnector.RIGHTLEFTARROW + flow(p3) + "))";
+		final String p1 = getEqual(source1, equals, representative);
+		final String p2 = getEqual(source2, equals, representative);
+		final String p3 = getEqual(sink, equals, representative);
+		final String merger = new MergerNode("", new HashSet<String>(Arrays.asList(p1, p2)), p3).getConstraint();
 		return new ConstraintConnector(merger, p1, p2, p3);
 	}
 
@@ -49,25 +47,28 @@ public class EqualBasedConnectorFactory extends Primitive {
 	}
 
 	public ConstraintConnector router(final String source, final String... ks) {
-		final String c = getEqual(source);
-		final String or = Arrays.asList(ks).stream().map(this::getEqual).map(this::flow).collect(Collectors.joining(AbstractConnector.OR));
+		final String c = getEqual(source, equals, representative);
+		final Set<String> sinkEquals = Arrays.asList(ks).stream().map(e -> getEqual(e, equals, representative)).collect(Collectors.toSet());
+		final String or = sinkEquals.stream().map(this::flow).collect(Collectors.joining(AbstractConnector.OR));
 		final String exclusives = Arrays.asList(ks).stream().map(this::flow).collect(Collectors.joining(AbstractConnector.AND));
 		final List<String> l = new ArrayList<>();
 		l.add(c);
 		l.addAll(Arrays.asList(ks));
-		return new ConstraintConnector("(" + flow(c) + AbstractConnector.RIGHTLEFTARROW + "("+ or +"))" + AbstractConnector.AND +"("+AbstractConnector.NOT+ " ("+ exclusives + "))", l);
+		String d = new RouteNode("", c, sinkEquals).getConstraint();
+		final String constraint = "(" + flow(c) + AbstractConnector.RIGHTLEFTARROW + "(" + or + "))" + AbstractConnector.AND + "(" + AbstractConnector.NOT + " (" + exclusives + "))";
+		return new ConstraintConnector(constraint, l);
 	}
 
 	public ConstraintConnector lossySync(final String source, final String sink) {
-		final String p1 = getEqual(source);
-		final String p2 = getEqual(sink);
+		final String p1 = getEqual(source, equals, representative);
+		final String p2 = getEqual(sink, equals, representative);
 		final String lossy = String.format("(%s %s %s)", flow(p2), AbstractConnector.IMPLIES, flow(p1));
 		return new ConstraintConnector(lossy, p1, p2);
 	}
 
 	public ConstraintConnector syncDrain(final String source, final String sink) {
-		final String p1 = getEqual(source);
-		final String p2 = getEqual(sink);
+		final String p1 = getEqual(source, equals, representative);
+		final String p2 = getEqual(sink, equals, representative);
 		String syncDrain = String.format("(%s %s %s)", flow(p1), AbstractConnector.RIGHTLEFTARROW, flow(p2));
 		return new ConstraintConnector(syncDrain, p1, p2);
 	}
@@ -114,7 +115,7 @@ public class EqualBasedConnectorFactory extends Primitive {
 	}
 
 	public ConstraintConnector writer(final String originalSource, final int capacity) {
-		final String source = getEqual(originalSource);
+		final String source = getEqual(originalSource, equals, representative);
 		return new ConstraintConnector(capacity > 0 ?
 				 String.format("(%s %s %s %s)", flow(source), AbstractConnector.OR, AbstractConnector.NOT, flow(source)) :
 		 		String.format("( %s %s)", AbstractConnector.NOT, flow(source)),
@@ -122,14 +123,8 @@ public class EqualBasedConnectorFactory extends Primitive {
 	}
 
 	public ConstraintConnector fifo(final String source, final String sink) {
-		final String eqsource = getEqual(source);
-		final String eqsink = getEqual(sink);
+		final String eqsource = getEqual(source, equals, representative);
+		final String eqsink = getEqual(sink, equals, representative);
 		return new FIFO(source, sink).generateConstraintOnLyRenameEnds(eqsource, eqsink);
-	}
-
-	private String getEqual(final String end) {
-		int index = find(end.toUpperCase());
-		if (index < 0) return end;
-		return representative.get(index);
 	}
 }

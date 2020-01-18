@@ -3,6 +3,7 @@ package thesisexample;
 import javafx.util.Pair;
 import org.behnaz.rcsp.ConstraintConnector;
 import org.behnaz.rcsp.EqualBasedConnectorFactory;
+import org.behnaz.rcsp.FIFO;
 import org.behnaz.rcsp.IOAwareSolution;
 import org.behnaz.rcsp.IOAwareStateValue;
 import org.behnaz.rcsp.IOComponent;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.behnaz.rcsp.model.util.SolverHelper.equalize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -231,11 +233,14 @@ public class JournalExampleTest implements ExampleData {
     }
 
     private Set<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
-        final Set<StateVariableValue> fifos = new HashSet<>();
-        fifos.add(StateVariableValue.builder().stateName("j2kjk1ring").value(Optional.of(Boolean.FALSE)).build());
-        fifos.add(StateVariableValue.builder().stateName("j5njn1ring").value(Optional.of(Boolean.FALSE)).build());
+        final Set<StateVariableValue> fifos = this.fifos.stream().map(e -> new FIFO(e.getKey(), e.getValue()).getMemory().toLowerCase())
+                .map(e -> StateVariableValue.builder().stateName(e).value(Optional.of(Boolean.FALSE)).build())
+                .collect(Collectors.toSet());
+
+        //fifos.add(StateVariableValue.builder().stateName("j2kjk1ring").value(Optional.of(Boolean.FALSE)).build());
+      //  fifos.add(StateVariableValue.builder().stateName("j5njn1ring").value(Optional.of(Boolean.FALSE)).build());
         IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
-                return new HashSet<>(Solver.builder()
+        return new HashSet<>(Solver.builder()
                                 .initState(initState)
                                 .build()
                                 .solve(connector.getConstraint(), 4));
@@ -346,35 +351,6 @@ public class JournalExampleTest implements ExampleData {
             for (String s : set) {
                 assertTrue("Invalid end " + s , connections.containsKey(s) | connections.containsValue(s));
             }
-        }
-    }
-
-    private void equalize(final List<HashSet<String>> result, final String a, final String b) {
-        int addedA = -1;
-        int addedB = -1;
-
-        for (int i = 0; i < result.size(); i++) {
-            HashSet<String> s = result.get(i);
-            if (s.contains(a) && s.contains(b)) {
-                return;
-            }
-            if (s.contains(a)) {
-                s.add(b);
-                addedA = i;
-            }
-            else if (s.contains(b)) {
-                s.add(a);
-                addedB = i;
-            }
-        }
-        if (addedA == -1 && addedB == -1) {
-            result.add(new HashSet<>(Arrays.asList(a, b)));
-        }
-
-        else if (addedA > -1 && addedB > -1) {
-            final Set<String> temp = result.get(addedA);
-            temp.addAll(result.get(addedB));
-            result.remove(addedB);
         }
     }
 
