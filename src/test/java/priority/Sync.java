@@ -1,6 +1,7 @@
 package priority;
 
 import org.behnaz.rcsp.*;
+import org.behnaz.rcsp.model.util.SolverHelper;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,8 +17,8 @@ public class Sync {
         assertEquals(sync.getName(0), "A1");
         assertEquals(sync.getName(1), "A2");
 
-        assertTrue(sync.extractVariables(sync.getConstraint()).contains("A1TILDE"));
-        assertTrue(sync.extractVariables(sync.getConstraint()).contains("A2TILDE"));
+        assertTrue(SolverHelper.extractVariables(sync.getConstraint()).contains("A1TILDE"));
+        assertTrue(SolverHelper.extractVariables(sync.getConstraint()).contains("A2TILDE"));
 
         assertEquals(0, sync.getStates().length);
         assertEquals(0, sync.getNextStates().length);

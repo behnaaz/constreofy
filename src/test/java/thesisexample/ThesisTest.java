@@ -258,7 +258,7 @@ public class ThesisTest implements ExampleData {
         return new HashSet<>(Solver.builder()
                 .initState(initState)
                 .build()
-                .solve(4, constraint, variables));
+                .solve(4));
     }
 
     private List<HashSet<String>> createEquals() {

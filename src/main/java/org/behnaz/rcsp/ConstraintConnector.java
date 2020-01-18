@@ -1,25 +1,17 @@
 package org.behnaz.rcsp;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.behnaz.rcsp.model.util.SolverHelper;
 
-import static org.behnaz.rcsp.Solver.FORMULA_NAME;
-import static org.behnaz.rcsp.Solver.SHUT;
 import static org.behnaz.rcsp.Solver.USE_EQUAL_SET_ON;
 import static priority.Variable.CURRENT_MEMORY;
 import static priority.Variable.NEXT_MEMORY;
@@ -32,19 +24,17 @@ import static priority.Variable.NEXT_MEMORY;
  */
 public class ConstraintConnector extends AbstractConnector {
 	private static final String BAR = "|";
-	private static final String KEY_WORDS_REGEX = String.format("%s%s%s%s%s%s%s%s%s%s%s%s%s", 
+	public static final String KEY_WORDS_REGEX = String.format("%s%s%s%s%s%s%s%s%s%s%s%s%s",
 			AND.trim(), BAR, IMPLIES.trim(), BAR, NOT.trim(), "|\\(|\\)|,|", RIGHTLEFTARROW.trim(), BAR,
 			OR.trim(), BAR, TRUE.trim(), BAR, FALSE.trim());
-	private static final Logger LOGGER = Logger.getLogger( ConstraintConnector.class.getName() );
+
 	@Getter
 	private String constraint;
 	private final ConnectorFactory factory = new ConnectorFactory();
 	private String[] states;
 	private String[] nextStates;
 	private final Connection connection;
-	static final String WORD_BOUNDARY = "\\b";
-	static final String PREAMBLE = "set_bndstk_size 100000;load_package \"redlog\";rlset ibalp;";
-
+	public static final String WORD_BOUNDARY = "\\b";
 
 	/**
 	 * The constraint representing the connector and lists of its port ends
@@ -76,102 +66,8 @@ public class ConstraintConnector extends AbstractConnector {
 		return result;
 	}
 
-	private String declarationSection(final String formulae) {
-		final StringBuilder builder = new StringBuilder();
-		final Set<String> vars = this.extractVariables(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
-				.map(String::toUpperCase).collect(Collectors.toSet());
-		constraint = capitalizeVars(constraint);
-
-		builder.append("rlpcvar ");
-		final String variable = vars.toString();
-		builder.append(variable.substring(1, variable.length() - 1)).append(';');
-		return builder.toString();
-	}
-
-	public Set<String> extractVariables(final String newConstraint) {
-		final Set<String> result = new HashSet<>();
-
-		if (StringUtils.isNotBlank(newConstraint)) {
-			// Replace all keywords with empty string
-			final String onlyVariables = newConstraint.replaceAll(KEY_WORDS_REGEX, "");
-			// Constraint
-			for (final String term : onlyVariables.split(SPACE)) {
-				if (!term.trim().isEmpty()) {
-					result.add(term.toUpperCase(Locale.US));
-				}
-			}
-		}
-		return result;
-	}
-
-	public String capitalizeVars(final String constraint) {
-		String result = constraint;
-		for (final String term : constraint.replaceAll(KEY_WORDS_REGEX, "").split(SPACE)) {
-			result = result.replaceAll(WORD_BOUNDARY + term + WORD_BOUNDARY, term.toUpperCase(Locale.US));
-		}
-		return result;
-	}
-
-	/**
-	* Wrap the constraints with required by REDUCE 
-	* @param stateValue
-	* @return
-	*/ 
-	public String buildConstraint(final StateValue stateValue) {
-		final StringBuilder builder = new StringBuilder();
-
-		try {
-			builder.append(PREAMBLE);
-			builder.append(declarationSection(constraint));
-			builder.append(FORMULA_NAME + " := " + applyFIFOStates(constraint, stateValue) + ";;");
-			builder.append(dnf(FORMULA_NAME));
-			builder.append(SHUT);
-			builder.append("; end;");
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.toString());
-		}
-		String temp = builder.toString();
-		Starter.log("Built constraints " + temp);
-		return temp;
-	}
-
-	private String applyFIFOStates(final String mainConstraint, final StateValue stateValue) {
-		final StringBuilder builder = new StringBuilder();
-		builder.append(mainConstraint);
-		
-		for (final String capitalFIFO : getAllFIFOs(mainConstraint)) {
-			final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll(NEXT_MEMORY, CURRENT_MEMORY); 
-			if (stateValue != null && stateValue.getValue(fifo).isPresent() && stateValue.getValue(fifo).get()) {//TODO what to do with optional???
-				if (stateValue.getValue(fifo).get()) {
-					builder.append(AND);
-					builder.append(fifo.toUpperCase(Locale.ENGLISH));
-				} else {
-					assert false;
-				}
-			} else {
-				builder.append(AND);
-				builder.append(" (");
-				builder.append(NOT);
-				builder.append(fifo.toUpperCase(Locale.ENGLISH));
-				builder.append(") ");
-			}
-		}
-		return builder.toString();
-	}
-
-	private Set<String> getAllFIFOs(final String mainConstraint) {
-		final Set<String> result = new TreeSet<>();
-		final Pattern pattern = Pattern.compile("\\w+XRING", Pattern.CASE_INSENSITIVE);
-		final Matcher matcher = pattern.matcher(mainConstraint);
-		
-		while(matcher.find())
-			result.add(mainConstraint.substring(matcher.start(), matcher.end()));
-
-		return result;
-	}
-
-	private String dnf(final String formulae) throws IOException {
-		return new StringBuilder().append("rldnf ").append(formulae).append(";").toString();
+	void capitalizeVars() {
+		constraint = SolverHelper.capitalizeVars(constraint);
 	}
 
 	/**

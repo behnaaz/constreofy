@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.behnaz.rcsp.model.util.SolverHelper;
 import priority.PropertyReader;
 
 @Builder
@@ -23,45 +24,6 @@ public class Solver implements Containable {
     private IOAwareStateValue initState;
     @Builder.Default
     private String reduceProgram = PropertyReader.reduceProgram();
-
-	public List<IOAwareSolution> solve(final int maxLimit, final String constraint, final List<String> variables) throws IOException {
-		List<IOAwareStateValue> visitedStates = new ArrayList<>();
-		List<IOAwareStateValue> explorableStates = new ArrayList<>();
-		//TODO convert to treemap and fix contains ad delete issues
-		int n = 0;
-		IOAwareStateValue currentStatesValue = initState;
-		final StateManager stateManager = new StateManager();
-		List<IOAwareSolution> solutions = new ArrayList<>();
-		long startTime0 = System.nanoTime();
-
-		do {
-			long startTime1 = System.nanoTime();
-
-			visit(visitedStates, currentStatesValue);
-			// Get solutions from current state
-			List<IOAwareSolution> foundSolutions = doSolve(constraint, variables);
-			addToSolutions(solutions, foundSolutions);
-
-			addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
-			currentStatesValue = getNextUnexploredState(visitedStates, explorableStates);
-			if (currentStatesValue != null)
-				Starter.log("Step " + ++n + " from " + currentStatesValue.toString());
-
-
-			long endTime1 = System.nanoTime();
-
-			long duration = endTime1 - startTime1;
-			Starter.log("One solution took in miliseconds: " + duration / 1000000);
-
-		} while (currentStatesValue != null && (maxLimit < 0 || n < maxLimit));
-		long endTime0 = System.nanoTime();
-
-		long duration = endTime0 - startTime0;
-		Starter.log("whole solutions took in miliseconds: " + duration / 1000000 + " #solutions: "
-				+ solutions.size());
-		Starter.log(".....done in step " + n);
-		return solutions;
-	}
 
     public List<IOAwareSolution> solve(int maxLimit) throws IOException {
         List<IOAwareStateValue> visitedStates = new ArrayList<>();
@@ -151,26 +113,14 @@ public class Solver implements Containable {
             throw new RuntimeException("Reduce path not provided");
         }
         Starter.log("Solving the constraint using " + reduceProgram);
-        final String constraints = cc.buildConstraint(currentStatesValue.getStateValue());
+        cc.capitalizeVars();
+        final String constraints = SolverHelper.constraintSection(currentStatesValue.getStateValue(), cc.getConstraint());
         final List<String> reduceOutput = executeReduce(constraints);
         final String strReduceOutput = getOnlyAnswer(reduceOutput);
-       // final String constraint = cc.capitalizeVars(newConstraint, constraint);
-        final DNF dnf = new DNF(new ArrayList<>(cc.extractVariables(constraints)));
+        final DNF dnf = new DNF(new ArrayList<>(SolverHelper.extractVariables(constraints)));
         final List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
         return ioAwarify(solutions, currentStatesValue.getIOs());
     }
-
-	public List<IOAwareSolution> doSolve(final String constraints, final List<String> variables) throws IOException {
-		if (StringUtils.isBlank(reduceProgram)) {
-			throw new RuntimeException("Reduce path not provided");
-		}
-		Starter.log("Solving the constraint using " + reduceProgram);
-		final List<String> reduceOutput = executeReduce(constraints);
-		final String strReduceOutput = getOnlyAnswer(reduceOutput);
-		final DNF dnf = new DNF(variables);
-		final List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
-		return ioAwarify(solutions, null);
-	}
 
     private String getOnlyAnswer(List<String> reduceOutput) {
         int formulaStart = -1;
