@@ -28,7 +28,7 @@ public class FIFOTest {
 
 		IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("w1", 1));
 		try {
-			return Solver.builder().connectorConstraint(connector).initState(initState).build().solve(-1);
+			return Solver.builder().initState(initState).build().solve(connector.getConstraint(),-1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

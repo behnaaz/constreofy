@@ -29,9 +29,8 @@ public class Sync {
 
         final Solver solver = Solver.builder()
                 .initState(initState)
-                .connectorConstraint(new ConstraintConnector(sync.getConstraint(), sync.getVariableNames()))
                 .build();
 
-        solver.solve(3);
+        solver.solve(new ConstraintConnector(sync.getConstraint(), sync.getVariableNames()).getConstraint(), 3);
     }
 }

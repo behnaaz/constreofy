@@ -236,10 +236,9 @@ public class JournalExampleTest implements ExampleData {
         fifos.add(StateVariableValue.builder().stateName("j5njn1ring").value(Optional.of(Boolean.FALSE)).build());
         IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
                 return new HashSet<>(Solver.builder()
-                                .connectorConstraint(connector)
                                 .initState(initState)
                                 .build()
-                                .solve(4));
+                                .solve(connector.getConstraint(), 4));
    }
 
     private List<HashSet<String>> createEquals() {

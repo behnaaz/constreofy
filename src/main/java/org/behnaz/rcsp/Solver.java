@@ -20,12 +20,11 @@ public class Solver implements Containable {
     public static final String FORMULA_NAME_EQUAL = "qaz :=";
     public static final String SHUT = "shut";
 
-    private ConstraintConnector connectorConstraint;
     private IOAwareStateValue initState;
     @Builder.Default
     private String reduceProgram = PropertyReader.reduceProgram();
 
-    public List<IOAwareSolution> solve(int maxLimit) throws IOException {
+    public List<IOAwareSolution> solve(final String constraint, final int maxLimit) throws IOException {
         List<IOAwareStateValue> visitedStates = new ArrayList<>();
         List<IOAwareStateValue> explorableStates = new ArrayList<>();
         //TODO convert to treemap and fix contains ad delete issues
@@ -40,7 +39,7 @@ public class Solver implements Containable {
 
             visit(visitedStates, currentStatesValue);
             // Get solutions from current state
-            List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, connectorConstraint.getConstraint());
+            List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, constraint);
             addToSolutions(solutions, foundSolutions);
 
             addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
@@ -59,7 +58,7 @@ public class Solver implements Containable {
 
         long duration = endTime0 - startTime0;
         Starter.log("whole solutions took in miliseconds: " + duration / 1000000 + " #solutions: "
-                + solutions.size() + " #cons len:" + connectorConstraint.getConstraint().length());
+                + solutions.size() + " #cons len:" + constraint.length());
         Starter.log(".....done in step " + n);
         return solutions;
     }

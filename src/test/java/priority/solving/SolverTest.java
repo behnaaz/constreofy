@@ -21,7 +21,6 @@ public class SolverTest {
 		ExampleMaker em = new ExampleMaker(3);
 		solver = Solver.builder()
 				.initState(currentStatesValue)
-				.connectorConstraint(em.getExample(currentStatesValue))
 				.build();
 		s = solver.doSolve(currentStatesValue, new ExampleMaker(3).getExample(currentStatesValue).getConstraint());
 	}

@@ -15,10 +15,9 @@ public class Starter {
 		List<IOAwareSolution> solutions = null;
 		try {
 			solutions = Solver.builder()
-					.connectorConstraint(cc)
 					.initState(initState)
 					.build()
-					.solve(-1);
+					.solve(cc.getConstraint(), -1);
 		} catch (IOException e) {
 			log("Solving constraints with reduce failed " +e.getMessage());
 		}

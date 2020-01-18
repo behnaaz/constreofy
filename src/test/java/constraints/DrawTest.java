@@ -27,10 +27,9 @@ public class DrawTest {
 		final IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().build(), new IOComponent("a1", 1));
 		try {
 			solutions = Solver.builder()
-					.connectorConstraint(connector)
 					.initState(initState)
 					.build()
-					.solve(-1);
+					.solve(connector.getConstraint(),-1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
