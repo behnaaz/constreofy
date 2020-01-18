@@ -111,7 +111,7 @@ public class Solver implements Containable {
 			throw new RuntimeException("Reduce path not provided");
 		}
 		Starter.log("Solving the constraint using " + reduceProgram);
-		final List<String> reduceOutput = executeReduce(cc, currentStatesValue.getStateValue());
+		final List<String> reduceOutput = executeReduce(cc.buildConstraint(currentStatesValue.getStateValue()));
 		final String strReduceOutput = getOnlyAnswer(reduceOutput);
 		final DNF dnf = new DNF(new ArrayList<>(cc.getVariables()));
 		final List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
@@ -161,12 +161,11 @@ public class Solver implements Containable {
 		return temp;
 	}
 
-	private List<String> executeReduce(final ConstraintConnector cc, final StateValue stateValue) throws IOException {
+	private List<String> executeReduce(final String constraints) throws IOException {
 		Starter.log("Loading Reduce from " + reduceProgram);
 		final Process process = Runtime.getRuntime().exec(reduceProgram);
 		Starter.log("Reduce loaded ? " + process.isAlive());
 		final OutputStream stdin = process.getOutputStream();
-		final String constraints = cc.buildConstraint(stateValue);
 		Starter.log("Constraints to be solved: " + constraints);
 
 		stdin.write(constraints.getBytes());
