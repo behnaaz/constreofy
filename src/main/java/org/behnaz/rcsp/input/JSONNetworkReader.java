@@ -3,6 +3,9 @@ package org.behnaz.rcsp.input;
 import javafx.util.Pair;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.behnaz.rcsp.model.MergerNode;
+import org.behnaz.rcsp.model.ReplicateNode;
+import org.behnaz.rcsp.model.RouteNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,11 +23,11 @@ public class JSONNetworkReader {
     private Map<String, String> connections = new HashMap<>();
     private JSONObject jsonObject;
     @Getter
-    private final List<Pair<String, Pair<Set<String>, Set<String>>>> replicates = new ArrayList<>();
+    private final List<ReplicateNode> replicates = new ArrayList<>();
     @Getter
-    private final List<Pair<String, Pair<Set<String>, Set<String>>>> routes = new ArrayList<>();
+    private final List<RouteNode> routes = new ArrayList<>();
     @Getter
-    private final List<Pair<String, Pair<Set<String>, Set<String>>>> merges = new ArrayList<>();
+    private final List<MergerNode> merges = new ArrayList<>();
     @Getter
     private final List<Pair<String, String>> syncs = new ArrayList<>();
     @Getter
@@ -60,13 +63,13 @@ public class JSONNetworkReader {
 
         switch (t) {
             case "Replicate":
-                replicates.add(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t)));
+                replicates.add(new ReplicateNode(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t))));
                 break;
             case "Route":
-                routes.add(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t)));
+                routes.add(new RouteNode(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t))));
                 break;
             case "Merge":
-                merges.add(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t)));
+                merges.add(new MergerNode(new Pair<>(node.getJSONObject(t).getString("name"), extractEnds(node, t))));
                 break;
             case "Sync":
                 syncs.add(new Pair(node.getJSONArray(t).getJSONObject(0).getString("Source"), node.getJSONArray(t).getJSONObject(1).getString("Sink")));
@@ -151,6 +154,10 @@ public class JSONNetworkReader {
         readWriters();
         readReaders();
         readConnections();
+    }
+
+    public boolean isReplicateEnd(final String name) {
+        return true;//replicates.stream()..findFirst();
     }
 
     public List<String> getWriters() {
