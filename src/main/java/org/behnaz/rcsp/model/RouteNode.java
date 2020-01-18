@@ -16,10 +16,6 @@ public class RouteNode extends Node {
         pair = p;
     }
 
-    public String getName() {
-        return pair.getKey();
-    }
-
     public String getSourceEnd(){
         return pair.getValue().getKey().iterator().next();
     }
@@ -28,6 +24,7 @@ public class RouteNode extends Node {
         return pair.getValue().getValue();
     }
 
+    @Override
     public boolean ownsEnd(final String name) {
         if (getSourceEnd().equals(name)) {
             return true;
@@ -36,4 +33,8 @@ public class RouteNode extends Node {
         return getSinkEnds().stream().filter(e -> e.equals(name)).findAny().isPresent();
     }
 
+    @Override
+    public String getConstraint() {
+        return "";
+    }
 }

@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -238,10 +239,13 @@ public class ThesisTest implements ExampleData {
 
         assertTrue(replicates.stream().anyMatch(e -> e.ownsEnd("B2")));
         assertTrue(routes.stream().anyMatch(e -> e.ownsEnd("C1")));
-
-
-
-
+        assertTrue(replicates.stream().filter(e -> e.ownsEnd("B2")).findAny().isPresent());
+        assertFalse(replicates.stream().filter(e -> e.ownsEnd("C1")).findAny().isPresent());
+        Node bk =  replicates.stream().filter(e -> e.ownsEnd("B2")).findAny().get();
+        assertEquals("B", bk.getName());
+        Node tmp =  routes.stream().filter(e -> e.ownsEnd("C1")).findAny().get();
+        assertEquals("C", tmp.getName());
+        assertEquals("C", tmp.getConstraint());
         return connector;
     }
 

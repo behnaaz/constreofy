@@ -10,4 +10,12 @@ public class Node {
     public String getName() {
         return pair.getKey();
     }
+
+    public boolean ownsEnd(final String name) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    public String getConstraint() {
+        throw new RuntimeException("Not implemented");
+    }
 }

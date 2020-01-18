@@ -17,10 +17,6 @@ public class MergerNode extends Node {
         this.pair = pair;
     }
 
-    public String getName() {
-        return pair.getKey();
-    }
-
     public String getSinkEnd(){
         return pair.getValue().getValue().iterator().next();
     }
@@ -29,11 +25,17 @@ public class MergerNode extends Node {
         return pair.getValue().getKey();
     }
 
+    @Override
     public boolean ownsEnd(final String name) {
         if (getSinkEnd().equals(name)) {
             return true;
         }
 
         return getSourceEnds().stream().filter(e -> e.equals(name)).findAny().isPresent();
+    }
+
+    @Override
+    public String getConstraint() {
+        return "";
     }
 }
