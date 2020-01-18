@@ -78,15 +78,17 @@ public class ConstraintConnector extends AbstractConnector {
 
 	private String declarationSection(final String formulae) {
 		final StringBuilder builder = new StringBuilder();
-		final Set<String> vars = this.extractVariablesAndUpdateConstraint(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
+		final Set<String> vars = this.extractVariables(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
 				.map(String::toUpperCase).collect(Collectors.toSet());
+		constraint = capitalizeVars(constraint);
+
 		builder.append("rlpcvar ");
 		final String variable = vars.toString();
 		builder.append(variable.substring(1, variable.length() - 1)).append(';');
 		return builder.toString();
 	}
 
-	public Set<String> extractVariablesAndUpdateConstraint(final String newConstraint) {
+	public Set<String> extractVariables(final String newConstraint) {
 		final Set<String> result = new HashSet<>();
 
 		if (StringUtils.isNotBlank(newConstraint)) {
@@ -98,15 +100,16 @@ public class ConstraintConnector extends AbstractConnector {
 					result.add(term.toUpperCase(Locale.US));
 				}
 			}
-			capitalizeVars(newConstraint);
 		}
 		return result;
 	}
 
-	private void capitalizeVars(final String newConstraint) {
-		for (final String term : newConstraint.replaceAll(KEY_WORDS_REGEX, "").split(SPACE)) {
-			constraint = constraint.replaceAll(WORD_BOUNDARY + term + WORD_BOUNDARY, term.toUpperCase(Locale.US));
+	public String capitalizeVars(final String constraint) {
+		String result = constraint;
+		for (final String term : constraint.replaceAll(KEY_WORDS_REGEX, "").split(SPACE)) {
+			result = result.replaceAll(WORD_BOUNDARY + term + WORD_BOUNDARY, term.toUpperCase(Locale.US));
 		}
+		return result;
 	}
 
 	/**
