@@ -23,9 +23,6 @@ public class Starter {
 			log("Solving constraints with reduce failed " +e.getMessage());
 		}
 		//System.out.println("Use new method?" + Solver.USE_EQUAL_SET_ON);
-      	//  final Drawer d = new Drawer(solutions);
-		//  d.draw();
-        //	d.toGoJS();
 	}
 
 	public static void log(String s) {

@@ -60,7 +60,7 @@ public class ConstraintConnector extends AbstractConnector {
 	public ConstraintConnector(final String constraint, final List<String> boundaryPortNames) {
 		super(boundaryPortNames);
 		connection = new Connection();
-		this.constraint = (constraint);
+		this.constraint = constraint;
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class ConstraintConnector extends AbstractConnector {
 	 * Variables used in the constraint
 	 * @return
 	 */
-	public Set<String> getVariables() {
+	public Set<String> getVariables(final String constraint) {
 		return extractVariablesAndUpdateConstraint(constraint, true);//TODO bad design side effect
 	}
 

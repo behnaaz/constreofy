@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -206,7 +207,7 @@ public class ThesisTest implements ExampleData {
 
         List<IOAwareSolution> solutions = null;
         try {
-            solutions = new ArrayList<>(checkSolutions(connector));
+            solutions = new ArrayList<>(checkSolutions(connector.getConstraint(), Collections.emptyList()));//TODO
         } catch (IOException e) {
             e.printStackTrace();
             fail("Failed to solve");
@@ -249,16 +250,15 @@ public class ThesisTest implements ExampleData {
         return connector;
     }
 
-    private Set<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
+    private Set<IOAwareSolution> checkSolutions(final String constraint, final List<String> variables) throws IOException {
         final Set<StateVariableValue> fifos = new HashSet<>();
         fifos.add(StateVariableValue.builder().stateName("j2kjk1ring").value(Optional.of(Boolean.FALSE)).build());
         fifos.add(StateVariableValue.builder().stateName("j5njn1ring").value(Optional.of(Boolean.FALSE)).build());
         IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
         return new HashSet<>(Solver.builder()
-                .connectorConstraint(connector)
                 .initState(initState)
                 .build()
-                .solve(4));
+                .solve(4, constraint, variables));
     }
 
     private List<HashSet<String>> createEquals() {
