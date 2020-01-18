@@ -154,7 +154,7 @@ public class Solver implements Containable {
         final String constraints = cc.buildConstraint(currentStatesValue.getStateValue());
         final List<String> reduceOutput = executeReduce(constraints);
         final String strReduceOutput = getOnlyAnswer(reduceOutput);
-        final DNF dnf = new DNF(new ArrayList<>(cc.getVariables(constraints)));
+        final DNF dnf = new DNF(new ArrayList<>(cc.extractVariablesAndUpdateConstraint(constraints)));
         final List<Solution> solutions = dnf.extractSolutions(strReduceOutput);
         return ioAwarify(solutions, currentStatesValue.getIOs());
     }

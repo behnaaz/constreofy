@@ -16,8 +16,8 @@ public class Sync {
         assertEquals(sync.getName(0), "A1");
         assertEquals(sync.getName(1), "A2");
 
-        assertTrue(sync.getVariables(sync.getConstraint()).contains("A1TILDE"));
-        assertTrue(sync.getVariables(sync.getConstraint()).contains("A2TILDE"));
+        assertTrue(sync.extractVariablesAndUpdateConstraint(sync.getConstraint()).contains("A1TILDE"));
+        assertTrue(sync.extractVariablesAndUpdateConstraint(sync.getConstraint()).contains("A2TILDE"));
 
         assertEquals(0, sync.getStates().length);
         assertEquals(0, sync.getNextStates().length);

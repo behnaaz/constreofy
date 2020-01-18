@@ -76,38 +76,6 @@ public class ConstraintConnector extends AbstractConnector {
 		return result;
 	}
 
-	/**
-	 * Variables used in the constraint
-	 * @return
-	 */
-	public Set<String> getVariables(final String constraint) {
-		return extractVariablesAndUpdateConstraint(constraint);//TODO bad design side effect
-	}
-
-	private Set<String> extractVariablesAndUpdateConstraint(final String newConstraint) {
-		final Set<String> result = new HashSet<>();
-
-		if (newConstraint != null && newConstraint.trim().length() > 0) {
-			// Replace all keywords with empty string
-			final String onlyVariables = newConstraint.replaceAll(KEY_WORDS_REGEX, "");
-			// Constraint
-			final StringBuilder builder = new StringBuilder();
-			for (final String term : onlyVariables.split(SPACE)) {
-				if (!term.trim().isEmpty()) {
-					result.add(term.toUpperCase(Locale.US));
-
-					if (true) {//temp
-						// Update constraint
-						builder.setLength(0); // Empty builder
-						builder.append(WORD_BOUNDARY).append(term).append(WORD_BOUNDARY);
-						constraint = constraint.replaceAll(builder.toString(), term.toUpperCase(Locale.US));
-					}
-				}
-			}
-		}
-		return result;
-	}
-
 	private String declarationSection(final String formulae) {
 		final StringBuilder builder = new StringBuilder();
 		final Set<String> vars = this.extractVariablesAndUpdateConstraint(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
@@ -117,7 +85,30 @@ public class ConstraintConnector extends AbstractConnector {
 		builder.append(variable.substring(1, variable.length() - 1)).append(';');
 		return builder.toString();
 	}
-	
+
+	public Set<String> extractVariablesAndUpdateConstraint(final String newConstraint) {
+		final Set<String> result = new HashSet<>();
+
+		if (StringUtils.isNotBlank(newConstraint)) {
+			// Replace all keywords with empty string
+			final String onlyVariables = newConstraint.replaceAll(KEY_WORDS_REGEX, "");
+			// Constraint
+			for (final String term : onlyVariables.split(SPACE)) {
+				if (!term.trim().isEmpty()) {
+					result.add(term.toUpperCase(Locale.US));
+				}
+			}
+			capitalizeVars(newConstraint);
+		}
+		return result;
+	}
+
+	private void capitalizeVars(final String newConstraint) {
+		for (final String term : newConstraint.replaceAll(KEY_WORDS_REGEX, "").split(SPACE)) {
+			constraint = constraint.replaceAll(WORD_BOUNDARY + term + WORD_BOUNDARY, term.toUpperCase(Locale.US));
+		}
+	}
+
 	/**
 	* Wrap the constraints with required by REDUCE 
 	* @param stateValue
