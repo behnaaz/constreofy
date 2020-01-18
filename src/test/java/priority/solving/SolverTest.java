@@ -23,7 +23,7 @@ public class SolverTest {
 				.initState(currentStatesValue)
 				.connectorConstraint(em.getExample(currentStatesValue))
 				.build();
-		s = solver.doSolve(currentStatesValue, new ExampleMaker(3).getExample(currentStatesValue));
+		s = solver.doSolve(currentStatesValue, new ExampleMaker(3).getExample(currentStatesValue).getConstraint());
 	}
 	@Test
 	@Ignore
@@ -33,7 +33,7 @@ public class SolverTest {
 		v.getStateValue().add(stateVariableValue("ij1ij2ring", optTrue));
 		v.getStateValue().add(stateVariableValue("jk1jk2ring", optTrue));
 
-		s = solver.doSolve(v, new ExampleMaker(3).getExample(v));
+		s = solver.doSolve(v, new ExampleMaker(3).getExample(v).getConstraint());
 		assertEquals(s.size(), 4);
 
 	}

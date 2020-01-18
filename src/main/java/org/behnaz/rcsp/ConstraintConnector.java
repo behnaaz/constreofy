@@ -66,10 +66,6 @@ public class ConstraintConnector extends AbstractConnector {
 		return result;
 	}
 
-	void capitalizeVars() {
-		constraint = SolverHelper.capitalizeVars(constraint);
-	}
-
 	/**
 	 * Conjuncts the new connector logic to the existing and
 	 *  adds the first passed port to the list of names
@@ -111,24 +107,6 @@ public class ConstraintConnector extends AbstractConnector {
 	 */
 	public ConstraintConnector connect(final String port1, final String port2) {
 		return new ConstraintConnector(String.format(" (%s %s %s) ", port1, IMPLIES, port2));
-	}
-
-	/**
-	 * Sets states
-	 * 
-	 * @param currents
-	 */
-	public void setStates(final String... currents) {
-		states = currents;
-	}
-
-	/**
-	 * Sets next states
-	 * 
-	 * @param nexts
-	 */
-	public void setNextStates(final String... nexts) {
-		nextStates = nexts;
 	}
 
 	/**

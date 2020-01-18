@@ -40,7 +40,7 @@ public class Solver implements Containable {
 
             visit(visitedStates, currentStatesValue);
             // Get solutions from current state
-            List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, connectorConstraint);
+            List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, connectorConstraint.getConstraint());
             addToSolutions(solutions, foundSolutions);
 
             addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
@@ -108,13 +108,12 @@ public class Solver implements Containable {
         return currentStatesValues;
     }
 
-    public List<IOAwareSolution> doSolve(final IOAwareStateValue currentStatesValue, final ConstraintConnector cc) throws IOException {
+    public List<IOAwareSolution> doSolve(final IOAwareStateValue currentStatesValue, final String constraint) throws IOException {
         if (StringUtils.isBlank(reduceProgram)) {
             throw new RuntimeException("Reduce path not provided");
         }
         Starter.log("Solving the constraint using " + reduceProgram);
-        cc.capitalizeVars();
-        final String constraints = SolverHelper.constraintSection(currentStatesValue.getStateValue(), cc.getConstraint());
+        final String constraints = SolverHelper.constraintSection(currentStatesValue.getStateValue(), SolverHelper.capitalizeVars(constraint));
         final List<String> reduceOutput = executeReduce(constraints);
         final String strReduceOutput = getOnlyAnswer(reduceOutput);
         final DNF dnf = new DNF(new ArrayList<>(SolverHelper.extractVariables(constraints)));

@@ -22,7 +22,7 @@ public class StateManagerTest {
 		IOAwareStateValue currentStatesValue = new IOAwareStateValue(stateValue, ioComponent);
 		ConstraintConnector cc = new ExampleMaker(1).getExample(currentStatesValue);
 		solver = Solver.builder().connectorConstraint(cc).initState(currentStatesValue).build();
-		solutions = solver.doSolve(currentStatesValue, cc);
+		solutions = solver.doSolve(currentStatesValue, cc.getConstraint());
 	}
 
 	@Test
