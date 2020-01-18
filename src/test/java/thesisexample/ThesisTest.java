@@ -245,7 +245,7 @@ public class ThesisTest implements ExampleData {
         assertEquals("B", bk.getName());
         Node tmp =  routes.stream().filter(e -> e.ownsEnd("C1")).findAny().get();
         assertEquals("C", tmp.getName());
-        assertEquals("C", tmp.getConstraint());
+        assertEquals("(C1tilde equiv (C3tilde or C4tilde or C2tilde)) and ( not (C3tilde and C4tilde and C2tilde))", tmp.getConstraint());
         return connector;
     }
 

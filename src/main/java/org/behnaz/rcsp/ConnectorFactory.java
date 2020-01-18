@@ -1,7 +1,10 @@
 package org.behnaz.rcsp;
 
+import org.behnaz.rcsp.model.RouteNode;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class ConnectorFactory extends Primitive {
@@ -32,10 +35,7 @@ public class ConnectorFactory extends Primitive {
 	}
 
 	public ConstraintConnector router(final String c, final String k1, final String k2) {
-		String router = String.format(
-				"(%s %s ( %s %s %s )) %s (%s (%s %s %s))", 
-				flow(c), AbstractConnector.RIGHTLEFTARROW, flow(k1), AbstractConnector.OR, flow(k2), AbstractConnector.AND, AbstractConnector.NOT, flow(k1), AbstractConnector.AND, flow(k2));
-		return new ConstraintConnector(router, c, k1, k2);
+		return new ConstraintConnector(new RouteNode("", c, new HashSet<>(Arrays.asList(k1, k2))).getConstraint(), c, k1, k2);
 	}
 
 	public ConstraintConnector lossySync(final String p1, final String p2) {

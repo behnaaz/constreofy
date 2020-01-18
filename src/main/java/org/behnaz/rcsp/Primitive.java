@@ -1,21 +1,17 @@
 package org.behnaz.rcsp;
 
-import static priority.Variable.*;
+import org.behnaz.rcsp.model.util.VariableNamer;
 
 public class Primitive {
 	public String flow(String node) {
-		return new StringBuilder().append(node).append(TILDE).toString();
+		return VariableNamer.flow(node);
 	}
 
 	public String memory(String p1, String p2) {
-//		p1 = p1.toLowerCase().trim();
-//		p2 = p2.toLowerCase().trim();
-		return new StringBuilder().append(p1).append(p2).append(CURRENT_MEMORY).toString();
+		return VariableNamer.memory(p1, p2);
 	}
 
 	public String nextMemory(String p1, String p2) {
-//		p1 = p1.toLowerCase().trim();
-//		p2 = p2.toLowerCase().trim();
-		return new StringBuilder().append(p1).append(p2).append(NEXT_MEMORY).toString();
+		return VariableNamer.nextMemory(p1, p2);
 	}
 }
