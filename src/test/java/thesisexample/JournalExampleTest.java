@@ -1,6 +1,7 @@
 package thesisexample;
 
 import javafx.util.Pair;
+import lombok.NonNull;
 import org.behnaz.rcsp.ConstraintConnector;
 import org.behnaz.rcsp.EqualBasedConnectorFactory;
 import org.behnaz.rcsp.FIFO;
@@ -206,40 +207,14 @@ public class JournalExampleTest implements ExampleData {
         assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
 
         final ConstraintConnector connector = network();
+        testSol(connector, 2, 6, "b2cbc1ring,b3ebe1ring");
 
-        List<IOAwareSolution> solutions = null;
-        try {
-            solutions = new ArrayList<>(solve(connector, 1));
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("Failed to solve");
-        }
-        assertEquals(2, solutions.size());
+        testSol(connector, 1, 2);
+        testSol(connector, 2, 8, "q5pqp1ring");
+        testSol(connector, 2, 8);
+        testSol(connector, 3, 8);
 
-        try {
-            solutions = new ArrayList<>(solve(connector, 2));
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("Failed to solve");
-        }
-        assertEquals(8, solutions.size());
-
-        try {
-            solutions = new ArrayList<>(solve(connector, 3));
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("Failed to solve");
-        }
-        assertEquals(8, solutions.size());
-
-        try {
-            solutions = new ArrayList<>(solve(connector, 4));
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail("Failed to solve");
-        }
-
-        assertEquals(12, solutions.size());
+        List<IOAwareSolution> solutions = testSol(connector, 4, 12);
         for (IOAwareSolution s : solutions) {
             if (s.getSolution().getFromVariables().size()  > 1) {
                 System.out.println("FROM STATE WITH MORE THAN ONE" + s.getSolution().readable());
@@ -254,9 +229,26 @@ public class JournalExampleTest implements ExampleData {
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
     }
 
-    private Set<IOAwareSolution> solve(final ConstraintConnector connector, final int numberOfRounds) throws IOException {
+    private  List<IOAwareSolution>  testSol(final ConstraintConnector connector, final int rounds, final int expected, final String init) {
+        List<IOAwareSolution> solutions = null;
+        try {
+            solutions = new ArrayList<>(solve(connector, rounds, init));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Failed to solve");
+        }
+        new Drawer("/tmp/out-"+rounds+"-"+init.replaceAll(",","_")).draw(solutions);
+        assertEquals(expected, solutions.size());
+        return solutions;
+    }
+
+    private List<IOAwareSolution> testSol(final ConstraintConnector connector, final int rounds, final int expected) {
+        return testSol(connector, rounds, expected, "");
+    }
+
+    private Set<IOAwareSolution> solve(final ConstraintConnector connector, final int numberOfRounds, @NonNull final String givenInit) throws IOException {
         final Set<StateVariableValue> fifos = this.fifos.stream().map(e -> new FIFO(e.getKey(), e.getValue()).getMemory().toLowerCase())
-                .map(e -> StateVariableValue.builder().stateName(e).value(Boolean.FALSE).build())
+                .map(e -> StateVariableValue.builder().stateName(e).value(givenInit.contains(e)).build())
                 .collect(Collectors.toSet());
 
         IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
