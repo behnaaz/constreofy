@@ -376,10 +376,13 @@ public class JournalExampleTest implements ExampleData {
 
         //TODO TEMP taghalllob
         equalize(result, "CM1", "C3M");
+        //TODO TEMP taghalllob
+        equalize(result, "OD4", "O1D");
 
-        assertEquals(17, result.size());
+
+        assertEquals(16, result.size());
         validateEnds(result);
-      //  assertEquals("", result);
+        assertEquals("[[Q1, Q2, ET2, Q3, Q4, Q4H, Q5, E4T, Q3O, Q5P, QT1, E4, SQ1, Q2T, S2Q, W31, T1, T2, S1, S2], [C3, M1, M2, CM1, C3M, JM2], [I2J, J2K, J5N, J4L, J3M, L1, L2, J1, I1, J2, J6U, I2, J3, J4, J5, EL1, J6, E3, IJ1, JL2, W11, E3L], [A1, AB1, B2, A2, A2B, B3, B2C, B3E, W21, B1], [BC1, C1], [JK1, R12, K1, K2], [R22, N1, N2, JN1], [R32, FG1, G1, G2], [C2D, C2], [E1, BE1], [C4, HC4, H1, H2, QH2, H1C], [R42, P1, P2, QP1], [CD1, D1], [EF2, E2F, D2F, F1, F3G, F2, E2, F3, D2, DF1], [DU1, JU2, D3U, U1, U2, D3], [D4, O1, O1D, O2, QO2, OD4]]", result.toString());
         return result;
     }
 

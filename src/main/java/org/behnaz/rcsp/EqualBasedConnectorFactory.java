@@ -51,9 +51,7 @@ public class EqualBasedConnectorFactory extends Primitive {
 		final List<String> l = new ArrayList<>();
 		l.add(c);
 		l.addAll(Arrays.asList(ks));
-		String d = new RouteNode("", c, sinkEquals).getConstraint();
-		final String constraint = "(" + flow(c) + AbstractConnector.RIGHTLEFTARROW + "(" + or + "))" + AbstractConnector.AND + "(" + AbstractConnector.NOT + " (" + exclusives + "))";
-		return new ConstraintConnector(constraint, l);
+		return new ConstraintConnector(new RouteNode("", c, sinkEquals).getConstraint(), l);
 	}
 
 	public ConstraintConnector lossySync(final String source, final String sink) {
