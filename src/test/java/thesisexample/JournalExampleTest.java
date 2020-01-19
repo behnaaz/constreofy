@@ -18,7 +18,6 @@ import org.behnaz.rcsp.model.RouteNode;
 import org.behnaz.rcsp.model.util.SolverHelper;
 import org.behnaz.rcsp.output.Drawer;
 import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,6 +93,7 @@ public class JournalExampleTest implements ExampleData {
         checkChannels();
         checkNodes();
         checkConnections();
+        reportErrors();
     }
 
     private void checkChannels() {
@@ -138,7 +138,6 @@ public class JournalExampleTest implements ExampleData {
         assertEquals("F", merges.stream().map(Node::getName).collect(Collectors.joining(", ")));
     }
 
-    @After
     public void reportErrors() {
         final Set<String> bads = new HashSet<>();
         final Set<String> checkedEnds = new HashSet<>();
