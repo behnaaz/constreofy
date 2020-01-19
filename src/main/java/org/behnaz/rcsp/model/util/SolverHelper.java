@@ -1,9 +1,13 @@
 package org.behnaz.rcsp.model.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.behnaz.rcsp.IOAwareSolution;
+import org.behnaz.rcsp.IOAwareStateValue;
+import org.behnaz.rcsp.Solver;
 import org.behnaz.rcsp.Starter;
 import org.behnaz.rcsp.StateValue;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -161,5 +165,12 @@ public class SolverHelper {
     public static String getEqual(final String end, final List<HashSet<String>> equals, Map<Integer, String> representative) {
         final int index = find(end.toUpperCase(), equals);
         return (index < 0) ? end : representative.get(index);
+    }
+
+    public static Set<IOAwareSolution> solve(final String constraints, final int numberOfRounds, final IOAwareStateValue initState) throws IOException {
+        return new HashSet<>(Solver.builder()
+                .initState(initState)
+                .build()
+                .solve(constraints, numberOfRounds));
     }
 }

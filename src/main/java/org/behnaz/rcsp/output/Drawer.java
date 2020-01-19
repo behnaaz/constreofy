@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class Drawer {
+    public static final String NEG = "!";//TODO duplicate
     public static final String STATE_VARIABLE_DELIMITER = "_";
     private final String path;
 
@@ -70,7 +71,7 @@ public class Drawer {
     }
 
     private String cache(final Set<String> flowVariables) {
-        final String lbl = flowVariables.isEmpty() ? "{}" : flowVariables.stream().collect(Collectors.joining(","));
+        final String lbl = flowVariables.isEmpty() ? "{}" : flowVariables.stream().filter(e -> ! e.startsWith(NEG)).collect(Collectors.joining(","));
         if (labels.containsKey(lbl)) {
             return labels.get(lbl);
         }
@@ -85,6 +86,10 @@ public class Drawer {
             return new HashSet<>(Arrays.asList("empty"));
         }
 
-        return set.stream().map(e -> e.replaceAll("\\d", "").substring(0, 2)).collect(Collectors.toSet());
+        final Set<String> temp = set.stream()
+                .filter(e -> !e.startsWith(NEG))
+                .map(e -> e.replaceAll("\\d", "").substring(0, 2))
+                .collect(Collectors.toSet());
+        return temp.isEmpty() ? new HashSet<>(Arrays.asList("empty")) : temp;
     }
 }

@@ -7,7 +7,6 @@ import org.behnaz.rcsp.FIFO;
 import org.behnaz.rcsp.IOAwareSolution;
 import org.behnaz.rcsp.IOAwareStateValue;
 import org.behnaz.rcsp.IOComponent;
-import org.behnaz.rcsp.Solver;
 import org.behnaz.rcsp.StateValue;
 import org.behnaz.rcsp.StateVariableValue;
 import org.behnaz.rcsp.input.JSONNetworkReader;
@@ -15,6 +14,7 @@ import org.behnaz.rcsp.model.MergerNode;
 import org.behnaz.rcsp.model.Node;
 import org.behnaz.rcsp.model.ReplicateNode;
 import org.behnaz.rcsp.model.RouteNode;
+import org.behnaz.rcsp.model.util.SolverHelper;
 import org.behnaz.rcsp.output.Drawer;
 import org.json.JSONObject;
 import org.junit.After;
@@ -209,7 +209,31 @@ public class JournalExampleTest implements ExampleData {
 
         List<IOAwareSolution> solutions = null;
         try {
-            solutions = new ArrayList<>(checkSolutions(connector));
+            solutions = new ArrayList<>(solve(connector, 1));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Failed to solve");
+        }
+        assertEquals(2, solutions.size());
+
+        try {
+            solutions = new ArrayList<>(solve(connector, 2));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Failed to solve");
+        }
+        assertEquals(8, solutions.size());
+
+        try {
+            solutions = new ArrayList<>(solve(connector, 3));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Failed to solve");
+        }
+        assertEquals(8, solutions.size());
+
+        try {
+            solutions = new ArrayList<>(solve(connector, 4));
         } catch (IOException e) {
             e.printStackTrace();
             fail("Failed to solve");
@@ -224,22 +248,19 @@ public class JournalExampleTest implements ExampleData {
         }
         new Drawer("/tmp/out").draw(solutions);
         //assertEquals("", connector.getConstraint());
-        assertEquals(2, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() > 1).count());
-        assertEquals(4, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() > 1).count());
-        assertEquals(1, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 0).count());
-        assertEquals(1, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
+        assertEquals(3, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() > 1).count());
+        assertEquals(8, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() > 1).count());
+        assertEquals(0, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 0).count());
+        assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
     }
 
-    private Set<IOAwareSolution> checkSolutions(final ConstraintConnector connector) throws IOException {
+    private Set<IOAwareSolution> solve(final ConstraintConnector connector, final int numberOfRounds) throws IOException {
         final Set<StateVariableValue> fifos = this.fifos.stream().map(e -> new FIFO(e.getKey(), e.getValue()).getMemory().toLowerCase())
                 .map(e -> StateVariableValue.builder().stateName(e).value(Optional.of(Boolean.FALSE)).build())
                 .collect(Collectors.toSet());
 
         IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
-        return new HashSet<>(Solver.builder()
-                                .initState(initState)
-                                .build()
-                                .solve(connector.getConstraint(), 4));
+        return SolverHelper.solve(connector.getConstraint(), numberOfRounds, initState);
    }
 
     private List<HashSet<String>> createEquals() {
