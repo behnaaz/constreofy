@@ -23,10 +23,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.validation.Path;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -237,8 +235,6 @@ public class JournalExampleTest implements ExampleData {
                 .map(e -> StateVariableValue.builder().stateName(e).value(Optional.of(Boolean.FALSE)).build())
                 .collect(Collectors.toSet());
 
-        //fifos.add(StateVariableValue.builder().stateName("j2kjk1ring").value(Optional.of(Boolean.FALSE)).build());
-      //  fifos.add(StateVariableValue.builder().stateName("j5njn1ring").value(Optional.of(Boolean.FALSE)).build());
         IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
         return new HashSet<>(Solver.builder()
                                 .initState(initState)

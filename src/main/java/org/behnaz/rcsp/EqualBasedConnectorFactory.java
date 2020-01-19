@@ -2,7 +2,6 @@ package org.behnaz.rcsp;
 
 import org.behnaz.rcsp.model.MergerNode;
 import org.behnaz.rcsp.model.RouteNode;
-import org.behnaz.rcsp.model.util.SolverHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,9 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.behnaz.rcsp.model.util.SolverHelper.getEqual;
 
@@ -118,7 +115,7 @@ public class EqualBasedConnectorFactory extends Primitive {
 		final String source = getEqual(originalSource, equals, representative);
 		return new ConstraintConnector(capacity > 0 ?
 				 String.format("(%s %s %s %s)", flow(source), AbstractConnector.OR, AbstractConnector.NOT, flow(source)) :
-		 		String.format("( %s %s)", AbstractConnector.NOT, flow(source)),
+		 		String.format("(%s %s)", AbstractConnector.NOT, flow(source)),
 		 	source);
 	}
 

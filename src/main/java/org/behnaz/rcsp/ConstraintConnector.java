@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.behnaz.rcsp.model.util.SolverHelper;
 
 import static org.behnaz.rcsp.Solver.USE_EQUAL_SET_ON;
 import static priority.Variable.CURRENT_MEMORY;
@@ -23,11 +22,10 @@ import static priority.Variable.NEXT_MEMORY;
  *
  */
 public class ConstraintConnector extends AbstractConnector {
-	private static final String BAR = "|";
-	public static final String KEY_WORDS_REGEX = String.format("%s%s%s%s%s%s%s%s%s%s%s%s%s",
-			AND.trim(), BAR, IMPLIES.trim(), BAR, NOT.trim(), "|\\(|\\)|,|", RIGHTLEFTARROW.trim(), BAR,
-			OR.trim(), BAR, TRUE.trim(), BAR, FALSE.trim());
-
+	public static final String KEY_WORDS_REGEX =
+			AND.trim() + "|" +IMPLIES.trim()+"|" + NOT.trim()+"|" +"\\(|\\)"+"|" + RIGHTLEFTARROW.trim()+"|" +
+			OR.trim()+"|" + TRUE.trim()+"|" +FALSE.trim()+"|" + "set_bndstk_size"+"|" +"100000;load_package"+"|" +
+					"\"redlog\";rlset"+"|" + "ibalp;rlpcvar"+"|" + "qaz"+"|;|:=|,|"+"end"+"|"+"shut"+"|"+"rldnf";
 	@Getter
 	private String constraint;
 	private final ConnectorFactory factory = new ConnectorFactory();

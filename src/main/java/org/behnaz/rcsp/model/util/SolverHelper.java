@@ -1,19 +1,16 @@
 package org.behnaz.rcsp.model.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.behnaz.rcsp.ConstraintConnector;
 import org.behnaz.rcsp.Starter;
 import org.behnaz.rcsp.StateValue;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -86,17 +83,12 @@ public class SolverHelper {
             final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll(NEXT_MEMORY, CURRENT_MEMORY);
             if (stateValue != null && stateValue.getValue(fifo).isPresent() && stateValue.getValue(fifo).get()) {//TODO what to do with optional???
                 if (stateValue.getValue(fifo).get()) {
-                    builder.append(AND);
-                    builder.append(fifo.toUpperCase(Locale.ENGLISH));
+                    builder.append(AND).append(fifo.toUpperCase(Locale.ENGLISH));
                 } else {
                     assert false;
                 }
             } else {
-                builder.append(AND);
-                builder.append(" (");
-                builder.append(NOT);
-                builder.append(fifo.toUpperCase(Locale.ENGLISH));
-                builder.append(") ");
+                builder.append(AND).append(" (").append(NOT).append(fifo.toUpperCase(Locale.ENGLISH)).append(") ");
             }
         }
         return builder.toString();
