@@ -206,7 +206,7 @@ public class JournalExampleTest implements ExampleData {
         assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
 
         final ConstraintConnector connector = network();
-        //testSol(connector, 2, 8, "b3ebe1ring,c2dcd1ring");
+       // testSol(connector, 1, 32, "b3ebe1ring,c2dcd1ring");
 
         testSol(connector, 2, 7, "googogoli");
 
@@ -215,21 +215,8 @@ public class JournalExampleTest implements ExampleData {
         testSol(connector, 1, 2);
         testSol(connector, 2, 8, "q5pqp1ring");
         testSol(connector, 2, 7);
-        testSol(connector, 3, 7);
-
-        List<IOAwareSolution> solutions = testSol(connector, 4, 11);
-        for (IOAwareSolution s : solutions) {
-            if (s.getSolution().getFromVariables().size()  > 1) {
-                System.out.println("FROM STATE WITH MORE THAN ONE" + s.getSolution().readable());
-            }
-            System.out.println(s.getSolution().readable());
-        }
-        new Drawer("/tmp/out").draw(solutions);
-        //assertEquals("", connector.getConstraint());
-        assertEquals(3, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() > 1).count());
-        assertEquals(8, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() > 1).count());
-        assertEquals(0, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 0).count());
-        assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
+        testSol(connector, 3, 11);
+        testSol(connector, 1, 4, "f3gfg1ring");
     }
 
     private  List<IOAwareSolution>  testSol(final ConstraintConnector connector, final int rounds, final int expected, final String init) {
@@ -254,7 +241,10 @@ public class JournalExampleTest implements ExampleData {
                 .map(e -> StateVariableValue.builder().stateName(e).value(givenInit.contains(e)).build())
                 .collect(Collectors.toSet());
 
-        IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
+        IOAwareStateValue initState = new IOAwareStateValue(
+                StateValue.builder().variableValues(fifos).build(),
+                new IOComponent("W11", 1), new IOComponent("W21", 1), new IOComponent("W31", 1),
+                new IOComponent("R12", 1), new IOComponent("R22", 1),  new IOComponent("R32", 1), new IOComponent("R42", 1));
         return SolverHelper.solve(connector.getConstraint(), numberOfRounds, initState);
    }
 
@@ -386,7 +376,7 @@ public class JournalExampleTest implements ExampleData {
         connector.add(factory.router("D1", "D2", "D3", "D4"), "D1", connections.get("D1"));
 
         connector.add(factory.merger("F1", "F2", "F3"), "F3", connections.get("F3"));
-        connector.add(factory.fifo("F3G", "FG11"), "F3G", connections.get("F3G"));
+        connector.add(factory.fifo("F3G", "FG1"), "F3G", connections.get("F3G"));
         connector.add(factory.router("E1", "E2", "E3", "E4"), "E2", connections.get("E2"));
         connector.add(factory.syncDrain("E3L", "EL1"), "E3L", connections.get("E3L"));
         connector.add(factory.fifo("B3E", "BE1"), "BE1", connections.get("BE1"));

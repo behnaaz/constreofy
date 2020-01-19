@@ -244,7 +244,7 @@ public class ThesisTest implements ExampleData {
             fail("Failed to solve");
         }
 
-        assertEquals(4, solutions.size());
+        assertEquals(2, solutions.size());
         for (IOAwareSolution s : solutions) {
             if (s.getSolution().getFromVariables().size()  > 1) {
                 System.out.println("FROM STATE WITH MORE THAN ONE" + s.getSolution().readable());
@@ -257,7 +257,7 @@ public class ThesisTest implements ExampleData {
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() > 1).count());
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 0).count());
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
-        assertEquals(2, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 1).count());
+        assertEquals(1, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 1).count());
         assertEquals(2, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 1).count());
     }
 

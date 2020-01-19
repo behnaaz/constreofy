@@ -80,21 +80,22 @@ public class SolverHelper {
     }
 
     public static String applyFIFOStates(final String mainConstraint, final StateValue stateValue) {//TODO remove
-        final StringBuilder builder = new StringBuilder().append(mainConstraint);
-        for (final String capitalFIFO : SolverHelper.getAllFIFOs(mainConstraint)) {
+        final StringBuilder builder = new StringBuilder();
+        final Set<String> allFIFOs = SolverHelper.getAllFIFOs(mainConstraint);
+        for (final String capitalFIFO : allFIFOs) {
             final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll(NEXT_MEMORY, CURRENT_MEMORY);
-            if (stateValue != null && stateValue.getValue(fifo)) {
+            if (stateValue != null) {
                 if (stateValue.getValue(fifo)) {
-                    builder.append(AND).append(fifo.toUpperCase(Locale.ENGLISH));
+                    builder.append("(").append(fifo.toUpperCase(Locale.ENGLISH)).append(")").append(AND);
                 } else {
-                    assert false;
+                    builder.append("(").append(NOT).append(fifo.toUpperCase(Locale.ENGLISH)).append(")").append(AND);
                 }
             } else {
-                builder.append(AND).append(" (").append(NOT).append(fifo.toUpperCase(Locale.ENGLISH)).append(") ");
+                builder.append(" (").append(NOT).append(fifo.toUpperCase(Locale.ENGLISH)).append(")").append(AND);
             }
         }
 
-        return builder.toString();
+        return builder.append(mainConstraint).toString();
     }
 
     /**
