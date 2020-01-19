@@ -18,12 +18,12 @@ public class StateValue implements Cloneable {
 	@Builder.Default
 	private Set<StateVariableValue> variableValues = new HashSet<>();
 
-	public Optional<Boolean> getValue(String m) {
+	public Boolean getValue(String m) {
 		for (StateVariableValue v : getVariableValues()) { 
 			if (v.getStateName().equals(m))
 				return v.getValue();
 		}
-		return Optional.empty();
+		return Boolean.FALSE;
 	}
 
 	public StateValue add(final StateVariableValue stateVariableValue) {

@@ -11,8 +11,8 @@ import org.behnaz.rcsp.*;
 import org.junit.Test;
 
 public class StateValueTest {
-	Optional<Boolean> optTrue = Optional.of(Boolean.TRUE);
-	Optional<Boolean> optFalse = Optional.of(Boolean.FALSE);
+	final Boolean optTrue = Boolean.TRUE;
+	final Boolean optFalse = Boolean.FALSE;
 
 	@Test
 	public void testEquality() {
@@ -43,7 +43,7 @@ public class StateValueTest {
 		assertEquals(t1.getVariableValues().size(), 3);
 	}
 
-	private StateVariableValue stateVariableValue(final String name, final Optional<Boolean> val) {
+	private StateVariableValue stateVariableValue(final String name, final Boolean val) {
 		return StateVariableValue.builder()
 				.stateName(name)
 				.value(val)

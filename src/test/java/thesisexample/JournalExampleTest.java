@@ -256,7 +256,7 @@ public class JournalExampleTest implements ExampleData {
 
     private Set<IOAwareSolution> solve(final ConstraintConnector connector, final int numberOfRounds) throws IOException {
         final Set<StateVariableValue> fifos = this.fifos.stream().map(e -> new FIFO(e.getKey(), e.getValue()).getMemory().toLowerCase())
-                .map(e -> StateVariableValue.builder().stateName(e).value(Optional.of(Boolean.FALSE)).build())
+                .map(e -> StateVariableValue.builder().stateName(e).value(Boolean.FALSE).build())
                 .collect(Collectors.toSet());
 
         IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));

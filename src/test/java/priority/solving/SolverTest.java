@@ -3,7 +3,6 @@ package priority.solving;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.behnaz.rcsp.*;
 import org.junit.Before;
@@ -11,7 +10,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class SolverTest {
-	Optional<Boolean> optTrue = Optional.of(Boolean.TRUE);
+	Boolean optTrue = Boolean.TRUE;
 	List<IOAwareSolution> s;
 	Solver solver;
 	
@@ -37,7 +36,7 @@ public class SolverTest {
 
 	}
 
-	private StateVariableValue stateVariableValue(final String name, Optional<Boolean> val) {
+	private StateVariableValue stateVariableValue(final String name, final Boolean val) {
 		return StateVariableValue.builder()
 				.stateName(name)
 				.value(val)

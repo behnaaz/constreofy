@@ -37,7 +37,7 @@ public class Starter {
 						Collections.singleton(
 								StateVariableValue.builder()
 										.stateName(stateName)
-										.value(Optional.of(Boolean.TRUE))
+										.value(Boolean.TRUE)
 										.build()
 						)
 				)

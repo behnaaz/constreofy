@@ -1,7 +1,6 @@
 package org.behnaz.rcsp;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,7 +16,7 @@ public class Solution {
 	private static final String SPACE = " ";
 	private static final String REGEX_EQUAL = " = ";
 	private static final String ZERO = "0";
-	private static final String NEG = "!";
+	public static final String NEG = "!";
 	private static final String EMPTY = "";
 	@Getter
 	private Set<String> flowVariables = new HashSet<>();
@@ -39,7 +38,7 @@ public class Solution {
 	}
 
 	private StateValue buildNextStateValues() {//TODO eftezah
-		StateValue res = StateValue.builder().build();
+		final StateValue res = StateValue.builder().build();
 		for (String t : toVariables)
 			res.add(makeStateVariable(t, true));
 		return res;
@@ -103,17 +102,16 @@ public class Solution {
 		return sb.toString().replaceAll("\\ \\ ", "\\ ").replaceAll("\\ }", "}").replaceAll("\\ \\)", "\\)").replaceAll("\\ ]", "]").replaceAll("\\{ \\ ", "\\{");
 	}
 
-	private StateVariableValue makeStateVariable(String state) {
+	private StateVariableValue makeStateVariable(final String state) {
 		return makeStateVariable(state.trim(), false);
 	}
 	
-	private StateVariableValue makeStateVariable(String state, boolean convertNextToCurrent) {
-		boolean neg = state.trim().startsWith(NEG);
-		String name = neg ? EMPTY /*state.trim().substring(1, state.trim().length())*/:state.trim();
+	private StateVariableValue makeStateVariable(final String state, final boolean convertNextToCurrent) {
+		final boolean neg = state.trim().startsWith(NEG);
+		String name = state.trim();//neg ? EMPTY /*state.trim().substring(1, state.trim().length())*/:state.trim();
 		if (convertNextToCurrent)
 			name = name.replace(NEXT_MEMORY, CURRENT_MEMORY);
-		Optional<Boolean> optTemp = neg ? Optional.of(Boolean.FALSE) : Optional.of(Boolean.TRUE);
-		return StateVariableValue.builder().stateName(name.trim()).value(optTemp).build();
+		return StateVariableValue.builder().stateName(name.trim()).value(! neg).build();
 	}
 
 	public String readable() {

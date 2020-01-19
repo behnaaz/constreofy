@@ -85,8 +85,8 @@ public class SolverHelper {
 
         for (final String capitalFIFO : SolverHelper.getAllFIFOs(mainConstraint)) {
             final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll(NEXT_MEMORY, CURRENT_MEMORY);
-            if (stateValue != null && stateValue.getValue(fifo).isPresent() && stateValue.getValue(fifo).get()) {//TODO what to do with optional???
-                if (stateValue.getValue(fifo).get()) {
+            if (stateValue != null && stateValue.getValue(fifo)) {
+                if (stateValue.getValue(fifo)) {
                     builder.append(AND).append(fifo.toUpperCase(Locale.ENGLISH));
                 } else {
                     assert false;

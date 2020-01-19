@@ -3,7 +3,7 @@ package org.behnaz.rcsp.output;
 import lombok.AllArgsConstructor;
 import org.behnaz.rcsp.GraphViz;
 import org.behnaz.rcsp.IOAwareSolution;
-
+import static org.behnaz.rcsp.Solution.NEG;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class Drawer {
-    public static final String NEG = "!";//TODO duplicate
     public static final String STATE_VARIABLE_DELIMITER = "_";
     private final String path;
 

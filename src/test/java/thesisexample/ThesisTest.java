@@ -261,8 +261,8 @@ public class ThesisTest implements ExampleData {
 
     private Set<IOAwareSolution> checkSolutions(final String constraint, final List<String> variables) throws IOException {
         final Set<StateVariableValue> fifos = new HashSet<>();
-        fifos.add(StateVariableValue.builder().stateName("j2kjk1ring").value(Optional.of(Boolean.FALSE)).build());
-        fifos.add(StateVariableValue.builder().stateName("j5njn1ring").value(Optional.of(Boolean.FALSE)).build());
+        fifos.add(StateVariableValue.builder().stateName("j2kjk1ring").value(Boolean.FALSE).build());
+        fifos.add(StateVariableValue.builder().stateName("j5njn1ring").value(Boolean.FALSE).build());
         IOAwareStateValue initState = new IOAwareStateValue(StateValue.builder().variableValues(fifos).build(), new IOComponent("W11", 1), new IOComponent("W31", 1));
         return new HashSet<>(Solver.builder()
                 .initState(initState)
