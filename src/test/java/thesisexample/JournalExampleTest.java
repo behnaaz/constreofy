@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -207,14 +206,18 @@ public class JournalExampleTest implements ExampleData {
         assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
 
         final ConstraintConnector connector = network();
-        testSol(connector, 2, 6, "b2cbc1ring,b3ebe1ring");
+        //testSol(connector, 2, 8, "b3ebe1ring,c2dcd1ring");
+
+        testSol(connector, 2, 7, "googogoli");
+
+        testSol(connector, 2, 5, "b2cbc1ring,b3ebe1ring");
 
         testSol(connector, 1, 2);
         testSol(connector, 2, 8, "q5pqp1ring");
-        testSol(connector, 2, 8);
-        testSol(connector, 3, 8);
+        testSol(connector, 2, 7);
+        testSol(connector, 3, 7);
 
-        List<IOAwareSolution> solutions = testSol(connector, 4, 12);
+        List<IOAwareSolution> solutions = testSol(connector, 4, 11);
         for (IOAwareSolution s : solutions) {
             if (s.getSolution().getFromVariables().size()  > 1) {
                 System.out.println("FROM STATE WITH MORE THAN ONE" + s.getSolution().readable());
@@ -261,6 +264,7 @@ public class JournalExampleTest implements ExampleData {
             equalize(result, s.getKey(), s.getValue());
         }
 
+        equalize(result, "C4", "H1");
         equalize(result, "C1", "BC1");
         equalize(result, "BC1", "C1");
         equalize(result, onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
@@ -344,14 +348,12 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "H1", "H2");
         equalize(result, "ET2", "E4T");
 
-
         //TODO TEMP taghalllob
         equalize(result, "CM1", "C3M");
 
-
-        assertEquals(18, result.size());
+        assertEquals(17, result.size());
         validateEnds(result);
-        //assertEquals("", result);
+      //  assertEquals("", result);
         return result;
     }
 

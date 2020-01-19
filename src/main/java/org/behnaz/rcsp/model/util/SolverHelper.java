@@ -80,9 +80,7 @@ public class SolverHelper {
     }
 
     public static String applyFIFOStates(final String mainConstraint, final StateValue stateValue) {//TODO remove
-        final StringBuilder builder = new StringBuilder();
-        builder.append(mainConstraint);
-
+        final StringBuilder builder = new StringBuilder().append(mainConstraint);
         for (final String capitalFIFO : SolverHelper.getAllFIFOs(mainConstraint)) {
             final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll(NEXT_MEMORY, CURRENT_MEMORY);
             if (stateValue != null && stateValue.getValue(fifo)) {
@@ -95,6 +93,7 @@ public class SolverHelper {
                 builder.append(AND).append(" (").append(NOT).append(fifo.toUpperCase(Locale.ENGLISH)).append(") ");
             }
         }
+
         return builder.toString();
     }
 
@@ -118,10 +117,6 @@ public class SolverHelper {
 
     private static String dnf(final String formulae) {
         return new StringBuilder().append("rldnf ").append(formulae).append(";").toString();
-    }
-
-    public static String replaceEquals(List<HashSet<String>> equals) {
-        return "";
     }
 
     public static void equalize(final List<HashSet<String>> result, final String a, final String b) {
