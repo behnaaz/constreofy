@@ -211,12 +211,43 @@ public class JournalExampleTest implements ExampleData {
         testSol(connector, 2, 7, "googogoli");
 
         testSol(connector, 2, 5, "b2cbc1ring,b3ebe1ring");
+        testSol(connector, 3, 9, "b2cbc1ring,b3ebe1ring");
+       // testSol(connector, 4, 9, "b2cbc1ring,b3ebe1ring");
 
         testSol(connector, 1, 2);
+
+        testSol(connector, 1, 4, "j2kjk1ring");
+        testSol(connector, 2, 14, "j2kjk1ring");
+        testSol(connector, 3, 19, "j2kjk1ring");
+        testSol(connector, 4, 19, "j2kjk1ring");
+      //  testSol(connector, -1, 19, "j2kjk1ring");
+
+        testSol(connector, 1, 4, "j5njn1ring");
+        testSol(connector, 2, 14, "j5njn1ring");
+        testSol(connector, 3, 19, "j5njn1ring");
+        testSol(connector, 4, 19, "j5njn1ring");
+
+
+        testSol(connector, 1, 8, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 2, 28, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 3, 38, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 4, 48, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 5, 48, "j2kjk1ring,j5njn1ring");
+
         testSol(connector, 2, 8, "q5pqp1ring");
+        testSol(connector, 1, 4, "q5pqp1ring");
+        testSol(connector, 3, 13, "q5pqp1ring");
+        testSol(connector, 4, 15, "q5pqp1ring");
+        testSol(connector, 5, 21, "q5pqp1ring");//TODO ali
+
         testSol(connector, 2, 7);
         testSol(connector, 3, 11);
         testSol(connector, 1, 4, "f3gfg1ring");
+        testSol(connector, 2, 14, "f3gfg1ring");
+        testSol(connector, 3, 19, "f3gfg1ring");
+        testSol(connector, 5, 29, "f3gfg1ring");
+        testSol(connector, 6, 33, "f3gfg1ring");
+     //   testSol(connector, 7, 33, "f3gfg1ring");
     }
 
     private  List<IOAwareSolution>  testSol(final ConstraintConnector connector, final int rounds, final int expected, final String init) {
