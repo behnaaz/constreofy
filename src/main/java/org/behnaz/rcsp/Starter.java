@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public class Starter {
 	private static boolean debug = true;
-	private static String logSearchTerm = "StateVariableValue";
+	private static String logSearchTerm = "";
 
 	public static void main(String[] args) {
 		final IOAwareStateValue initState = new IOAwareStateValue(makeInitState("a1b1ring"), null/*new IOComponent("w1", 10000000)*/);

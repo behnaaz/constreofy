@@ -72,12 +72,12 @@ public class Drawer {
     private String cache(final Set<String> flowVariables) {
         final String lbl = flowVariables.isEmpty() ? "{}" : flowVariables.stream().filter(e -> ! e.startsWith(NEG)).collect(Collectors.joining(","));
         if (labels.containsKey(lbl)) {
-            return labels.get(lbl);
+            return lbl;//labels.get(lbl);
         }
 
         String tmp = "L" + (labels.size() + 1);
         labels.put(lbl, tmp);
-        return tmp;
+        return lbl;//tmp;
     }
 
     private Set<String> handleState(final Set<String> set) {

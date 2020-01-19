@@ -232,7 +232,13 @@ public class JournalExampleTest implements ExampleData {
         testSol(connector, 2, 28, "j2kjk1ring,j5njn1ring");
         testSol(connector, 3, 38, "j2kjk1ring,j5njn1ring");
         testSol(connector, 4, 48, "j2kjk1ring,j5njn1ring");
-        testSol(connector, 5, 48, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 5, 53, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 6, 57, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 7, 61, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 8, 63, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 9, 79, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 10, 87, "j2kjk1ring,j5njn1ring");
+        testSol(connector, 15, 139, "j2kjk1ring,j5njn1ring");
 
         testSol(connector, 2, 8, "q5pqp1ring");
         testSol(connector, 1, 4, "q5pqp1ring");
