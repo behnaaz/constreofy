@@ -2,9 +2,11 @@ package thesisexample;
 
 import javafx.util.Pair;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.behnaz.rcsp.ConstraintConnector;
 import org.behnaz.rcsp.EqualBasedConnectorFactory;
 import org.behnaz.rcsp.FIFO;
+import org.behnaz.rcsp.GraphViz;
 import org.behnaz.rcsp.IOAwareSolution;
 import org.behnaz.rcsp.IOAwareStateValue;
 import org.behnaz.rcsp.IOComponent;
@@ -19,13 +21,21 @@ import org.behnaz.rcsp.model.util.SolverHelper;
 import org.behnaz.rcsp.output.Drawer;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +63,7 @@ public class JournalExampleTest implements ExampleData {
 
     @Before
     public void init() {
-        jsonObject  = new JSONObject(CONTENT);
+        jsonObject = new JSONObject(CONTENT);
         networkReader.read(jsonObject);
         connections = networkReader.getConnections();
         fifos = networkReader.getFifos();
@@ -64,19 +74,20 @@ public class JournalExampleTest implements ExampleData {
         twoPrioritySyncs = networkReader.getTwoPrioritySyncs();
         replicates = networkReader.getReplicates();
         routes = networkReader.getRoutes();
-        merges= networkReader.getMerges();
+        merges = networkReader.getMerges();
     }
 
     @Test
+    @Ignore
     public void example() {
         assertEquals(4, networkReader.getReaders().size());
         assertEquals(3, networkReader.getWriters().size());
 //        assertEquals(20, nodes.length());
         //        assertEquals(24, channels.length());
 //        assertEquals("ends", t);
-  //      assertEquals(1, node.getJSONArray("ends").length()); // name
-    //    assertTrue(node.getJSONArray("ends").getJSONObject(0).has("name"));
-      //  assertTrue(node.getJSONArray("ends").getJSONObject(0).has("type"));
+        //      assertEquals(1, node.getJSONArray("ends").length()); // name
+        //    assertTrue(node.getJSONArray("ends").getJSONObject(0).has("name"));
+        //  assertTrue(node.getJSONArray("ends").getJSONObject(0).has("type"));
         //assertTrue(node.getJSONArray("ends").getJSONObject(0).getString("type"), "Source".equals(node.getJSONArray("ends").getJSONObject(0).getString("type")) || "Sink".equals(node.getJSONArray("ends").getJSONObject(0).getString("type")));
 
 
@@ -104,7 +115,7 @@ public class JournalExampleTest implements ExampleData {
         assertEquals(1, onePrioritySyncs.size());
         assertEquals(1, twoPrioritySyncs.size());
 
-        assertEquals(24,  fifos.size() + twoPrioritySyncs.size() + onePrioritySyncs.size() + lossys.size() + syncdrains.size() + syncs.size());
+        assertEquals(24, fifos.size() + twoPrioritySyncs.size() + onePrioritySyncs.size() + lossys.size() + syncdrains.size() + syncs.size());
         assertEquals("A2B->AB1, D2F->DF1, E2F->EF2, Q2T->QT1, J4L->JL2", syncs.stream().map(e -> e.getKey() + "->" + e.getValue()).collect(Collectors.joining(", ")));
         assertEquals("E4T<->ET2, O1D<->OD4, H1C<->HC4, C3M<->CM1, D3U<->DU1, E3L<->EL1", syncdrains.stream().map(e -> e.getKey() + "<->" + e.getValue()).collect(Collectors.joining(", ")));
         assertEquals("Q3O.>QO2, Q4H.>QH2, J3M.>JM2, J6U.>JU2", lossys.stream().map(e -> e.getKey() + ".>" + e.getValue()).collect(Collectors.joining(", ")));
@@ -165,7 +176,7 @@ public class JournalExampleTest implements ExampleData {
         List<Pair<String, Pair<Set<String>, Set<String>>>> nodeEnds = new ArrayList<>();
         //nodeEnds.addAll(replicates);
         //nodeEnds.addAll(routes);
-       // nodeEnds.addAll(merges);
+        // nodeEnds.addAll(merges);
 
         for (Pair<String, Pair<Set<String>, Set<String>>> p : nodeEnds) {
             final Pair<Set<String>, Set<String>> sourceSinks = p.getValue();
@@ -185,8 +196,8 @@ public class JournalExampleTest implements ExampleData {
         assertEquals(4, networkReader.getReaders().size());
 
         final List<String> components = new ArrayList<>();
-     //   components.addAll(nereaders);
-     //   components.addAll(writers);
+        //   components.addAll(nereaders);
+        //   components.addAll(writers);
 
         for (String p : components) {
             if (!connections.containsKey(p)) {
@@ -202,16 +213,16 @@ public class JournalExampleTest implements ExampleData {
             sb.append(t).append(", ");
             cnt++;
         }
-        assertEquals( cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
+        assertEquals(cnt + " Missing or double connections: " + sb.toString(), 0, cnt);
 
         final ConstraintConnector connector = network();
-       // testSol(connector, 1, 32, "b3ebe1ring,c2dcd1ring");
+        // testSol(connector, 1, 32, "b3ebe1ring,c2dcd1ring");
 
         testSol(connector, 2, 7, "googogoli");
 
         testSol(connector, 2, 5, "b2cbc1ring,b3ebe1ring");
         testSol(connector, 3, 9, "b2cbc1ring,b3ebe1ring");
-       // testSol(connector, 4, 9, "b2cbc1ring,b3ebe1ring");
+        // testSol(connector, 4, 9, "b2cbc1ring,b3ebe1ring");
 
         testSol(connector, 1, 2);
 
@@ -219,7 +230,7 @@ public class JournalExampleTest implements ExampleData {
         testSol(connector, 2, 14, "j2kjk1ring");
         testSol(connector, 3, 19, "j2kjk1ring");
         testSol(connector, 4, 19, "j2kjk1ring");
-      //  testSol(connector, -1, 19, "j2kjk1ring");
+        //  testSol(connector, -1, 19, "j2kjk1ring");
 
         testSol(connector, 1, 4, "j5njn1ring");
         testSol(connector, 2, 14, "j5njn1ring");
@@ -252,10 +263,10 @@ public class JournalExampleTest implements ExampleData {
         testSol(connector, 3, 19, "f3gfg1ring");
         testSol(connector, 5, 29, "f3gfg1ring");
         testSol(connector, 6, 33, "f3gfg1ring");
-     //   testSol(connector, 7, 33, "f3gfg1ring");
+        //   testSol(connector, 7, 33, "f3gfg1ring");
     }
 
-    private  List<IOAwareSolution>  testSol(final ConstraintConnector connector, final int rounds, final int expected, final String init) {
+    private List<IOAwareSolution> testSol(final ConstraintConnector connector, final int rounds, final int expected, final String init) {
         List<IOAwareSolution> solutions = null;
         try {
             solutions = new ArrayList<>(solve(connector, rounds, init));
@@ -263,7 +274,7 @@ public class JournalExampleTest implements ExampleData {
             e.printStackTrace();
             fail("Failed to solve");
         }
-        new Drawer("/tmp/out-"+rounds+"-"+init.replaceAll(",","_")).draw(solutions);
+        new Drawer("/tmp/out-" + rounds + "-" + init.replaceAll(",", "_")).draw(solutions);
         assertEquals(expected, solutions.size());
         return solutions;
     }
@@ -280,9 +291,9 @@ public class JournalExampleTest implements ExampleData {
         IOAwareStateValue initState = new IOAwareStateValue(
                 StateValue.builder().variableValues(fifos).build(),
                 new IOComponent("W11", 1), new IOComponent("W21", 1), new IOComponent("W31", 1),
-                new IOComponent("R12", 1), new IOComponent("R22", 1),  new IOComponent("R32", 1), new IOComponent("R42", 1));
+                new IOComponent("R12", 1), new IOComponent("R22", 1), new IOComponent("R32", 1), new IOComponent("R42", 1));
         return SolverHelper.solve(connector.getConstraint(), numberOfRounds, initState);
-   }
+    }
 
     private List<HashSet<String>> createEquals() {
         final List<HashSet<String>> result = new ArrayList<>();
@@ -298,10 +309,17 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "I1", "I2");
         equalize(result, "I2", connections.get("I2"));
         equalize(result, "IJ1", connections.get("IJ1"));
-        equalize(result, "J1", "J2");equalize(result, "J1", "J3");equalize(result, "J1", "J4");equalize(result, "J1", "J5");equalize(result, "J1", "J6");//(factory.replicator("J1", "J2", "J3", "J4", "J5", "J6"), "J1", connections.get("J1"));
-        equalize(result, "J1", connections.get("J1"));equalize(result, "J2", connections.get("J2"));
-        equalize(result, "J3", connections.get("J3"));equalize(result, "J4", connections.get("J4"));
-        equalize(result, "J5", connections.get("J5"));equalize(result, "J6", connections.get("J6"));
+        equalize(result, "J1", "J2");
+        equalize(result, "J1", "J3");
+        equalize(result, "J1", "J4");
+        equalize(result, "J1", "J5");
+        equalize(result, "J1", "J6");//(factory.replicator("J1", "J2", "J3", "J4", "J5", "J6"), "J1", connections.get("J1"));
+        equalize(result, "J1", connections.get("J1"));
+        equalize(result, "J2", connections.get("J2"));
+        equalize(result, "J3", connections.get("J3"));
+        equalize(result, "J4", connections.get("J4"));
+        equalize(result, "J5", connections.get("J5"));
+        equalize(result, "J6", connections.get("J6"));
         equalize(result, "K1", connections.get("K1"));
         equalize(result, "J4L", connections.get("J4L"));
         equalize(result, "N2", connections.get("N2"));
@@ -389,7 +407,7 @@ public class JournalExampleTest implements ExampleData {
     private void validateEnds(final List<HashSet<String>> result) {
         for (HashSet<String> set : result) {
             for (String s : set) {
-                assertTrue("Invalid end " + s , connections.containsKey(s) | connections.containsValue(s));
+                assertTrue("Invalid end " + s, connections.containsKey(s) | connections.containsValue(s));
             }
         }
     }
@@ -433,5 +451,119 @@ public class JournalExampleTest implements ExampleData {
         connector.add(factory.syncDrain("HC4", "H1C"), "E3L", connections.get("E3L"));
 
         return connector;
+    }
+
+    @Test
+    public void a() {
+        String s =
+                "empty -> bc_be [ label=\"L1:{[a1]}\"];\n" +
+                        "bc_be -> qp [ label=\"L2:{[q1],[e1],[c4]]}\"];\n" +
+                        "cd_be -> qp [ label=\"L2:{[q1],[e1],[d4]]}\"];\n" +
+                        "empty -> empty [ label=\"L3:{}\"];\n" +
+                        "cd_be -> fg [ label=\"L5:{[f3],[d1],[e1]}\"];\n" +
+                        "bc_be -> bc_be [ label=\"L6:{}\"];\n" +
+                        "bc_be -> cd_be [ label=\"L7:{[c2]}\"];\n" +
+                        "fg -> empty [ label=\"L12:{[r32]}\"];\n" +
+                        "cd_be -> jk_jn [ label=\"L14:{[w11],[d3]}\"];\n" +
+                        "bc_be -> jk_jn [ label=\"L15:{[w11],}\"];\n" +
+                        "fg -> fg [ label=\"L17:{}\"];\n" +
+                        "empty -> empty [ label=\"L18:{}\"];\n" +
+                        "jk -> empty [ label=\"L19:{[r12]}\"];\n" +
+                        "jn -> empty [ label=\"L20:{[r22]}\"];\n" +
+                        "jk_jn -> jn [ label=\"L21:{[r12]}\"];\n" +
+                        "jk_jn -> jk [ label=\"L22:{[r22]}\"];\n" +
+                        "jk_jn -> jk_jn [ label=\"L23:{}\"];\n" +
+                        "jk_jn -> empty [ label=\"L24:{[r12],[r22]}\"];\n" +
+                        "qp -> qp [ label=\"L25:{}\"];\n" +
+                        "qp -> empty [ label=\"L26:{[r42]}\"];\n";
+
+        final String refined = s.replaceAll("\"L\\d+:", "\"");
+        final Set<String> transitions = Arrays.asList(refined.split("\n")).stream()//map(e ->
+                //(e.split(":")[0].substring(0, e.split(":")[0].lastIndexOf("\"")+1))+ e.split(":")[1])
+                .collect(Collectors.toSet());
+        String reachableTrans = "";
+
+        Map<String, Set<String>> reachables = new HashMap<>();
+        Set<String> targets;
+        LinkedHashSet<String> toExplore = new LinkedHashSet<>(Arrays.asList("empty"));
+        Set<String> visited = new HashSet<>();
+        String old = "empty";
+        while (!toExplore.isEmpty()) {
+            String state = toExplore.iterator().next();
+            reachableTrans += transitions.stream().filter(e -> e.startsWith(state + " -> ")).collect(Collectors.joining("\n"));
+            visited.add(state);
+            toExplore.remove(toExplore.iterator().next());
+            targets = transitions.stream().filter(e -> e.startsWith(state + " -> "))
+                    .map(e -> e.substring(e.indexOf(">") + 1, e.indexOf("[")).trim())
+                    .collect(Collectors.toSet());
+            toExplore.addAll(targets.stream().filter(e -> !visited.contains(e)).collect(Collectors.toSet()));
+            Set<String> temp = reachables.getOrDefault(old, new HashSet<>());
+            temp.add(state);
+            reachables.put(old, temp);
+            old = state;
+        }
+
+        writeToFile(reachableTrans, "svg");
+        writeToFile(reachableTrans, "txt");
+    }
+
+    @SneakyThrows
+    private void writeToFile(final String content, final String fileType) {
+        File out = new File("/tmp/outbehnaz" + "." + fileType);   // Linux
+        if ("svg".equals(fileType)) {
+            GraphViz gv = new GraphViz();
+            gv.addln(gv.start_graph());
+            gv.add(("labelloc=\"b\";\n" +
+                    "aHtmlTable [\n" +
+                    "   shape=plaintext\n" +
+                    "   color=blue      // The color of the border of the table\n" +
+                    "   label=<\n" +
+                    "\n" +
+                    "     <table border='1' cellborder='0'>\n" +
+                    "       <tr><td>a1</td><td>{A1, AB1, B2, A2, A2B, B3, B2C, B3E, W21, B1}</td></tr>\n" +
+                    "       <tr><td>w11</td><td>{I2J, J2K, J5N, J4L, J3M, L1, L2, J1, I1, J2, J6U, I2, J3, J4, J5, EL1, J6, E3, IJ1, JL2, W11, E3L}</td></tr>\n" +
+                    "       <tr><td>C3</td><td>{C3, M1, M2, CM1, C3M, JM2}</td></tr>\n" +
+                    "       <tr><td>Q1</td><td>{Q1, Q2, ET2, Q3, Q4, Q4H, Q5, E4T, Q3O, Q5P, QT1, E4, SQ1, Q2T, S2Q, W31, T1, T2, S1, S2}</td></tr>\n" +
+                    "       <tr><td>C1</td><td>{BC1, C1}</td></tr>\n" +
+                    "       <tr><td>r12</td><td>{JK1, R12, K1, K2}</td></tr>\n" +
+                    "       <tr><td>r22</td><td>{R22, N1, N2, JN1}</td></tr>\n" +
+                    "       <tr><td>r32</td><td>{R32, FG1, G1, G2}</td></tr>\n" +
+                    "       <tr><td>C2</td><td>{C2D, C2}</td></tr>\n" +
+                    "       <tr><td>E1</td><td>{E1, BE1}</td></tr>\n" +
+                    "       <tr><td>C4</td><td>{C4, HC4, H1, H2, QH2, H1C}</td></tr>\n" +
+                    "       <tr><td>R42</td><td>{R42, P1, P2, QP1}</td></tr>\n" +
+                    "       <tr><td>d1</td><td>{CD1, D1}</td></tr>\n" +
+                    "       <tr><td>f3</td><td>{EF2, E2F, D2F, F1, F3G, F2, E2, F3, D2, DF1}</td></tr>\n" +
+                    "       <tr><td>D3</td><td>{DU1, JU2, D3U, U1, U2, D3}</td></tr>\n" +
+                    "       <tr><td>D4</td><td>{D4, O1, O1D, O2, QO2, OD4}</td></tr>\n" +
+                    "     </table>\n" +
+                    "\n" +
+                    "  >];" + content).toLowerCase());
+            gv.addln(gv.end_graph());
+            System.out.println(gv.getDotSource());
+
+            gv.increaseDpi();   // 106 dpi
+
+            String type = "svg";
+            //      String type = "dot";
+            //      String type = "fig";    // open with xfig
+            //      String type = "pdf";
+            //      String type = "ps";
+            //      String type = "svg";    // open with inkscape
+            //      String type = "png";
+            //      String type = "plain";
+
+            String repesentationType = "dot";
+            //		String repesentationType= "neato";
+            //		String repesentationType= "fdp";
+            //		String repesentationType= "sfdp";
+            // 		String repesentationType= "twopi";
+            // 		String repesentationType= "circo";
+
+            gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), type, repesentationType), out);
+        } else {
+            FileOutputStream fos = new FileOutputStream(out);
+            fos.write(content.getBytes());
+        }
     }
 }

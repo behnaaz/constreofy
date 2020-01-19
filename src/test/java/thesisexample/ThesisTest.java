@@ -251,7 +251,7 @@ public class ThesisTest implements ExampleData {
             }
             System.out.println(s.getSolution().readable());
         }
-        new Drawer("/tmp/out").draw(solutions);
+        new Drawer("/tmp/outthesis").draw(solutions);
         //assertEquals("", connector.getConstraint());
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() > 1).count());
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() > 1).count());
