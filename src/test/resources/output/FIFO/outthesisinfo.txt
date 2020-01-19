@@ -1,0 +1,6 @@
+digraph G {
+bc -> bc [ label="L1:{}"];
+empty -> bc [ label="L2:{b2c}"];
+bc -> empty [ label="L3:{bc1}"];
+empty -> empty [ label="L1:{}"];
+}
