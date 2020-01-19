@@ -25,7 +25,8 @@ public class Drawer {
         GraphViz gv = new GraphViz();
         gv.addln(gv.start_graph());
         for (IOAwareSolution sol : solutions) {
-            gv.addln(makeLine(sol));
+            final String line = makeLine(sol);
+            gv.addln(line);
         }
         gv.addln(gv.end_graph());
         System.out.println(gv.getDotSource());
@@ -59,10 +60,19 @@ public class Drawer {
         } catch (java.io.IOException ioe) {
             ioe.printStackTrace();
         }
+
+        File source = new File( path  + "info.txt");   // Linux
+        try {
+            FileOutputStream fos = new FileOutputStream(source);
+            fos.write(gv.getDotSource().getBytes());
+            fos.close();
+        } catch (java.io.IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     private String flow(final Set<String> flowVariables) {
-        return " [ label=\"" + cache(flowVariables) + "\" " + "]";
+        return " [ label=\"" + cache(flowVariables).replaceAll("tilde", "") + "\"]";
     }
 
     private String makeLine(final IOAwareSolution sol) {
@@ -70,14 +80,14 @@ public class Drawer {
     }
 
     private String cache(final Set<String> flowVariables) {
-        final String lbl = flowVariables.isEmpty() ? "{}" : flowVariables.stream().filter(e -> ! e.startsWith(NEG)).collect(Collectors.joining(","));
+        final String lbl = "{" + flowVariables.stream().filter(e -> ! e.startsWith(NEG)).collect(Collectors.joining(",")) + "}";
         if (labels.containsKey(lbl)) {
-            return lbl;//labels.get(lbl);
+            return labels.get(lbl);
         }
 
-        String tmp = "L" + (labels.size() + 1);
+        String tmp = "L" + (labels.size() + 1) + ":" + lbl;
         labels.put(lbl, tmp);
-        return lbl;//tmp;
+        return tmp;
     }
 
     private Set<String> handleState(final Set<String> set) {
