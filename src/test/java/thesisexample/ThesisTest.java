@@ -255,8 +255,10 @@ public class ThesisTest implements ExampleData {
         //assertEquals("", connector.getConstraint());
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() > 1).count());
         assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() > 1).count());
-        assertEquals(1, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 0).count());
-        assertEquals(1, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
+        assertEquals(0, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 0).count());
+        assertEquals(0, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 0).count());
+        assertEquals(2, solutions.stream().map(e -> e.getSolution().getFromVariables()).distinct().filter(e -> e.size() == 1).count());
+        assertEquals(2, solutions.stream().map(e -> e.getSolution().getToVariables()).distinct().filter(e -> e.size() == 1).count());
     }
 
     private Set<IOAwareSolution> checkSolutions(final String constraint, final List<String> variables) throws IOException {
