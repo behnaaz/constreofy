@@ -1,5 +1,7 @@
 Example:
 
+![Image description](src/main/resources/graph0.png)
+
 {"nodes":[{"Replicate":{"name":"A",
   "ends":[{"name":"A1",
     "type":"Source"},
