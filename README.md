@@ -5,16 +5,13 @@ It uses REDUCE Algebra system (https://reduce-algebra.sourceforge.io/) for solvi
 To make it easier to use, the tool will be dockerized in near future.
 
 
-Examples:
+Example:
+A complex network ![Image description](src/main/resources/graph0.png)
 
-1) A FIFO channel (Unmerged results)
+
+More examples are being added to ![](![FIFO1](src/test/resources/output) such as a FIFO channel (Unmerged results)
 Graphical output
-![FIFO1](src/test/resources/output/FIFO/outthesis106.svg.png =100x20)
-![FIFO1](src/test/resources/output/FIFO/outthesis106info.txt)
+![](src/test/resources/output/FIFO/outthesis106.svg.png =100x20)
+![](src/test/resources/output/FIFO/outthesis106info.txt)
 Label Information
-![FIFO1](src/test/resources/output/FIFO/outthesislabels.txt)
-
-
-
-2) A more complex example ![Image description](src/main/resources/graph0.png)
-
+![](src/test/resources/output/FIFO/outthesislabels.txt)
