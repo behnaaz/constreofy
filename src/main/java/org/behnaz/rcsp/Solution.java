@@ -38,7 +38,7 @@ public class Solution {
 		nextStateValue = buildNextStateValues();
 	}
 
-	public StateValue buildNextStateValues() {//TODO eftezah
+	private StateValue buildNextStateValues() {//TODO eftezah
 		StateValue res = StateValue.builder().build();
 		for (String t : toVariables)
 			res.add(makeStateVariable(t, true));
@@ -48,15 +48,14 @@ public class Solution {
 	private void process(String[] atoms) {//TODO
 		if (atoms[0].trim().endsWith(TILDE) && !isNegative(atoms[1])) {
 			String name = (atoms[1].trim().equals(ZERO)?NEG:SPACE)+(atoms[0].trim()).trim();
-			name = name.trim();
-			flowVariables.add(name);
+			flowVariables.add(name.trim());
 		}
 		else if (atoms[0].trim().endsWith(BULLET) || atoms[0].trim().endsWith(CIRC) && ONE.equals(atoms[1].trim()))
 			priority.add(atoms[0].trim());
-		else if (atoms[0].trim().endsWith(NEXT_MEMORY) && !isNegative(atoms[1])) {
+		else if (atoms[0].trim().endsWith(NEXT_MEMORY)) {
 			toVariables.add((atoms[1].trim().equals(ZERO)?NEG:EMPTY)+(atoms[0].trim()));
 		}
-		else if (atoms[0].trim().endsWith(CURRENT_MEMORY) && !isNegative(atoms[1]))
+		else if (atoms[0].trim().endsWith(CURRENT_MEMORY))
 			fromVariables.add((atoms[1].trim().equals(ZERO)?NEG:EMPTY)+(atoms[0].trim()));
 	}
 	
@@ -104,11 +103,11 @@ public class Solution {
 		return sb.toString().replaceAll("\\ \\ ", "\\ ").replaceAll("\\ }", "}").replaceAll("\\ \\)", "\\)").replaceAll("\\ ]", "]").replaceAll("\\{ \\ ", "\\{");
 	}
 
-	public StateVariableValue makeStateVariable(String state) {
+	private StateVariableValue makeStateVariable(String state) {
 		return makeStateVariable(state.trim(), false);
 	}
 	
-	public StateVariableValue makeStateVariable(String state, boolean convertNextToCurrent) {
+	private StateVariableValue makeStateVariable(String state, boolean convertNextToCurrent) {
 		boolean neg = state.trim().startsWith(NEG);
 		String name = neg ? EMPTY /*state.trim().substring(1, state.trim().length())*/:state.trim();
 		if (convertNextToCurrent)
