@@ -37,7 +37,7 @@ public class Solution {
 		nextStateValue = buildNextStateValues();
 	}
 
-	private StateValue buildNextStateValues() {//TODO eftezah
+	private StateValue buildNextStateValues() {
 		final StateValue res = StateValue.builder().build();
 		for (String t : toVariables)
 			res.add(makeStateVariable(t, true));
@@ -108,10 +108,10 @@ public class Solution {
 	
 	private StateVariableValue makeStateVariable(final String state, final boolean convertNextToCurrent) {
 		final boolean neg = state.trim().startsWith(NEG);
-		String name = state.trim();//neg ? EMPTY /*state.trim().substring(1, state.trim().length())*/:state.trim();
+		String name = neg ? state.trim().substring(1):state.trim();
 		if (convertNextToCurrent)
 			name = name.replace(NEXT_MEMORY, CURRENT_MEMORY);
-		return StateVariableValue.builder().stateName(name.trim()).value(! neg).build();
+		return StateVariableValue.builder().stateName(name).value(! neg).build();
 	}
 
 	public String readable() {

@@ -41,7 +41,7 @@ public class Solver implements Containable {
             List<IOAwareSolution> foundSolutions = doSolve(currentStatesValue, constraint);
             solutions.addAll(foundSolutions);
 
-            addToExplorableStates(visitedStates, explorableStates, stateManager, solutions);
+            explorableStates.addAll(stateManager.findNextStates(solutions, visitedStates, explorableStates));
             currentStatesValue = getNextUnexploredState(visitedStates, explorableStates);
             if (currentStatesValue != null)
                 Starter.log("Step " + ++n + " from " + currentStatesValue.toString());
@@ -57,17 +57,6 @@ public class Solver implements Containable {
                 + solutions.size() + " #cons len:" + constraint.length());
         Starter.log(".....done in step " + n);
         return solutions;
-    }
-
-    public void addToExplorableStates(List<IOAwareStateValue> visitedStates, List<IOAwareStateValue> explorableStates,
-                                      StateManager stateManager, List<IOAwareSolution> solutions) {
-        //Starter.log("B4 Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
-        List<IOAwareStateValue> nexts = stateManager.findNextStates(solutions, visitedStates, explorableStates);
-        for (IOAwareStateValue state : nexts) {
-            //	Starter.log("  " + state.toString() + " exporable  ");
-            explorableStates.add(state);
-        }
-        //Starter.log("Updated explorable states: " + explorableStates.size() + " " + explorableStates.toString());
     }
 
     private void visit(@NonNull final List<IOAwareStateValue> visitedStates, @NonNull final IOAwareStateValue currentStatesValues) {

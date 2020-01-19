@@ -84,7 +84,7 @@ public class DNF {
 		return solutions;
 	}
 	
-	private boolean contains(final List<Solution> sols, final Solution s) {
+	private boolean contains(final List<Solution> sols, final Solution s) {//TODO
 		for (Solution t : sols)
 			if (t.getFlowVariables().equals(s.getFlowVariables()) && t.getFromVariables().equals(s.getFromVariables()) && t.getToVariables().equals(s.getToVariables()))
 				return true;
