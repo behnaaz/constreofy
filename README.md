@@ -1,6 +1,6 @@
-This tool uses constraint satisfaction techniques to compute the formal semantics of a Reo network.
+This tool applies constraint satisfaction techniques to compute the formal semantics of a Reo network.
 
-In order to run the code you need to have REDUCE Algebra system for solving the constraints and GraphViz to generate the result automata. The image below is an example of its output.
+It uses REDUCE Algebra system (https://reduce-algebra.sourceforge.io/) for solving the constraints and GraphViz (https://www.graphviz.org/) to generate the result automata. The image below is an example of its output.
 
 ![Image description](src/main/resources/graph0.png)
 
