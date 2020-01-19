@@ -4,5 +4,17 @@ It uses REDUCE Algebra system (https://reduce-algebra.sourceforge.io/) for solvi
 
 To make it easier to use, the tool will be dockerized in near future.
 
-![Image description](src/main/resources/graph0.png)
+
+Examples:
+
+1) A FIFO channel (Unmerged results)
+Graphical output
+![FIFO1](src/test/resources/output/FIFO/outthesis106.svg)
+![FIFO1](src/test/resources/output/FIFO/outthesis106info.txt)
+Label Information
+![FIFO1](src/test/resources/output/FIFO/outthesislabels.txt)
+
+
+
+2) A more complex example ![Image description](src/main/resources/graph0.png)
 
