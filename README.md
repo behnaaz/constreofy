@@ -44,7 +44,10 @@ If the constraint is not data-aware, the solutions to the constraints are extrac
 
 
 Otherwise, prior to solving the constraint, the data-aware expressions are replaced by new binary predicates and after that their validity 
-extracted from the DNF. A new data-aware constraint is formed and solved using  
+extracted from the DNF. A new data-aware constraint is formed and solved using Reduce. 
+
+ ![Image description](src/test/resources/readme/numeric.png)
+
 
 ## Examples
 ### FIFO
