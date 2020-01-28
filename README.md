@@ -21,7 +21,10 @@ public ConstraintConnector example() {
 It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json). To facilitate the definition of a Reo network in the JSON format, we are building a GUI editor based on [PixiJS](https://www.pixijs.com/). 
 
 
-## Example:
+### Flow
+The tool works by mapping each Reo element to a binary constraint that encodes its behavior. 
+
+## Example
 A complex network ![Image description](src/main/resources/graph0.png)
 
 
