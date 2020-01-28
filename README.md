@@ -21,7 +21,7 @@ public ConstraintConnector example() {
 It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json). To facilitate the definition of a Reo network in the JSON format, we are building a GUI editor based on [PixiJS](https://www.pixijs.com/). 
 
 
-### Steps
+### Internal steps
 Constreofy works by mapping each Reo element to a binary constraint that encodes its behavior, and constructing a constraint 
 from the conjunction of these constraints. Then, it launches the Reduce program that is installed on the machine, 
 loads the [redlog package](http://www.fmi.uni-passau.de/~redlog/), sets the context to IBALP,
@@ -47,6 +47,16 @@ Otherwise, prior to solving the constraint, the data-aware expressions are repla
 extracted from the DNF. A new data-aware constraint is formed and solved using Reduce. 
 
  ![Image description](src/test/resources/readme/numeric.png)
+ 
+ Constreofy constructs an automaton from the solutions and writes it in the ```dot``` format, for instance:
+ 
+ ```digraph G {
+bc -> bc [ label="L1:{}"];
+empty -> bc [ label="L2:{b2c}"];
+bc -> empty [ label="L3:{bc1}"];
+empty -> empty [ label="L1:{}"];
+}
+```
 
 
 ## Examples
