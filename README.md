@@ -43,7 +43,7 @@ The command ```rldnf constraint_name``` calculated the DNF (Disjunctive Normal F
 ### FIFO
 The automata corresponding to a FIFO1 channel is as follows:
 
-![FIFO1](src/test/resources/FIFO/example.png  =250x) 
+![](src/test/resources/FIFO/example.png){width=50%, height=50%} 
 
 
 ### More sophisticated 
