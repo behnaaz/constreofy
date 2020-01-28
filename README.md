@@ -18,6 +18,10 @@ public ConstraintConnector example() {
 }
 ```
 
+
+
+## Example:
+A complex network ![Image description](src/main/resources/graph0.png)
 ```json
 {"nodes":[{"Replicate":{"name":"A",
   "ends":[{"name":"A1",
@@ -318,10 +322,6 @@ public ConstraintConnector example() {
       "two":"U2"}
     ]}
 ```
-
-
-Example:
-A complex network ![Image description](src/main/resources/graph0.png)
 
 
 More examples are being added to ![](![FIFO1](src/test/resources/output) such as a FIFO channel (Unmerged results)
