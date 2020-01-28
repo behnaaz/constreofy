@@ -22,7 +22,22 @@ It is also possible to define a model in in JSON format. The schema for the inpu
 
 
 ### Flow
-The tool works by mapping each Reo element to a binary constraint that encodes its behavior. 
+Constreofy works by mapping each Reo element to a binary constraint that encodes its behavior, and constructing a constraint 
+from the conjunction of these constraints. Then, it launches the Reduce program that is installed on the machine, 
+loads the [redlog package](http://www.fmi.uni-passau.de/~redlog/), sets the context to IBALP,
+(Initial Boolean algebras, basically quantified propositional logic.) using the following commands:
+
+```
+load_package "redlog";
+rlset ibalp;
+```
+
+The variables used in the constraints are declared using ```rlpcvar ```. 
+
+The main constraint is provided to Reduce as ```constraint_name := constraints ```.
+
+The command ```rldnf constraint_name``` calculated the DNF (Disjunctive Normal Form) of the given constraint.
+
 
 ## Example
 The below Reo network is a non trivial example from [page 115](behnaz-thesis.pdf).
