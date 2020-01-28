@@ -39,7 +39,14 @@ The main constraint is provided to Reduce as ```constraint_name := constraints `
 The command ```rldnf constraint_name``` calculated the DNF (Disjunctive Normal Form) of the given constraint.
 
 
-## Example
+## Examples
+### FIFO
+The automata corresponding to a FIFO1 channel is as follows:
+
+![FIFO1](src/test/resources/FIFO/example.png  =250x) 
+
+
+### More sophisticated 
 The below is a non trivial Reo network.
  ![Image description](src/test/resources/readme/chapter7.png), which is mapped to the following automata using Constreofy tool
  ![Image description](src/main/resources/graph0.png)
@@ -350,13 +357,6 @@ The below is a non trivial Reo network.
 ```
 
 </details>
-
-More examples are being added to ![](![FIFO1](src/test/resources/FIFO/example.png) such as a FIFO channel (Unmerged results)
-Graphical output
-![](src/test/resources/output/FIFO/outthesis106.svg.png =100x20)
-![](src/test/resources/FIFO/exampleinfo.txt)
-Label Information
-![](src/test/resources/FIFO/examplelabels.txt)
 
 ### Contribution
 Wanna get involved? There are a few things you can help with to improve the tool.
