@@ -17,7 +17,7 @@ public ConstraintConnector example() {
 	return connector;
 }
 ```
-
+It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json).
 
 
 ## Example:
