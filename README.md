@@ -18,7 +18,7 @@ public ConstraintConnector example() {
 }
 ```
 
-It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json). To enhance the usability of the  We are working on a GUI editor to generate this 
+It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json). To facilitate the definition of a Reo network in the JSON format, we are building a GUI editor based on [the pixijs framework](https://www.pixijs.com/). 
 
 
 ## Example:
