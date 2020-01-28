@@ -17,11 +17,17 @@ public ConstraintConnector example() {
 	return connector;
 }
 ```
-It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json).
+
+It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json). To enhance the usability of the  We are working on a GUI editor to generate this 
 
 
 ## Example:
 A complex network ![Image description](src/main/resources/graph0.png)
+
+
+<details>
+  <summary>Click to expand the json definition of the above example.</summary>
+	
 ```json
 {"nodes":[{"Replicate":{"name":"A",
   "ends":[{"name":"A1",
@@ -323,6 +329,7 @@ A complex network ![Image description](src/main/resources/graph0.png)
     ]}
 ```
 
+</details>
 
 More examples are being added to ![](![FIFO1](src/test/resources/output) such as a FIFO channel (Unmerged results)
 Graphical output
