@@ -4,8 +4,8 @@ Constreofy applies constraint satisfaction techniques to compute the formal sema
 
 ```java
 public ConstraintConnector example() {
-	final ConnectorFactory factory = new ConnectorFactory();
-	connector = factory.prioritySync("a", "b");
+	ConnectorFactory factory = new ConnectorFactory();
+	ConstraintConnector connector = factory.prioritySync("a", "b");
 	connector.add(factory.merger("c", "d", "e"), "c", "b");
 	connector.add(factory.sync("f", "g"), "f", "a");
 	connector.add(factory.merger("h", "i", "j"), "h", "g");
