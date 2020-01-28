@@ -1,4 +1,4 @@
-#Constrainify tool:
+# Constrainify tool:
 
 
 This tool applies constraint satisfaction techniques to compute the formal semantics of a Reo network.
