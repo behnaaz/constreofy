@@ -32,6 +32,8 @@ Graphical output
 Label Information
 ![](src/test/resources/output/FIFO/outthesislabels.txt)
 
-### TODOs
+### Contribution
+Wanna get involved? There are a few things you can help with to improve the tool.
+
 * Dockerize the tool for easy installation
 * Implement a graphical editor for defining input Reo models (work in progress) 
