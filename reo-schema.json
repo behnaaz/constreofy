@@ -1,0 +1,288 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "nodes",
+    "readers",
+    "writers",
+    "channels",
+    "connections"
+  ],
+  "properties": {
+    "nodes": {
+      "$id": "#/properties/nodes",
+      "type": "array",
+      "title": "The Nodes Schema",
+      "items": {
+        "$id": "#/properties/nodes/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "Replicate"
+        ],
+        "properties": {
+          "Replicate": {
+            "$id": "#/properties/nodes/items/properties/Replicate",
+            "type": "object",
+            "title": "The Replicate Schema",
+            "required": [
+              "name",
+              "ends"
+            ],
+            "properties": {
+              "name": {
+                "$id": "#/properties/nodes/items/properties/Replicate/properties/name",
+                "type": "string",
+                "title": "The Name Schema",
+                "default": "",
+                "examples": [
+                  "A"
+                ],
+                "pattern": "^(.*)$"
+              },
+              "ends": {
+                "$id": "#/properties/nodes/items/properties/Replicate/properties/ends",
+                "type": "array",
+                "title": "The Ends Schema",
+                "items": {
+                  "$id": "#/properties/nodes/items/properties/Replicate/properties/ends/items",
+                  "type": "object",
+                  "title": "The Items Schema",
+                  "required": [
+                    "name",
+                    "type"
+                  ],
+                  "properties": {
+                    "name": {
+                      "$id": "#/properties/nodes/items/properties/Replicate/properties/ends/items/properties/name",
+                      "type": "string",
+                      "title": "The Name Schema",
+                      "default": "",
+                      "examples": [
+                        "A1"
+                      ],
+                      "pattern": "^(.*)$"
+                    },
+                    "type": {
+                      "$id": "#/properties/nodes/items/properties/Replicate/properties/ends/items/properties/type",
+                      "type": "string",
+                      "title": "The Type Schema",
+                      "default": "",
+                      "examples": [
+                        "Source"
+                      ],
+                      "pattern": "^(.*)$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "readers": {
+      "$id": "#/properties/readers",
+      "type": "array",
+      "title": "The Readers Schema",
+      "items": {
+        "$id": "#/properties/readers/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "name",
+          "ends"
+        ],
+        "properties": {
+          "name": {
+            "$id": "#/properties/readers/items/properties/name",
+            "type": "string",
+            "title": "The Name Schema",
+            "default": "",
+            "examples": [
+              "R1"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "ends": {
+            "$id": "#/properties/readers/items/properties/ends",
+            "type": "array",
+            "title": "The Ends Schema",
+            "items": {
+              "$id": "#/properties/readers/items/properties/ends/items",
+              "type": "object",
+              "title": "The Items Schema",
+              "required": [
+                "name",
+                "type"
+              ],
+              "properties": {
+                "name": {
+                  "$id": "#/properties/readers/items/properties/ends/items/properties/name",
+                  "type": "string",
+                  "title": "The Name Schema",
+                  "default": "",
+                  "examples": [
+                    "R12"
+                  ],
+                  "pattern": "^(.*)$"
+                },
+                "type": {
+                  "$id": "#/properties/readers/items/properties/ends/items/properties/type",
+                  "type": "string",
+                  "title": "The Type Schema",
+                  "default": "",
+                  "examples": [
+                    "Sink"
+                  ],
+                  "pattern": "^(.*)$"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "writers": {
+      "$id": "#/properties/writers",
+      "type": "array",
+      "title": "The Writers Schema",
+      "items": {
+        "$id": "#/properties/writers/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "name",
+          "ends"
+        ],
+        "properties": {
+          "name": {
+            "$id": "#/properties/writers/items/properties/name",
+            "type": "string",
+            "title": "The Name Schema",
+            "default": "",
+            "examples": [
+              "W1"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "ends": {
+            "$id": "#/properties/writers/items/properties/ends",
+            "type": "array",
+            "title": "The Ends Schema",
+            "items": {
+              "$id": "#/properties/writers/items/properties/ends/items",
+              "type": "object",
+              "title": "The Items Schema",
+              "required": [
+                "name",
+                "type"
+              ],
+              "properties": {
+                "name": {
+                  "$id": "#/properties/writers/items/properties/ends/items/properties/name",
+                  "type": "string",
+                  "title": "The Name Schema",
+                  "default": "",
+                  "examples": [
+                    "W11"
+                  ],
+                  "pattern": "^(.*)$"
+                },
+                "type": {
+                  "$id": "#/properties/writers/items/properties/ends/items/properties/type",
+                  "type": "string",
+                  "title": "The Type Schema",
+                  "default": "",
+                  "examples": [
+                    "Source"
+                  ],
+                  "pattern": "^(.*)$"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "channels": {
+      "$id": "#/properties/channels",
+      "type": "array",
+      "title": "The Channels Schema",
+      "items": {
+        "$id": "#/properties/channels/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "Sync"
+        ],
+        "properties": {
+          "Sync": {
+            "$id": "#/properties/channels/items/properties/Sync",
+            "type": "array",
+            "title": "The Sync Schema",
+            "items": {
+              "$id": "#/properties/channels/items/properties/Sync/items",
+              "type": "object",
+              "title": "The Items Schema",
+              "required": [
+                "Source"
+              ],
+              "properties": {
+                "Source": {
+                  "$id": "#/properties/channels/items/properties/Sync/items/properties/Source",
+                  "type": "string",
+                  "title": "The Source Schema",
+                  "default": "",
+                  "examples": [
+                    "A2B"
+                  ],
+                  "pattern": "^(.*)$"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "connections": {
+      "$id": "#/properties/connections",
+      "type": "array",
+      "title": "The Connections Schema",
+      "items": {
+        "$id": "#/properties/connections/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "one",
+          "two"
+        ],
+        "properties": {
+          "one": {
+            "$id": "#/properties/connections/items/properties/one",
+            "type": "string",
+            "title": "The One Schema",
+            "default": "",
+            "examples": [
+              "W11"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "two": {
+            "$id": "#/properties/connections/items/properties/two",
+            "type": "string",
+            "title": "The Two Schema",
+            "default": "",
+            "examples": [
+              "I1"
+            ],
+            "pattern": "^(.*)$"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,12 +1,16 @@
 package org.behnaz.rcsp;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +66,85 @@ public class ConstraintConnector extends AbstractConnector {
 			result.put(lowerCaseState.replace(CURRENT_MEMORY, NEXT_MEMORY), false);
 		}
 		return result;
+	}
+
+/*
+	private String declarationSection(final String formulae) {
+		final StringBuilder builder = new StringBuilder();
+		final Set<String> vars = this.extractVariables(formulae).stream().filter(item -> !item.isEmpty())//TODO orElse??
+				.map(String::toUpperCase).collect(Collectors.toSet());
+		constraint = capitalizeVars(constraint);
+
+		builder.append("rlpcvar ");
+		final String variable = vars.toString();
+		builder.append(variable.substring(1, variable.length() - 1)).append(';');
+		return builder.toString();
+	}
+
+	public String capitalizeVars(final String constraint) {
+		String result = constraint;
+		for (final String term : constraint.replaceAll(KEY_WORDS_REGEX, "").split(SPACE)) {
+			result = result.replaceAll(WORD_BOUNDARY + term + WORD_BOUNDARY, term.toUpperCase(Locale.US));
+		}
+		return result;
+	}
+
+	*//*
+	public String buildConstraint(final StateValue stateValue) {
+		final StringBuilder builder = new StringBuilder();
+
+		try {
+			builder.append(PREAMBLE);
+			builder.append(declarationSection(constraint));
+			builder.append(FORMULA_NAME + " := " + applyFIFOStates(constraint, stateValue) + ";;");
+			builder.append(dnf(FORMULA_NAME));
+			builder.append(SHUT);
+			builder.append("; end;");
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, e.toString());
+		}
+		String temp = builder.toString();
+		Starter.log("Built constraints " + temp);
+		return temp;
+	}
+
+	private String applyFIFOStates(final String mainConstraint, final StateValue stateValue) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(mainConstraint);
+		
+		for (final String capitalFIFO : getAllFIFOs(mainConstraint)) {
+			final String fifo = capitalFIFO.toLowerCase(Locale.ENGLISH).replaceAll(NEXT_MEMORY, CURRENT_MEMORY); 
+			if (stateValue != null && stateValue.getValue(fifo).isPresent() && stateValue.getValue(fifo).get()) {//TODO what to do with optional???
+				if (stateValue.getValue(fifo).get()) {
+					builder.append(AND);
+					builder.append(fifo.toUpperCase(Locale.ENGLISH));
+				} else {
+					assert false;
+				}
+			} else {
+				builder.append(AND);
+				builder.append(" (");
+				builder.append(NOT);
+				builder.append(fifo.toUpperCase(Locale.ENGLISH));
+				builder.append(") ");
+			}
+		}
+		return builder.toString();
+	}
+
+	private Set<String> getAllFIFOs(final String mainConstraint) {
+		final Set<String> result = new TreeSet<>();
+		final Pattern pattern = Pattern.compile("\\w+XRING", Pattern.CASE_INSENSITIVE);
+		final Matcher matcher = pattern.matcher(mainConstraint);
+		
+		while(matcher.find())
+			result.add(mainConstraint.substring(matcher.start(), matcher.end()));
+
+		return result;
+	}
+
+	private String dnf(final String formulae) throws IOException {
+		return new StringBuilder().append("rldnf ").append(formulae).append(";").toString();
 	}
 
 	/**
