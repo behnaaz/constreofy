@@ -1,7 +1,10 @@
 # Constreofy tool
 
-Constreofy applies constraint satisfaction techniques to compute the formal semantics of a Reo network.
-It uses [REDUCE Algebra system](https://reduce-algebra.sourceforge.io/) for solving the constraints and [GraphViz](https://www.graphviz.org/) to generate the result automata. The image below is an example of its output.
+Constreofy is a tool-set that obtains the formal semantics of a Reo network by utilizing constraint satisfaction techniques.
+It works by constructing a constraint satisfaction problem from conjunction of the constraints, which describe the behavior of a Reo element 
+and by using [REDUCE Algebra system](https://reduce-algebra.sourceforge.io/) to solve the constraints. Then, it builds 
+an automaton, which visualizes the solutions to the constraint. It uses [GraphViz](https://www.graphviz.org/) to represent 
+the automaton. 
 
 
 ### Define a Reo network
@@ -66,7 +69,7 @@ The automata corresponding to a FIFO1 channel named ```bc``` with the source end
 ![](src/test/resources/FIFO/example.png)
 
 
-### More sophisticated example
+### A more sophisticated example
 The below is a non trivial Reo network.
  ![Image description](src/test/resources/readme/chapter7.png)
  
