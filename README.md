@@ -1,14 +1,14 @@
 # Constreofy tool
 
 Constreofy is a tool-set that obtains the formal semantics of a Reo network by utilizing constraint satisfaction techniques.
-It works by constructing a constraint satisfaction problem from conjunction of the constraints, which describe the behavior of a Reo element 
+It works by constructing a constraint satisfaction problem from the conjunction of the constraints, which describe the behavior of a Reo element 
 and by using [REDUCE Algebra system](https://reduce-algebra.sourceforge.io/) to solve the constraints. Then, it builds 
 an automaton, which visualizes the solutions to the constraint. It uses [GraphViz](https://www.graphviz.org/) to represent 
 the automaton. 
 
 
 ### Define a Reo network
-The tool provides API to define a Reo nework programmatically. 
+The tool provides API to define a Reo network programmatically. 
 
 ```java
 public ConstraintConnector example() {
@@ -21,11 +21,11 @@ public ConstraintConnector example() {
 }
 ```
 
-It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json). To facilitate the definition of a Reo network in the JSON format, we are building a GUI editor based on [PixiJS](https://www.pixijs.com/). 
+It is also possible to define a model in JSON format. The schema for the input format is [here](reo-schema.json). To facilitate the definition of a Reo network in the JSON format, we are building a GUI editor based on [PixiJS](https://www.pixijs.com/). 
 
 
 ### Internal steps
-Constreofy works by mapping each Reo element to a binary constraint that encodes its behavior, and constructing a constraint 
+Constreofy works by mapping each Reo element to a binary constraint that encodes its behavior and constructing a constraint 
 from the conjunction of these constraints. Then, it launches the Reduce program that is installed on the machine, 
 loads the [redlog package](http://www.fmi.uni-passau.de/~redlog/), sets the context to IBALP,
 (Initial Boolean algebras, basically quantified propositional logic.) using the following commands:
@@ -46,8 +46,7 @@ If the constraint is not data-aware, the solutions to the constraints are extrac
  ![Image description](src/test/resources/readme/reduce.png)
 
 
-Otherwise, prior to solving the constraint, the data-aware expressions are replaced by new binary predicates and after that their validity 
-extracted from the DNF. A new data-aware constraint is formed and solved using Reduce. 
+Otherwise, prior to solving the constraint, the data-aware expressions are replaced by new binary predicates whole validity is obtained from the DNF. A new data-aware constraint is formed and solved using Reduce. 
 
  ![Image description](src/test/resources/readme/numeric.png)
  
@@ -70,7 +69,7 @@ The automata corresponding to a FIFO1 channel named ```bc``` with the source end
 
 
 ### A more sophisticated example
-The below is a non trivial Reo network.
+The below is a nontrivial Reo network.
  ![Image description](src/test/resources/readme/chapter7.png)
  
   which is mapped to the following automata using Constreofy tool
@@ -386,7 +385,7 @@ The below is a non trivial Reo network.
 </details>
 
 ### Contribution
-Wanna get involved? There are a few things you can help with to improve the tool.
+Wanna get involved? There are a few things you can help to improve the tool.
 
 * Dockerize the tool for easy installation
 * Implement a graphical editor for defining input Reo models (work in progress) 
