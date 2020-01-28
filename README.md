@@ -40,7 +40,7 @@ The command ```rldnf constraint_name``` calculated the DNF (Disjunctive Normal F
 
 
 ## Example
-The below Reo network is a non trivial example from [page 115](behnaz-thesis.pdf).
+The below is a non trivial Reo network.
  ![Image description](src/test/resources/readme/chapter7.png), which is mapped to the following automata using Constreofy tool
  ![Image description](src/main/resources/graph0.png)
 
@@ -351,12 +351,12 @@ The below Reo network is a non trivial example from [page 115](behnaz-thesis.pdf
 
 </details>
 
-More examples are being added to ![](![FIFO1](src/test/resources/output) such as a FIFO channel (Unmerged results)
+More examples are being added to ![](![FIFO1](src/test/resources/FIFO/example.png) such as a FIFO channel (Unmerged results)
 Graphical output
 ![](src/test/resources/output/FIFO/outthesis106.svg.png =100x20)
-![](src/test/resources/output/FIFO/outthesis106info.txt)
+![](src/test/resources/FIFO/exampleinfo.txt)
 Label Information
-![](src/test/resources/output/FIFO/outthesislabels.txt)
+![](src/test/resources/FIFO/examplelabels.txt)
 
 ### Contribution
 Wanna get involved? There are a few things you can help with to improve the tool.
