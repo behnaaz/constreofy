@@ -2,6 +2,9 @@
 
 Constreofy applies constraint satisfaction techniques to compute the formal semantics of a Reo network.
 
+## Define a Reo network
+The tool provides API to define a Reo nework programmatically. 
+
 ```java
 public ConstraintConnector example() {
 	ConnectorFactory factory = new ConnectorFactory();
