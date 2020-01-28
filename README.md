@@ -25,7 +25,9 @@ It is also possible to define a model in in JSON format. The schema for the inpu
 The tool works by mapping each Reo element to a binary constraint that encodes its behavior. 
 
 ## Example
-A complex network ![Image description](src/main/resources/graph0.png)
+The below Reo network is a non trivial example from [page 115](behnaz-thesis.pdf).
+ ![Image description](src/test/resources/readme/chapter7.png), which is mapped to the following automata using Constreofy tool
+ ![Image description](src/main/resources/graph0.png)
 
 
 <details>
