@@ -1,4 +1,4 @@
-# Constreofy tool:
+# Constreofy tool
 
 Constreofy applies constraint satisfaction techniques to compute the formal semantics of a Reo network.
 It uses [REDUCE Algebra system](https://reduce-algebra.sourceforge.io/) for solving the constraints and [GraphViz](https://www.graphviz.org/) to generate the result automata. The image below is an example of its output.
@@ -18,7 +18,7 @@ public ConstraintConnector example() {
 }
 ```
 
-It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json). To facilitate the definition of a Reo network in the JSON format, we are building a GUI editor based on [the pixijs framework](https://www.pixijs.com/). 
+It is also possible to define a model in in JSON format. The schema for the input format is [here](reo-schema.json). To facilitate the definition of a Reo network in the JSON format, we are building a GUI editor based on [PixiJS](https://www.pixijs.com/). 
 
 
 ## Example:
