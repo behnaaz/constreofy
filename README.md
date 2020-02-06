@@ -1,5 +1,6 @@
 # Constreofy tool
 
+
 Constreofy is a tool-set that obtains the formal semantics of a Reo network by utilizing constraint satisfaction techniques.
 It works by constructing a constraint satisfaction problem from the conjunction of the constraints, which describe the behavior of a Reo element 
 and by using [REDUCE Algebra system](https://reduce-algebra.sourceforge.io/) to solve the constraints. Then, it builds 
