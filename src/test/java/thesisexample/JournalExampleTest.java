@@ -1,6 +1,6 @@
 package thesisexample;
 
-import javafx.util.Pair;
+import org.javatuples.Pair;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.behnaz.rcsp.ConstraintConnector;
@@ -116,12 +116,12 @@ public class JournalExampleTest implements ExampleData {
         assertEquals(1, twoPrioritySyncs.size());
 
         assertEquals(24, fifos.size() + twoPrioritySyncs.size() + onePrioritySyncs.size() + lossys.size() + syncdrains.size() + syncs.size());
-        assertEquals("A2B->AB1, D2F->DF1, E2F->EF2, Q2T->QT1, J4L->JL2", syncs.stream().map(e -> e.getKey() + "->" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("E4T<->ET2, O1D<->OD4, H1C<->HC4, C3M<->CM1, D3U<->DU1, E3L<->EL1", syncdrains.stream().map(e -> e.getKey() + "<->" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("Q3O.>QO2, Q4H.>QH2, J3M.>JM2, J6U.>JU2", lossys.stream().map(e -> e.getKey() + ".>" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("I2J!>IJ1", onePrioritySyncs.stream().map(e -> e.getKey() + "!>" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("S2Q!!>SQ1", twoPrioritySyncs.stream().map(e -> e.getKey() + "!!>" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("B2C[]>BC1, C2D[]>CD1, F3G[]>FG1, B3E[]>BE1, Q5P[]>QP1, J2K[]>JK1, J5N[]>JN1", fifos.stream().map(e -> e.getKey() + "[]>" + e.getValue()).collect(Collectors.joining(", ")));
+        assertEquals("A2B->AB1, D2F->DF1, E2F->EF2, Q2T->QT1, J4L->JL2", syncs.stream().map(e -> e.getValue0() + "->" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("E4T<->ET2, O1D<->OD4, H1C<->HC4, C3M<->CM1, D3U<->DU1, E3L<->EL1", syncdrains.stream().map(e -> e.getValue0() + "<->" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("Q3O.>QO2, Q4H.>QH2, J3M.>JM2, J6U.>JU2", lossys.stream().map(e -> e.getValue0() + ".>" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("I2J!>IJ1", onePrioritySyncs.stream().map(e -> e.getValue0() + "!>" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("S2Q!!>SQ1", twoPrioritySyncs.stream().map(e -> e.getValue0() + "!!>" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("B2C[]>BC1, C2D[]>CD1, F3G[]>FG1, B3E[]>BE1, Q5P[]>QP1, J2K[]>JK1, J5N[]>JN1", fifos.stream().map(e -> e.getValue0() + "[]>" + e.getValue1()).collect(Collectors.joining(", ")));
     }
 
     private void checkConnections() {
@@ -134,7 +134,7 @@ public class JournalExampleTest implements ExampleData {
         channelEnds.addAll(twoPrioritySyncs);
 
         for (Pair<String, String> p : channelEnds) {
-            assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+            assertTrue(connections.containsKey(p.getValue0()) || connections.containsKey(p.getValue1()));
         }
     }
 
@@ -161,15 +161,15 @@ public class JournalExampleTest implements ExampleData {
         ps.addAll(twoPrioritySyncs);
 
         for (Pair<String, String> p : ps) {
-            if (!connections.containsKey(p.getKey()) || checkedEnds.contains(p.getKey())) {
-                bads.add(p.getKey());
+            if (!connections.containsKey(p.getValue0()) || checkedEnds.contains(p.getValue0())) {
+                bads.add(p.getValue0());
             } else {
-                checkedEnds.add(p.getKey());
+                checkedEnds.add(p.getValue0());
             }
-            if (!connections.containsKey(p.getValue()) || checkedEnds.contains(p.getValue())) {
-                bads.add(p.getValue());
+            if (!connections.containsKey(p.getValue1()) || checkedEnds.contains(p.getValue1())) {
+                bads.add(p.getValue1());
             } else {
-                checkedEnds.add(p.getValue());
+                checkedEnds.add(p.getValue1());
             }
         }
 
@@ -179,9 +179,9 @@ public class JournalExampleTest implements ExampleData {
         // nodeEnds.addAll(merges);
 
         for (Pair<String, Pair<Set<String>, Set<String>>> p : nodeEnds) {
-            final Pair<Set<String>, Set<String>> sourceSinks = p.getValue();
-            final Set<String> ends = sourceSinks.getKey();
-            ends.addAll(sourceSinks.getValue());
+            final Pair<Set<String>, Set<String>> sourceSinks = p.getValue1();
+            final Set<String> ends = sourceSinks.getValue0();
+            ends.addAll(sourceSinks.getValue1());
 
             for (String s : ends) {
                 if (!connections.containsKey(s) || checkedEnds.contains(s)) {
@@ -284,7 +284,7 @@ public class JournalExampleTest implements ExampleData {
     }
 
     private Set<IOAwareSolution> solve(final ConstraintConnector connector, final int numberOfRounds, @NonNull final String givenInit) throws IOException {
-        final Set<StateVariableValue> fifos = this.fifos.stream().map(e -> new FIFO(e.getKey(), e.getValue()).getMemory().toLowerCase())
+        final Set<StateVariableValue> fifos = this.fifos.stream().map(e -> new FIFO(e.getValue0(), e.getValue1()).getMemory().toLowerCase())
                 .map(e -> StateVariableValue.builder().stateName(e).value(givenInit.contains(e)).build())
                 .collect(Collectors.toSet());
 
@@ -304,7 +304,7 @@ public class JournalExampleTest implements ExampleData {
         equalize(result, "C4", "H1");
         equalize(result, "C1", "BC1");
         equalize(result, "BC1", "C1");
-        equalize(result, onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
+        equalize(result, onePrioritySyncs.get(0).getValue0(), onePrioritySyncs.get(0).getValue1());
         equalize(result, "I1", connections.get("I1"));
         equalize(result, "I1", "I2");
         equalize(result, "I2", connections.get("I2"));
@@ -415,7 +415,7 @@ public class JournalExampleTest implements ExampleData {
     private ConstraintConnector network() {
         final EqualBasedConnectorFactory factory = new EqualBasedConnectorFactory(createEquals());//Arrays.asList("C2D", "CD1", "B2C", "BC1",
         ConstraintConnector connector = factory.writer("W11", 1);
-//factory.prioritySync(onePrioritySyncs.get(0).getKey(), onePrioritySyncs.get(0).getValue());
+//factory.prioritySync(onePrioritySyncs.get(0).getValue0(), onePrioritySyncs.get(0).getValue1());
         connector.add(factory.fifo("J2k", "JK1"), "J2K", connections.get("J2K"));
         connector.add(factory.writer("R12", 1), "R12", connections.get("R12"));//TODO reader
         connector.add(factory.lossySync("J3M", "JM2"), "J3", connections.get("J3"));

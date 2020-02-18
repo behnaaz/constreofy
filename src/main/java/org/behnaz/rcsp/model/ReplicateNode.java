@@ -1,28 +1,28 @@
 package org.behnaz.rcsp.model;
 
-import javafx.util.Pair;
+import org.javatuples.Pair;
 
 import java.util.Set;
 
 public class ReplicateNode extends Node {
     public ReplicateNode(final Pair<String, Pair<Set<String>, Set<String>>> pair) {
-        if (pair.getValue().getKey().size() != 1) {
-            throw new RuntimeException(pair.getKey() + " Replicate has wrong source number");
+        if (pair.getValue1().getValue0().size() != 1) {
+            throw new RuntimeException(pair.getValue0() + " Replicate has wrong source number");
         }
 
-        if (pair.getValue().getKey().isEmpty()) {
-            throw new RuntimeException(pair.getKey() + " Replicate has wrong sink number");
+        if (pair.getValue1().getValue0().isEmpty()) {
+            throw new RuntimeException(pair.getValue0() + " Replicate has wrong sink number");
         }
 
         this.pair = pair;
     }
 
     public String getSourceEnd(){
-        return pair.getValue().getKey().iterator().next();
+        return pair.getValue1().getValue0().iterator().next();
     }
 
     public Set<String> getSinkEnds(){
-        return pair.getValue().getValue();
+        return pair.getValue1().getValue1();
     }
 
     @Override

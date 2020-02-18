@@ -86,14 +86,13 @@
             <version>2.0.0.Final</version>
         </dependency>
 
-	<!-- https://mvnrepository.com/artifact/javafx/javafx -->
-	<dependency>
-		    <groupId>javafx</groupId>
-		        <artifactId>javafx</artifactId>
-			    <version>2.2.7</version>
-		    </dependency>
+<dependency>
+    <groupId>org.javatuples</groupId>
+    <artifactId>javatuples</artifactId>
+    <version>1.2</version>
+</dependency>
+</dependencies>
 
-    </dependencies>
     <build>
         <plugins>
             <plugin>

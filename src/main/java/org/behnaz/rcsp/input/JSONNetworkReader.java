@@ -1,6 +1,7 @@
 package org.behnaz.rcsp.input;
 
-import javafx.util.Pair;
+import org.javatuples.Pair;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.behnaz.rcsp.model.MergerNode;

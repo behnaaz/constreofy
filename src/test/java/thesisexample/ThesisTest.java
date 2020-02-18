@@ -1,6 +1,6 @@
 package thesisexample;
 
-import javafx.util.Pair;
+import org.javatuples.Pair;
 import org.behnaz.rcsp.ConstraintConnector;
 import org.behnaz.rcsp.FIFO;
 import org.behnaz.rcsp.IOAwareSolution;
@@ -76,8 +76,8 @@ public class ThesisTest implements ExampleData {
 
     private ConstraintConnector network() {
         List<HashSet<String>> equals = findEquals();
-        String source = networkReader.getFifos().get(0).getKey();
-        String sink = networkReader.getFifos().get(0).getValue();
+        String source = networkReader.getFifos().get(0).getValue0();
+        String sink = networkReader.getFifos().get(0).getValue1();
 
         ConstraintConnector connector = new ConstraintConnector(new FIFO(source, sink).generateConstraint().getConstraint());
         Node bk = replicates.stream().filter(e -> e.ownsEnd("B2")).findAny().get();
@@ -134,12 +134,12 @@ public class ThesisTest implements ExampleData {
         assertEquals(1, twoPrioritySyncs.size());
 
         assertEquals(24,  fifos.size() + twoPrioritySyncs.size() + onePrioritySyncs.size() + lossys.size() + syncdrains.size() + syncs.size());
-        assertEquals("A2B->AB1, D2F->DF1, E2F->EF2, Q2T->QT1, J4L->JL2", syncs.stream().map(e -> e.getKey() + "->" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("E4T<->ET2, O1D<->OD4, H1C<->HC4, C3M<->CM1, D3U<->DU1, E3L<->EL1", syncdrains.stream().map(e -> e.getKey() + "<->" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("Q3O.>QO2, Q4H.>QH2, J3M.>JM2, J6U.>JU2", lossys.stream().map(e -> e.getKey() + ".>" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("I2J!>IJ1", onePrioritySyncs.stream().map(e -> e.getKey() + "!>" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("S2Q!!>SQ1", twoPrioritySyncs.stream().map(e -> e.getKey() + "!!>" + e.getValue()).collect(Collectors.joining(", ")));
-        assertEquals("B2C[]>BC1, C2D[]>CD1, F3G[]>FG1, B3E[]>BE1, Q5P[]>QP1, J2K[]>JK1, J5N[]>JN1", fifos.stream().map(e -> e.getKey() + "[]>" + e.getValue()).collect(Collectors.joining(", ")));
+        assertEquals("A2B->AB1, D2F->DF1, E2F->EF2, Q2T->QT1, J4L->JL2", syncs.stream().map(e -> e.getValue0() + "->" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("E4T<->ET2, O1D<->OD4, H1C<->HC4, C3M<->CM1, D3U<->DU1, E3L<->EL1", syncdrains.stream().map(e -> e.getValue0() + "<->" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("Q3O.>QO2, Q4H.>QH2, J3M.>JM2, J6U.>JU2", lossys.stream().map(e -> e.getValue0() + ".>" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("I2J!>IJ1", onePrioritySyncs.stream().map(e -> e.getValue0() + "!>" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("S2Q!!>SQ1", twoPrioritySyncs.stream().map(e -> e.getValue0() + "!!>" + e.getValue1()).collect(Collectors.joining(", ")));
+        assertEquals("B2C[]>BC1, C2D[]>CD1, F3G[]>FG1, B3E[]>BE1, Q5P[]>QP1, J2K[]>JK1, J5N[]>JN1", fifos.stream().map(e -> e.getValue0() + "[]>" + e.getValue1()).collect(Collectors.joining(", ")));
     }
 
     private void checkConnections() {
@@ -152,7 +152,7 @@ public class ThesisTest implements ExampleData {
         channelEnds.addAll(twoPrioritySyncs);
 
         for (Pair<String, String> p : channelEnds) {
-            assertTrue(connections.containsKey(p.getKey()) || connections.containsKey(p.getValue()));
+            assertTrue(connections.containsKey(p.getValue0()) || connections.containsKey(p.getValue1()));
         }
     }
 
@@ -180,15 +180,15 @@ public class ThesisTest implements ExampleData {
         ps.addAll(twoPrioritySyncs);
 
         for (Pair<String, String> p : ps) {
-            if (!connections.containsKey(p.getKey()) || checkedEnds.contains(p.getKey())) {
-                bads.add(p.getKey());
+            if (!connections.containsKey(p.getValue0()) || checkedEnds.contains(p.getValue0())) {
+                bads.add(p.getValue0());
             } else {
-                checkedEnds.add(p.getKey());
+                checkedEnds.add(p.getValue0());
             }
-            if (!connections.containsKey(p.getValue()) || checkedEnds.contains(p.getValue())) {
-                bads.add(p.getValue());
+            if (!connections.containsKey(p.getValue1()) || checkedEnds.contains(p.getValue1())) {
+                bads.add(p.getValue1());
             } else {
-                checkedEnds.add(p.getValue());
+                checkedEnds.add(p.getValue1());
             }
         }
 
@@ -198,9 +198,9 @@ public class ThesisTest implements ExampleData {
         //nodeEnds.addAll(merges);
 
         for (Pair<String, Pair<Set<String>, Set<String>>> p : nodeEnds) {
-            final Pair<Set<String>, Set<String>> sourceSinks = p.getValue();
-            final Set<String> ends = sourceSinks.getKey();
-            ends.addAll(sourceSinks.getValue());
+            final Pair<Set<String>, Set<String>> sourceSinks = p.getValue1();
+            final Set<String> ends = sourceSinks.getValue0();
+            ends.addAll(sourceSinks.getValue1());
 
             for (String s : ends) {
                 if (!connections.containsKey(s) || checkedEnds.contains(s)) {
@@ -275,7 +275,7 @@ public class ThesisTest implements ExampleData {
     private List<HashSet<String>> createEquals() {
         final List<HashSet<String>> result = new ArrayList<>();
         for (Map.Entry<String, String> s : connections.entrySet()) {
-    //        equalize(result, s.getKey(), s.getValue());
+    //        equalize(result, s.getValue0(), s.getValue1());
         }
 
         //TODO TEMP taghalllob

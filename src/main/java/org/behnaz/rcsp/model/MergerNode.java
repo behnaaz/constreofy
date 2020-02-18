@@ -1,6 +1,7 @@
 package org.behnaz.rcsp.model;
 
-import javafx.util.Pair;
+import org.javatuples.Pair;
+
 import org.behnaz.rcsp.model.util.VariableNamer;
 
 import java.util.Collections;
@@ -19,23 +20,23 @@ public class MergerNode extends Node {
     }
 
     public MergerNode(final Pair<String, Pair<Set<String>, Set<String>>> pair) {
-        if (pair.getValue().getValue().size() != 1) {
-            throw new RuntimeException(pair.getKey() + " Replicate has wrong sink number");
+        if (pair.getValue1().getValue1().size() != 1) {
+            throw new RuntimeException(pair.getValue0() + " Replicate has wrong sink number");
         }
 
-        if (pair.getValue().getKey().isEmpty()) {
-            throw new RuntimeException(pair.getKey() + " Replicate has wrong sink number");
+        if (pair.getValue1().getValue0().isEmpty()) {
+            throw new RuntimeException(pair.getValue0() + " Replicate has wrong sink number");
         }
 
         this.pair = pair;
     }
 
     public String getSinkEnd(){
-        return pair.getValue().getValue().iterator().next();
+        return pair.getValue1().getValue1().iterator().next();
     }
 
     public Set<String> getSourceEnds(){
-        return pair.getValue().getKey();
+        return pair.getValue1().getValue0();
     }
 
     @Override
